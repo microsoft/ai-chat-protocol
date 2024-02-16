@@ -1,0 +1,50 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.ComponentModel;
+
+namespace Microsoft.AI.ChatProtocol
+{
+    /// <summary> Identifies the type of a message. </summary>
+    internal readonly struct MessageKind : IEquatable<MessageKind>
+    {
+        private readonly String _value;
+
+        /// <summary> Initializes a new instance of <see cref="MessageKind"/>. </summary>
+        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
+        public MessageKind(String value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        private const String TextValue = "text";
+
+        /// <summary> The message context is text. </summary>
+        public static MessageKind Text { get; } = new MessageKind(TextValue);
+
+        /// <summary> Determines if two <see cref="MessageKind"/> values are the same. </summary>
+        public static bool operator ==(MessageKind left, MessageKind right) => left.Equals(right);
+
+        /// <summary> Determines if two <see cref="MessageKind"/> values are not the same. </summary>
+        public static bool operator !=(MessageKind left, MessageKind right) => !left.Equals(right);
+
+        /// <summary> Converts a string to a <see cref="MessageKind"/>. </summary>
+        public static implicit operator MessageKind(String value) => new MessageKind(value);
+
+        /// <inheritdoc />
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object obj) => obj is MessageKind other && Equals(other);
+
+        /// <inheritdoc />
+        public bool Equals(MessageKind other) => String.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
+
+        /// <inheritdoc />
+        [EditorBrowsable(EditorBrowsableState.Never)]
+
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        /// <inheritdoc />
+        public override String ToString() => _value;
+    }
+}
