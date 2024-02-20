@@ -1,0 +1,15 @@
+{
+	"name": "chat-protocol-dev",
+	"dockerComposeFile": ["docker-compose.yaml"],
+	"service": "development",
+	"workspaceFolder": "/workspace",
+	"remoteUser": "vscode",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.vscode-typescript-next",
+				"ms-dotnettools.vscode-dotnet-pack"
+			]
+		}
+	}
+}
