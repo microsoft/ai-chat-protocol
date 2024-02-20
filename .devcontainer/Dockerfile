@@ -27,7 +27,7 @@ RUN curl -o dotnet-install.sh -L https://dot.net/v1/dotnet-install.sh &&\
 
 RUN echo "export DOTNET_ROOT=\"/home/${user}/.dotnet\"" >> /home/$user/.bashrc &&\
     echo "export PATH=\"\$PATH:\$DOTNET_ROOT:\$DOTNET_ROOT/tools\"" >> /home/$user/.bashrc
-    
+
 # Configure shell
 RUN curl -L https://raw.github.com/git/git/master/contrib/completion/git-prompt.sh -o /home/$user/.git-prompt.sh &&\
     echo "source /home/$user/.git-prompt.sh" >> /home/$user/.bashrc &&\
