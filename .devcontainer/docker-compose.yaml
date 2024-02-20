@@ -1,0 +1,12 @@
+services:
+  development:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        user: vscode
+        node_version: 20.11.1
+        dotnet_version: 8.0.100
+    volumes:
+      - ..:/workspace
+    command: sleep infinity
