@@ -1,0 +1,26 @@
+{
+  "name": "@microsoft/ai-chat-protocol",
+  "version": "0.1.0-alpha.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/microsoft/ai-chat-protocol.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/microsoft/ai-chat-protocol/issues"
+  },
+  "homepage": "https://github.com/microsoft/ai-chat-protocol#readme",
+  "dependencies": {
+    "@azure-rest/core-client": "^1.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
