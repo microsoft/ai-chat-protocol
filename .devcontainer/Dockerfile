@@ -17,8 +17,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | b
 ENV NVM_DIR /home/$user/.nvm
 RUN . "$NVM_DIR/nvm.sh" &&\
     nvm install v$node_version &&\
-    nvm use v$node_version &&\
-    npm install -g @typespec/compiler
+    nvm use v$node_version
 
 # Add .NET
 ARG dotnet_version
