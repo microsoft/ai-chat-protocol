@@ -44,7 +44,7 @@ internal class OpenAIChatResponseBaseClass
                 case "assistant":
                     messages.Add(new ChatRequestAssistantMessage(chatMessage.Content));
                     break;
-                case "tool": // TODO 
+                case "tool": // TODO
                 case "function": // TODO (but deprecated)
                 default:
                     // This will result in "HTTP/1.1 500 Internal Server Error" response to the client
@@ -58,7 +58,7 @@ internal class OpenAIChatResponseBaseClass
 
 internal class OpenAIChatResponse: OpenAIChatResponseBaseClass, IActionResult
 {
-    internal OpenAIChatResponse(OpenAIClient client, string deployment, ChatProtocolCompletionOptions options) 
+    internal OpenAIChatResponse(OpenAIClient client, string deployment, ChatProtocolCompletionOptions options)
         : base(client, deployment, options)
     {
     }
@@ -134,6 +134,5 @@ internal class OpenAIStreamingChatResponse : OpenAIChatResponseBaseClass, IActio
 
             await httpResponse.WriteAsync($"{JsonSerializer.Serialize(completion)}\n", Encoding.UTF8);
         }
-        await httpResponse.WriteAsync("[DONE]\n");
     }
 }
