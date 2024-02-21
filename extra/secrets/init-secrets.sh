@@ -1,21 +1,19 @@
 #!/bin/bash
 
 echo "Initializing secrets..."
-echo "- Azure OpenAI"
-read -p "  Please enter your key: " AZURE_OPENAI_KEY
-read -p "  Please enter your endpoint: " AZURE_OPENAI_ENDPOINT
-read -p "  Please enter your deployment: " AZURE_OPENAI_DEPLOYMENT
-echo ""
-echo "- Azure Model as a Service"
-read -p "  Please enter your key: " AZURE_MAAS_KEY
-read -p "  Please enter your endpoint: " AZURE_MAAS_ENDPOINT
-echo ""
-echo "- Azure MaaP LLama2"
-read -p "  Please enter your key: " AZURE_MAAP_LLAMA2_KEY
-read -p "  Please enter your endpoint: " AZURE_MAAP_LLAMA2_ENDPOINT
-read -p "  Please enter your deployment: " AZURE_MAAP_LLAMA2_DEPLOYMENT
 
 SECRETS_DIR=$(dirname $(readlink -f $0))
+
+## Fill in the following values with your own keys and endpoints
+AZURE_OPENAI_KEY="YOUR_AZURE_OPENAI_KEY"
+AZURE_OPENAI_ENDPOINT="YOUR_AZURE_OPENAI_ENDPOINT"
+AZURE_OPENAI_DEPLOYMENT="YOUR_AZURE_OPENAI_DEPLOYMENT"
+AZURE_MAAS_KEY="YOUR_MAAS_KEY"
+AZURE_MAAS_ENDPOINT="YOUR_MAAS_ENDPOINT"
+AZURE_MAAP_LLAMA2_KEY="YOUR_LLAMA2_MAAP_KEY"
+AZURE_MAAP_LLAMA2_ENDPOINT="YOUR_LLAMA2_MAAP_ENDPOINT"
+AZURE_MAAP_LLAMA2_DEPLOYMENT="YOUR_LLAMA2_MAAP_DEPLOYMENT"
+
 echo "$AZURE_OPENAI_KEY" > $SECRETS_DIR/azure_openai_key
 echo "$AZURE_OPENAI_ENDPOINT" > $SECRETS_DIR/azure_openai_endpoint
 echo "$AZURE_OPENAI_DEPLOYMENT" > $SECRETS_DIR/azure_openai_deployment
