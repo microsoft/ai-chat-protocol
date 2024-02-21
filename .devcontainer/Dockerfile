@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-RUN apt update && apt upgrade -y && apt install -y curl wget git zsh
+RUN apt update && apt upgrade -y && apt install -y curl wget git zsh libicu70
 
 ARG user=vscode
 
