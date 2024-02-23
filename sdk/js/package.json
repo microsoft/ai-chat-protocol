@@ -17,10 +17,8 @@
     "url": "https://github.com/microsoft/ai-chat-protocol/issues"
   },
   "homepage": "https://github.com/microsoft/ai-chat-protocol#readme",
-  "dependencies": {
-    "@azure-rest/core-client": "^1.2.0"
-  },
   "devDependencies": {
+    "@types/node": "^20.11.20",
     "typescript": "^5.3.3"
   }
 }
