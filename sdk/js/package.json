@@ -6,6 +6,8 @@
   "scripts": {
     "build": "tshy",
     "watch": "tshy -w",
+    "lint": "eslint --ext .ts",
+    "format": "prettier --write src/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "files": [
@@ -23,6 +25,12 @@
   "homepage": "https://github.com/microsoft/ai-chat-protocol#readme",
   "devDependencies": {
     "@types/node": "^20.11.20",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "tshy": "^1.11.1",
     "typescript": "^5.3.3"
   },
   "tshy": {

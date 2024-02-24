@@ -1,23 +1,30 @@
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
-
-export type RequestBody = string | FormData | Blob | ArrayBuffer | ArrayBufferView | URLSearchParams | ReadableStream<Uint8Array> | null;
+export type RequestBody =
+  | string
+  | FormData
+  | Blob
+  | ArrayBuffer
+  | ArrayBufferView
+  | URLSearchParams
+  | ReadableStream<Uint8Array>
+  | null;
 
 export type HttpHeaders = { [key: string]: string };
 
 export interface HttpRequest {
-    method: HttpMethod;
-    url: string;
-    headers: { [key: string]: string };
-    body: RequestBody;
+  method: HttpMethod;
+  url: string;
+  headers: { [key: string]: string };
+  body: RequestBody;
 }
 
 export interface HttpResponse {
-    status: number;
-    headers: { [key: string]: string };
-    body: string | ReadableStream<Uint8Array> | null;
+  status: number;
+  headers: { [key: string]: string };
+  body: ReadableStream<Uint8Array>;
 }
 
 export interface HttpClient {
-    send(request: HttpRequest): Promise<HttpResponse>;
+  send(request: HttpRequest): Promise<HttpResponse>;
 }

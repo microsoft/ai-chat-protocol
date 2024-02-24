@@ -1,7 +1,6 @@
 export {
-    AIChatMessage,
-    AIChatRole,
-    AIChatCompletion,
-    AIChatCompletionDelta,
-    AIChatEventStream,
+  AIChatMessage,
+  AIChatRole,
+  AIChatCompletion,
+  AIChatCompletionDelta,
 } from "./models.js";
