@@ -1,4 +1,4 @@
-import {AIChatMessage, AIChatCompletion, AIChatCompletionDelta, AIChatEventStream} from "./models";
+import {AIChatMessage, AIChatCompletion, AIChatCompletionDelta, AIChatEventStream} from "./models/index.js";
 
 export class AIChatProtocolClient {
     constructor(endpoint: string) {

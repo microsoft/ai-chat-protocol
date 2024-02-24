@@ -2,7 +2,7 @@ import * as http from "node:http";
 import * as https from "node:https";
 import * as zlib from "node:zlib";
 
-import { HttpHeaders, HttpRequest, HttpResponse } from "./interfaces";
+import { HttpHeaders, HttpRequest, HttpResponse } from "./interfaces.js";
 import { Readable } from "node:stream";
 
 export function _sendRequest(request: HttpRequest): Promise<HttpResponse> {
@@ -58,14 +58,16 @@ function getResponseHeaders(res: http.IncomingMessage): HttpHeaders {
 
 _sendRequest({ method: "POST", headers: { "Content-Type": "application/json" }, url: "http://test-server:8080/chat", body: "{\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"Give me ten reasons to regularly exercise.\"}],\"stream\": false}"})
     .then(response => {
+      console.log(`Status: ${response.status}`)
+      console.log(`Headers: ${JSON.stringify(response.headers)}`)
       let b = (response.body as ReadableStream<Uint8Array>);
         let reader = b.getReader();
-        let exit = false;
+        // let exit = false;
         reader.read().then(({ value, done }): void => {
           let text = new TextDecoder().decode(value);
-              console.log("read", text);
+              console.log(text);
               if (done) {
-                exit = true;
+                // exit = true;
               }
           });
 

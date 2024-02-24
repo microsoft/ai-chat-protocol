@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "es2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "./dist",
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -12,15 +11,12 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": ".",
     "lib": [
       "ESNext",
       "DOM"
     ]
-  },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "**/*.spec.ts"
-  ]
+  }
 }

@@ -2,11 +2,15 @@
   "name": "@microsoft/ai-chat-protocol",
   "version": "0.1.0-alpha.1",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/commonjs/index.js",
   "scripts": {
-    "watch": "tsc -w",
+    "build": "tshy",
+    "watch": "tshy -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/microsoft/ai-chat-protocol.git"
@@ -20,5 +24,38 @@
   "devDependencies": {
     "@types/node": "^20.11.20",
     "typescript": "^5.3.3"
-  }
+  },
+  "tshy": {
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts"
+    },
+    "dialects": [
+      "esm",
+      "commonjs"
+    ],
+    "esmDialects": [
+      "browser"
+    ],
+    "selfLink": false
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "browser": {
+        "types": "./dist/browser/index.d.ts",
+        "default": "./dist/browser/index.js"
+      },
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    }
+  },
+  "types": "./dist/commonjs/index.d.ts",
+  "type": "module"
 }
