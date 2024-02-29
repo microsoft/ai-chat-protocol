@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Text.Json;
 
 namespace Microsoft.AI.ChatProtocol
 {
@@ -37,5 +38,14 @@ namespace Microsoft.AI.ChatProtocol
 
         /// <summary> The text associated with the message. </summary>
         public String Content { get; set; }
+
+        public override void Write(Utf8JsonWriter writer)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("kind", Kind.ToString());
+            writer.WriteString("role", Role.ToString());
+            writer.WriteString("content", Content);
+            writer.WriteEndObject();
+        }
     }
 }

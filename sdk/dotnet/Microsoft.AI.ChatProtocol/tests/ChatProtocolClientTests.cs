@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using Microsoft.AI.ChatProtocol;
+using Microsoft.Extensions.Logging;
 
 using System;
+using System.Net;
 using System.Text;
 
 namespace Microsoft.AI.ChatProtocol.Test
@@ -33,13 +35,16 @@ namespace Microsoft.AI.ChatProtocol.Test
         {
             ReadEnvironmentVariables();
 
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
             var options = new ChatProtocolClientOptions(
-                httpHeaders: new Dictionary<string, string> { { "Authorization", "Bearer " + _key } }
+                httpHeaders: new Dictionary<string, string> { { "Authorization", "Bearer " + _key } },
+                loggerFactory: loggerFactory
             );
 
             var client = new ChatProtocolClient(new Uri(_endpoint), options);
 
-            client.Create(new ChatCompletionOptions(
+            HttpResponseMessage response = client.Create(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new TextChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
@@ -53,6 +58,8 @@ namespace Microsoft.AI.ChatProtocol.Test
                     ["key2"] = Encoding.UTF8.GetBytes("value2")
                 }
             ));
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }

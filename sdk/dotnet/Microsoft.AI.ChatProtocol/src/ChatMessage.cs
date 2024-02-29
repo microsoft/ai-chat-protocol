@@ -3,6 +3,7 @@
 
 using System;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace Microsoft.AI.ChatProtocol
 {
@@ -11,7 +12,7 @@ namespace Microsoft.AI.ChatProtocol
     /// Please note <see cref="ChatMessage"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
     /// The available derived classes include <see cref="TextChatMessage"/>.
     /// </summary>
-    public abstract class ChatMessage
+    public abstract class ChatMessage: IUtf8JsonSerializable
     {
         /// <summary> Initializes a new instance of ChatMessage. </summary>
         /// <param name="role"> The role associated with the message. </param>
@@ -76,5 +77,7 @@ namespace Microsoft.AI.ChatProtocol
         /// </para>
         /// </summary>
         public Byte[] SessionState { get; set; }
+
+        public abstract void Write(Utf8JsonWriter writer);
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 
 namespace Microsoft.AI.ChatProtocol
@@ -137,30 +138,24 @@ namespace Microsoft.AI.ChatProtocol
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("messages"u8);
+            writer.WritePropertyName(Encoding.UTF8.GetBytes("messages"));
             writer.WriteStartArray();
-            foreach (var item in Messages)
+            foreach (ChatMessage item in Messages)
             {
-                writer.WriteObjectValue(item);
+                item.Write(writer);
+                //writer.WriteObjectValue(item);
             }
             writer.WriteEndArray();
-            writer.WritePropertyName("stream"u8);
+            writer.WritePropertyName(Encoding.UTF8.GetBytes("stream"));
             writer.WriteBooleanValue(Stream);
             if (SessionState != Array.Empty<byte>())
             {
-                writer.WritePropertyName("sessionState"u8);
-#if NET6_0_OR_GREATER
+                writer.WritePropertyName(Encoding.UTF8.GetBytes("sessionState"));
                 writer.WriteRawValue(SessionState);
-#else
-                using (JsonDocument document = JsonDocument.Parse(SessionState))
-                {
-                    JsonSerializer.Serialize(writer, document.RootElement);
-                }
-#endif
             }
             if (Context.Count > 0)
             {
-                writer.WritePropertyName("context"u8);
+                writer.WritePropertyName(Encoding.UTF8.GetBytes("context"));
                 writer.WriteStartObject();
                 foreach (var item in Context)
                 {
@@ -170,14 +165,7 @@ namespace Microsoft.AI.ChatProtocol
                         writer.WriteNullValue();
                         continue;
                     }
-#if NET6_0_OR_GREATER
                     writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
                 }
                 writer.WriteEndObject();
             }
