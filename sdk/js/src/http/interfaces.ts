@@ -1,22 +1,17 @@
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-export type RequestBody =
-  | string
-  | FormData
-  | Blob
-  | ArrayBuffer
-  | ArrayBufferView
-  | URLSearchParams
-  | ReadableStream<Uint8Array>
-  | null;
+export interface HttpRequestBody {
+  type: "object" | "string";
+  body: object | string;
+}
 
 export type HttpHeaders = { [key: string]: string };
 
 export interface HttpRequest {
   method: HttpMethod;
-  url: string;
+  url: URL;
   headers: { [key: string]: string };
-  body: RequestBody;
+  body: HttpRequestBody;
 }
 
 export interface HttpResponse {
@@ -25,6 +20,14 @@ export interface HttpResponse {
   body: ReadableStream<Uint8Array>;
 }
 
+export interface HttpMiddleware {
+  (request: HttpRequest): Promise<HttpRequest>;
+}
+
 export interface HttpClient {
   send(request: HttpRequest): Promise<HttpResponse>;
+  send(
+    request: HttpRequest,
+    middleware?: HttpMiddleware,
+  ): Promise<HttpResponse>;
 }

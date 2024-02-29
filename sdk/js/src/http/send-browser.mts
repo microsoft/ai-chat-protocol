@@ -1,4 +1,4 @@
-import { HttpRequest, HttpResponse } from "./interfaces.js";
+import { HttpRequest, HttpRequestBody, HttpResponse } from "./interfaces.js";
 
 export async function _sendRequest(
   request: HttpRequest,
@@ -6,7 +6,7 @@ export async function _sendRequest(
   const _request = new Request(request.url, {
     method: request.method,
     headers: request.headers,
-    body: request.body,
+    body: toRequestBody(request.body),
   });
   const response = await fetch(_request);
   return {
@@ -14,6 +14,16 @@ export async function _sendRequest(
     headers: getResponseHeaders(response),
     body: response.body,
   };
+}
+
+function toRequestBody(body: HttpRequestBody): BodyInit {
+  if (body.type === "object") {
+    return JSON.stringify(body.body);
+  }
+  if (body.type === "string") {
+    return body.body as string;
+  }
+  throw new Error(`Invalid body type: ${body.type}`);
 }
 
 function getResponseHeaders(response: Response): { [key: string]: string } {

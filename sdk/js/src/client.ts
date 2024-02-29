@@ -16,7 +16,7 @@ export class AIChatProtocolClient {
 
   async getCompletion(messages: AIChatMessage[]): Promise<AIChatCompletion> {
     const response = await this.httpClient.post(
-      this.endpoint,
+      new URL(this.endpoint),
       {
         "Content-Type": "application/json",
       },
@@ -38,7 +38,7 @@ export class AIChatProtocolClient {
     messages: AIChatMessage[],
   ): Promise<AsyncIterable<AIChatCompletionDelta>> {
     const response = await this.httpClient.post(
-      this.endpoint,
+      new URL(this.endpoint),
       {
         "Content-Type": "application/json",
       },
