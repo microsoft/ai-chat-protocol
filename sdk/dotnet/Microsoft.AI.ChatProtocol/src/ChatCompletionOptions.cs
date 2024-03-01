@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,14 +26,14 @@ namespace Microsoft.AI.ChatProtocol
         /// Context allows the chat app to receive extra parameters from the client, such as temperature, functions, or
         /// customer_info. These parameters are specific to the chat app and not understood by the generic clients.
         /// </param>
-        internal ChatCompletionOptions(IList<ChatMessage> messages, bool stream, Byte[] sessionState, IDictionary<string, Byte[]> context)
+        internal ChatCompletionOptions(IList<ChatMessage> messages, bool stream /*, Byte[] sessionState, IDictionary<string, Byte[]> context*/)
         {
             Messages = messages;
             Stream = stream;
-            SessionState = sessionState;
-            Context = context;
+            //SessionState = sessionState;
+            //Context = context;
         }
-
+/*
         /// <summary> Initializes a new instance of ChatCompletionOptions. </summary>
         /// <param name="messages"> The collection of context messages associated with this completion request. </param>
         /// <param name="sessionState"> Backend-specific information for the tracking of a session. </param>
@@ -41,18 +42,18 @@ namespace Microsoft.AI.ChatProtocol
         {
             Argument.AssertNotNull(messages, nameof(messages));
             Messages = messages;
-            SessionState = sessionState;
-            Context = context;
+            //SessionState = sessionState;
+            //Context = context;
         }
-
+*/
         /// <summary> Initializes a new instance of ChatCompletionOptions. </summary>
         /// <param name="messages"> The collection of context messages associated with this completion request. </param>
         /// <param name="context"> Backend-specific context or arguments. </param>
-        public ChatCompletionOptions(IList<ChatMessage> messages, IDictionary<String, Byte[]> context)
+        public ChatCompletionOptions(IList<ChatMessage> messages /*, IDictionary<String, Byte[]> context*/)
         {
             Argument.AssertNotNull(messages, nameof(messages));
             Messages = messages;
-            Context = context;
+            //Context = context;
         }
 
         /// <summary>
@@ -95,7 +96,7 @@ namespace Microsoft.AI.ChatProtocol
         /// </list>
         /// </para>
         /// </summary>
-        public Byte[] SessionState { get; set; } = Array.Empty<byte>();
+        //public BinaryData SessionState { get; set; } = Array.Empty<byte>();
 
         /// <summary>
         /// Context allows the chat app to receive extra parameters from the client, such as temperature, functions, or
@@ -128,12 +129,24 @@ namespace Microsoft.AI.ChatProtocol
         /// </list>
         /// </para>
         /// </summary>
-        public IDictionary<String, Byte[]> Context { get; } = new Dictionary<string, byte[]> { };
+        //public IDictionary<String, Byte[]> Context { get; } = new Dictionary<string, byte[]> { };
 
         /// <summary>
         /// TODO
         /// </summary>
         public bool Stream { get; } = false;
+
+        public string SerializeToJson()
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                using (Utf8JsonWriter writer = new Utf8JsonWriter(stream))
+                {
+                    ((IUtf8JsonSerializable)this).Write(writer);
+                }
+                return Encoding.UTF8.GetString(stream.ToArray());
+            }
+        }
 
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
@@ -148,10 +161,11 @@ namespace Microsoft.AI.ChatProtocol
             writer.WriteEndArray();
             writer.WritePropertyName(Encoding.UTF8.GetBytes("stream"));
             writer.WriteBooleanValue(Stream);
+/*
             if (SessionState != Array.Empty<byte>())
             {
                 writer.WritePropertyName(Encoding.UTF8.GetBytes("sessionState"));
-                writer.WriteRawValue(SessionState);
+                writer.WriteRawValue(new Memory<byte>(SessionState).Span);
             }
             if (Context.Count > 0)
             {
@@ -169,6 +183,7 @@ namespace Microsoft.AI.ChatProtocol
                 }
                 writer.WriteEndObject();
             }
+*/
             writer.WriteEndObject();
         }
 /*

@@ -17,7 +17,7 @@ namespace Microsoft.AI.ChatProtocol
         {
             Argument.AssertNotNull(content, nameof(content));
 
-            Kind = MessageKind.Text;
+         //   Kind = MessageKind.Text;
             Content = content;
         }
 
@@ -31,7 +31,7 @@ namespace Microsoft.AI.ChatProtocol
         /// conversations or user preferences.
         /// </param>
         /// <param name="content"> The text associated with the message. </param>
-        internal TextChatMessage(MessageKind kind, ChatRole role, Byte[] sessionState, String content) : base(kind, role, sessionState)
+        internal TextChatMessage(/*MessageKind kind,*/ ChatRole role, Byte[] sessionState, String content) : base(/*kind,*/ role, sessionState)
         {
             Content = content;
         }
@@ -42,7 +42,7 @@ namespace Microsoft.AI.ChatProtocol
         public override void Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WriteString("kind", Kind.ToString());
+       //     writer.WriteString("kind", Kind.ToString());
             writer.WriteString("role", Role.ToString());
             writer.WriteString("content", Content);
             writer.WriteEndObject();

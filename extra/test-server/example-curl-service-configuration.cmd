@@ -17,5 +17,15 @@ REM Eample:
 REM     example-curl-service-configuration.cmd 59741 1
 REM
 
+IF "%~1"=="" (
+    echo Error: Missing argument. Please provide the port number.
+    exit /b
+)
+
+IF "%~2"=="" (
+    echo Error: Missing argument. Please provide the back-end-service-id.
+    exit /b
+)
+
 REM Good for testing non-streaming:
 curl -v "https://localhost:%1/config?backend=%2" -H "Content-Type: application/json" --data-ascii "{}"

@@ -31,16 +31,16 @@ namespace Microsoft.AI.ChatProtocol
         /// sends a new one. The data in this field can be used to implement stateful services, such as remembering previous
         /// conversations or user preferences.
         /// </param>
-        internal ChatMessage(MessageKind kind, ChatRole role, Byte[] sessionState)
+        internal ChatMessage(/*MessageKind kind,*/ ChatRole role, Byte[] sessionState)
         {
-            Kind = kind;
+       //     Kind = kind;
             Role = role;
             SessionState = sessionState;
         }
-
+/*
         /// <summary> The type of the message. If not specified, the message is assumed to be text. </summary>
         internal MessageKind Kind { get; set; }
-
+*/
         /// <summary> The role associated with the message. </summary>
         public ChatRole Role { get; set; }
         /// <summary>

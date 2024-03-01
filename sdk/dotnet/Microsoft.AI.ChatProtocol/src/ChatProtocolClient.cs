@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
+using System.Text.Json;
+//using static System.Net.Mime.MediaTypeNames;
+//using System.Net.Http.Headers;
+//using System.Reflection.PortableExecutable;
 
 namespace Microsoft.AI.ChatProtocol
 {
@@ -8,7 +11,7 @@ namespace Microsoft.AI.ChatProtocol
     {
         private readonly Uri _endpoint;
         private readonly ChatProtocolClientOptions? _clientOptions;
-        private ILogger _logger;
+        private ILogger? _logger;
 
         /// <summary> Initializes a new instance of ChatProtocolClient. </summary>
         /// <param name="endpoint"> The Uri to use. </param>
@@ -25,8 +28,6 @@ namespace Microsoft.AI.ChatProtocol
             if (_clientOptions != null && _clientOptions.LoggerFactory != null)
             {
                 _logger = _clientOptions.LoggerFactory.CreateLogger<ChatProtocolClient>();
-
-                _logger.LogInformation("Endpoint = {endpoint}\n\t  HTTP request headers = {options}", _endpoint, _clientOptions.HttpHeaders);
             }
         }
 
@@ -39,11 +40,14 @@ namespace Microsoft.AI.ChatProtocol
         {
             Argument.AssertNotNull(chatCompletionOptions, nameof(chatCompletionOptions));
 
+            string jsonBody = chatCompletionOptions.SerializeToJson();
+//            string jsonBody =  "{\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"How many feet in a mile??\"}],\"stream\": false}";
+            using HttpContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
             using (HttpClient client = new HttpClient())
             {
-                string jsonBody = "{\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"How many feet in a mile??\"}],\"stream\": false}";
-                HttpContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
+                // TODO: Set proper value for User-Agent
+                client.DefaultRequestHeaders.Add("User-Agent", "sdk-csharp-microsoft-ai-chatprotocol/1.0.0-beta.1");
                 if (_clientOptions != null && _clientOptions.HttpHeaders != null)
                 {
                     foreach (var header in _clientOptions.HttpHeaders)
@@ -54,14 +58,10 @@ namespace Microsoft.AI.ChatProtocol
 
                 HttpResponseMessage response = client.PostAsync(_endpoint, content, cancellationToken).Result;
 
-                if (_logger != null) 
+                if (_logger != null)
                 {
-                    _logger.LogInformation("Response = {response}", response);
-
-                    if (response.Content != null && response.Content.Headers.GetValues("Content-Type").First() == "application/json")
-                    {
-                        _logger.LogInformation("Response body = {body}", response.Content.ReadAsStringAsync().Result);
-                    }
+                    _logger.LogHttpRequest(response.RequestMessage, response.RequestMessage?.Content?.ReadAsStringAsync().Result);
+                    _logger.LogHttpResponse(response, response.Content.ReadAsStringAsync().Result); 
                 }
 
                 return response;
