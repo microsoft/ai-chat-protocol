@@ -31,3 +31,8 @@ export interface AIChatChoiceDelta {
 export interface AIChatCompletionDelta {
   choices: AIChatChoiceDelta[];
 }
+
+export interface AIChatComplationOptions {
+  context?: object;
+  sessionState?: any;
+}

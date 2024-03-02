@@ -1,8 +1,10 @@
 import { HttpClient } from "./http/client.js";
+import { HttpMiddleware } from "./http/interfaces.js";
 import {
   AIChatMessage,
   AIChatCompletion,
   AIChatCompletionDelta,
+  AIChatComplationOptions,
 } from "./models/index.js";
 import { getAsyncIterable } from "./util/ndjson.js";
 
@@ -14,16 +16,49 @@ export class AIChatProtocolClient {
     this.httpClient = new HttpClient();
   }
 
-  async getCompletion(messages: AIChatMessage[]): Promise<AIChatCompletion> {
-    const response = await this.httpClient.post(
-      new URL(this.endpoint),
+  getCompletion(messages: AIChatMessage[]): Promise<AIChatCompletion>;
+  getCompletion(
+    messages: AIChatMessage[],
+    middleware: HttpMiddleware,
+  ): Promise<AIChatCompletion>;
+  getCompletion(
+    messages: AIChatMessage[],
+    options: AIChatComplationOptions,
+  ): Promise<AIChatCompletion>;
+  getCompletion(
+    messages: AIChatMessage[],
+    options: AIChatComplationOptions,
+    middleware?: HttpMiddleware,
+  ): Promise<AIChatCompletion>;
+  async getCompletion(
+    messages: AIChatMessage[],
+    arg1?: AIChatComplationOptions | HttpMiddleware,
+    arg2?: HttpMiddleware,
+  ): Promise<AIChatCompletion> {
+    const options: AIChatComplationOptions = (arg1 as AIChatComplationOptions)
+      ? (arg1 as AIChatComplationOptions)
+      : {};
+    const middleware = (arg1 as HttpMiddleware)
+      ? (arg1 as HttpMiddleware)
+      : (arg2 as HttpMiddleware);
+
+    const response = await this.httpClient.send(
       {
-        "Content-Type": "application/json",
+        method: "POST",
+        url: new URL(this.endpoint),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          type: "object",
+          body: {
+            messages: messages,
+            stream: false,
+            ...options,
+          },
+        },
       },
-      {
-        messages: messages,
-        stream: false,
-      },
+      middleware,
     );
     if (response.status !== 200) {
       throw new Error(`Request failed with status code ${response.status}`);
@@ -34,18 +69,50 @@ export class AIChatProtocolClient {
     return JSON.parse(serialized) as AIChatCompletion;
   }
 
+  getStreamedCompletion(
+    messages: AIChatMessage[],
+  ): Promise<AsyncIterable<AIChatCompletionDelta>>;
+  getStreamedCompletion(
+    messages: AIChatMessage[],
+    middleware?: HttpMiddleware,
+  ): Promise<AsyncIterable<AIChatCompletionDelta>>;
+  getStreamedCompletion(
+    messages: AIChatMessage[],
+    options: AIChatComplationOptions,
+  ): Promise<AsyncIterable<AIChatCompletionDelta>>;
+  getStreamedCompletion(
+    messages: AIChatMessage[],
+    options: AIChatComplationOptions,
+    middleware?: HttpMiddleware,
+  ): Promise<AsyncIterable<AIChatCompletionDelta>>;
   async getStreamedCompletion(
     messages: AIChatMessage[],
+    arg1?: AIChatComplationOptions | HttpMiddleware,
+    arg2?: HttpMiddleware,
   ): Promise<AsyncIterable<AIChatCompletionDelta>> {
-    const response = await this.httpClient.post(
-      new URL(this.endpoint),
+    const options: AIChatComplationOptions = (arg1 as AIChatComplationOptions)
+      ? (arg1 as AIChatComplationOptions)
+      : {};
+    const middleware = (arg1 as HttpMiddleware)
+      ? (arg1 as HttpMiddleware)
+      : (arg2 as HttpMiddleware);
+    const response = await this.httpClient.send(
       {
-        "Content-Type": "application/json",
+        method: "POST",
+        url: new URL(this.endpoint),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          type: "object",
+          body: {
+            messages: messages,
+            stream: true,
+            ...options,
+          },
+        },
       },
-      {
-        messages: messages,
-        stream: true,
-      },
+      middleware,
     );
     if (response.status !== 200) {
       throw new Error(`Request failed with status code ${response.status}`);

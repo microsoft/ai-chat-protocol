@@ -10,24 +10,16 @@ export type HttpHeaders = { [key: string]: string };
 export interface HttpRequest {
   method: HttpMethod;
   url: URL;
-  headers: { [key: string]: string };
+  headers: HttpHeaders;
   body: HttpRequestBody;
 }
 
 export interface HttpResponse {
   status: number;
-  headers: { [key: string]: string };
+  headers: HttpHeaders;
   body: ReadableStream<Uint8Array>;
 }
 
 export interface HttpMiddleware {
   (request: HttpRequest): Promise<HttpRequest>;
-}
-
-export interface HttpClient {
-  send(request: HttpRequest): Promise<HttpResponse>;
-  send(
-    request: HttpRequest,
-    middleware?: HttpMiddleware,
-  ): Promise<HttpResponse>;
 }

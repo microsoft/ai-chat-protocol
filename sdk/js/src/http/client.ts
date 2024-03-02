@@ -1,21 +1,15 @@
-import { HttpResponse } from "./interfaces.js";
+import { HttpMiddleware, HttpRequest, HttpResponse } from "./interfaces.js";
 import { _sendRequest } from "./send.js";
 
 export class HttpClient {
-  get(url: URL, headers: { [key: string]: string }): Promise<HttpResponse> {
-    return _sendRequest({ method: "GET", url, headers, body: null });
-  }
+  send(request: HttpRequest): Promise<HttpResponse>;
+  send(request: HttpRequest, middleware: HttpMiddleware): Promise<HttpResponse>;
 
-  post(
-    url: URL,
-    headers: { [key: string]: string },
-    body: object,
+  async send(
+    request: HttpRequest,
+    middleware?: HttpMiddleware,
   ): Promise<HttpResponse> {
-    return _sendRequest({
-      method: "POST",
-      url,
-      headers,
-      body: { type: "object", body },
-    });
+    const actualRequest = middleware ? await middleware(request) : request;
+    return _sendRequest(actualRequest);
   }
 }
