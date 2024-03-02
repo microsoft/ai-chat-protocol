@@ -1,18 +1,33 @@
 ﻿using Microsoft.Extensions.Logging;
 
-// See article "Logging guidance for .NET library authors"
-// https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-library-authors
 namespace Microsoft.AI.ChatProtocol
 {
     public class ChatProtocolClientOptions
     {
-        public Dictionary<string, string>? HttpHeaders { get; set; }
+        public Dictionary<string, string>? HttpRequestHeaders { get; internal set; }
 
-        public ILoggerFactory LoggerFactory { get; set; }
+        public ILoggerFactory? LoggerFactory { get; internal set; }
 
-        public ChatProtocolClientOptions(Dictionary<string, string> httpHeaders, ILoggerFactory loggerFactory)
+        // See article "Logging guidance for .NET library authors"
+        // https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-library-authors
+        public ChatProtocolClientOptions(Dictionary<string, string>? httpRequestHeaders, ILoggerFactory? loggerFactory)
         {
-            HttpHeaders = httpHeaders;
+            if (httpRequestHeaders != null)
+            {
+                foreach(KeyValuePair<string, string> header in httpRequestHeaders)
+                {
+                    if (string.IsNullOrEmpty(header.Key))
+                    {
+                        throw new ArgumentException("HTTP request header name cannot be null or empty");
+                    }
+                    if (string.IsNullOrEmpty(header.Value))
+                    {
+                        throw new ArgumentException("HTTP request header value cannot be null or empty");
+                    }
+                }
+            }
+
+            HttpRequestHeaders = httpRequestHeaders;
             LoggerFactory = loggerFactory;
         }
     }

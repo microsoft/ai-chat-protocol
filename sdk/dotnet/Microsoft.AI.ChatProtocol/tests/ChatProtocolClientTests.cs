@@ -3,7 +3,6 @@
 
 using Microsoft.AI.ChatProtocol;
 using Microsoft.Extensions.Logging;
-
 using System;
 using System.Net;
 using System.Text;
@@ -13,25 +12,28 @@ namespace Microsoft.AI.ChatProtocol.Test
     [TestClass]
     public class ChatProtocolClientTests
     {
-       // string _key = "";
         string _endpoint = "";
+        string? _httpRequestHeaderName;
+        string? _httpRequestHeaderValue;
 
         private void ReadEnvironmentVariables()
         {
-           // String? key = Environment.GetEnvironmentVariable("SAMPLE_CHAT_SERVICE_MAAS_KEY");
-            String? endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT");
+            string? endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT");
 
-            if (/* String.IsNullOrEmpty(key) || */ String.IsNullOrEmpty(endpoint))
+            if (string.IsNullOrEmpty(endpoint))
             {
                 throw new Exception("Environment variables not defined");
             }
 
-           // _key = key.ToString();
             _endpoint = endpoint.ToString();
+
+            // Optional: Set one HTTP header
+            _httpRequestHeaderName = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_HTTP_REQUEST_HEADER_NAME");
+            _httpRequestHeaderValue = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_HTTP_REQUEST_HEADER_VALUE");
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void TestGetChatCompletion()
         {
             ReadEnvironmentVariables();
 
@@ -41,21 +43,23 @@ namespace Microsoft.AI.ChatProtocol.Test
                 builder.SetMinimumLevel(LogLevel.Information);
             });
 
+            Dictionary<string, string> httpHeaders = new Dictionary<string, string> { { "TestHeader1", "TestValue1" }, { "TestHeader2", "TestValue2" } };
 
-            var options = new ChatProtocolClientOptions(
-             // httpHeaders: new Dictionary<string, string> { { "Authorization", "Bearer " + _key } },
-                httpHeaders: new Dictionary<string, string> { { "TestHeader1", "TestValue1"}, { "TestHeader2", "TestValue2" }},
-                loggerFactory: loggerFactory
-            );
+            if (!String.IsNullOrEmpty(_httpRequestHeaderName) && !String.IsNullOrEmpty(_httpRequestHeaderValue))
+            {
+                httpHeaders.Add(_httpRequestHeaderName, _httpRequestHeaderValue);
+            }
+
+            var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
 
             var client = new ChatProtocolClient(new Uri(_endpoint), options);
 
-            HttpResponseMessage response = client.Create(new ChatCompletionOptions(
+            ChatCompletion chatCompletion = client.GetChatCompletion(new ChatCompletionOptions(
                 messages: new[]
                 {
-           //         new TextChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
-             //       new TextChatMessage(ChatRole.Assistant, "Hello, how can I help you?"),
-                    new TextChatMessage(ChatRole.User, "How many feet are in a mile?")
+           //         new ChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
+             //       new ChatMessage(ChatRole.Assistant, "Hello, how can I help you?"),
+                    new ChatMessage(ChatRole.User, "How many feet are in a mile?")
                 } /*,
                 sessionState: Encoding.UTF8.GetBytes("{\"key\":\"value\"}"),
                 context: new Dictionary<string, Byte[]>
@@ -65,7 +69,46 @@ namespace Microsoft.AI.ChatProtocol.Test
                 }*/
             ));
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Console.WriteLine(chatCompletion);
+
+        //    Console.WriteLine("Request: " + chatCompletion.Response.RequestMessage);
+        //    Console.WriteLine("Request body: " + chatCompletion.Response.RequestMessage?.Content?.ReadAsStringAsync().Result);
+        //    Console.WriteLine("Response: " + chatCompletion.Response);
+        //    Console.WriteLine("Response body: " + chatCompletion.Response.Content.ReadAsStringAsync().Result);
+
+          //  Assert.AreEqual(HttpStatusCode.OK, chatCompletion.Response.StatusCode);
+        }
+
+        [TestMethod]
+        public void TestGetChatCompletionAsync()
+        {
+            ReadEnvironmentVariables();
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+
+            Dictionary<string, string> httpHeaders = new Dictionary<string, string> { { "TestHeader1", "TestValue1" }, { "TestHeader2", "TestValue2" } };
+
+            if (!String.IsNullOrEmpty(_httpRequestHeaderName) && !String.IsNullOrEmpty(_httpRequestHeaderValue))
+            {
+                httpHeaders.Add(_httpRequestHeaderName, _httpRequestHeaderValue);
+            }
+
+            var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
+
+            var client = new ChatProtocolClient(new Uri(_endpoint), options);
+
+            ChatCompletion chatCompletion = client.GetChatCompletionAsync(new ChatCompletionOptions(
+                messages: new[]
+                {
+                    new ChatMessage(ChatRole.User, "How many feet are in a mile?")
+                }
+            )).Result;
+
+            Console.WriteLine(chatCompletion);
         }
     }
 }

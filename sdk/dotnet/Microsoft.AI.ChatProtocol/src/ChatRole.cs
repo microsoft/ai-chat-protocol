@@ -9,18 +9,18 @@ namespace Microsoft.AI.ChatProtocol
     /// <summary> A representation of the intended purpose of a message. </summary>
     public readonly struct ChatRole : IEquatable<ChatRole>
     {
-        private readonly String _value;
+        private readonly string _value;
 
         /// <summary> Initializes a new instance of <see cref="ChatRole"/>. </summary>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
-        public ChatRole(String value)
+        public ChatRole(string value)
         {
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        private const String UserValue = "user";
-        private const String SystemValue = "system";
-        private const String AssistantValue = "assistant";
+        private const string UserValue = "user";
+        private const string SystemValue = "system";
+        private const string AssistantValue = "assistant";
 
         /// <summary> The role that provides input to the completion. </summary>
         public static ChatRole User { get; } = new ChatRole(UserValue);
@@ -38,20 +38,20 @@ namespace Microsoft.AI.ChatProtocol
         public static bool operator !=(ChatRole left, ChatRole right) => !left.Equals(right);
 
         /// <summary> Converts a string to a <see cref="ChatRole"/>. </summary>
-        public static implicit operator ChatRole(String value) => new ChatRole(value);
+        public static implicit operator ChatRole(string value) => new ChatRole(value);
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is ChatRole other && Equals(other);
 
         /// <inheritdoc />
-        public bool Equals(ChatRole other) => String.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
+        public bool Equals(ChatRole other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;
 
         /// <inheritdoc />
-        public override String ToString() => _value;
+        public override string ToString() => _value;
     }
 }

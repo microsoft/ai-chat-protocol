@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// TODO:
+// - Do we need the Arguments.cs class? 
+// - Should I expose HttpResponseMessage to the caller? When I updated the test app to get chatCompletion.Response.RequestMessage?.Content?.ReadAsStringAsync().Result I got an exception saying the Content was already disposed. Should I just expose response status code, response headers and raw JSON as sperate properties?
+// - Test with CancellationToken
+
+using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
 //using static System.Net.Mime.MediaTypeNames;
@@ -9,6 +14,8 @@ namespace Microsoft.AI.ChatProtocol
 {
     public class ChatProtocolClient
     {
+        private static readonly string _version = "1.0.0-beta.1";
+
         private readonly Uri _endpoint;
         private readonly ChatProtocolClientOptions? _clientOptions;
         private ILogger? _logger;
@@ -31,75 +38,93 @@ namespace Microsoft.AI.ChatProtocol
             }
         }
 
+        private async Task<HttpResponseMessage> PrivateGetChatCompletionAsync(
+            ChatCompletionOptions chatCompletionOptions,
+            CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(chatCompletionOptions, nameof(chatCompletionOptions));
+
+            string jsonBody = chatCompletionOptions.SerializeToJson();
+            using HttpContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Add("User-Agent", $"sdk-csharp-microsoft-ai-chatprotocol/{_version}");
+
+            if (_clientOptions != null && _clientOptions.HttpRequestHeaders != null)
+            {
+                foreach (var header in _clientOptions.HttpRequestHeaders)
+                {
+                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+            }
+
+            return await client.PostAsync(_endpoint, content, cancellationToken);
+        }
+
 
         /// <summary> Creates a new chat completion. </summary>
         /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
-        public HttpResponseMessage Create(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken = default)
+        /// <exception cref="HttpRequestException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
+        /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
+        public ChatCompletion GetChatCompletion(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(chatCompletionOptions, nameof(chatCompletionOptions));
+            var task = Task.Run(async () => await PrivateGetChatCompletionAsync(chatCompletionOptions, cancellationToken));
+            using HttpResponseMessage response = task.Result;
 
-            string jsonBody = chatCompletionOptions.SerializeToJson();
-//            string jsonBody =  "{\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"How many feet in a mile??\"}],\"stream\": false}";
-            using HttpContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-            using (HttpClient client = new HttpClient())
+            if (!response.IsSuccessStatusCode)
             {
-                // TODO: Set proper value for User-Agent
-                client.DefaultRequestHeaders.Add("User-Agent", "sdk-csharp-microsoft-ai-chatprotocol/1.0.0-beta.1");
-                if (_clientOptions != null && _clientOptions.HttpHeaders != null)
-                {
-                    foreach (var header in _clientOptions.HttpHeaders)
-                    {
-                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
-                    }
-                }
-
-                HttpResponseMessage response = client.PostAsync(_endpoint, content, cancellationToken).Result;
-
-                if (_logger != null)
-                {
-                    _logger.LogHttpRequest(response.RequestMessage, response.RequestMessage?.Content?.ReadAsStringAsync().Result);
-                    _logger.LogHttpResponse(response, response.Content.ReadAsStringAsync().Result); 
-                }
-
-                return response;
+                throw new HttpRequestException($"The request failed with status code: {response.StatusCode}." +
+                    $" Reason: {response.ReasonPhrase}");
             }
-/*
-            /// <summary> Creates a new chat completion. </summary>
-            /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
-            /// <param name="cancellationToken"> The cancellation token to use. </param>
-            /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
-            public async Task<HttpResponseMessage> Create(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken = default)
+
+            if (_logger != null)
+            {
+                _logger.LogHttpRequest(response.RequestMessage /*, response.RequestMessage?.Content?.ReadAsStringAsync().Result*/);
+                _logger.LogHttpResponse(response, response.Content.ReadAsStringAsync().Result);
+            }
+
+            string jsonString = response.Content.ReadAsStringAsync().Result;
+
+            using JsonDocument document = JsonDocument.Parse(jsonString);
+
+            ChatCompletion chatCompletion = ChatCompletion.DeserializeChatCompletion(document.RootElement);
+
+            return chatCompletion;
+        }
+
+        /// <summary> Creates a new chat completion. </summary>
+        /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
+        /// <exception cref="HttpRequestException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
+        /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
+        public async Task<ChatCompletion> GetChatCompletionAsync(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(chatCompletionOptions, nameof(chatCompletionOptions));
+           using HttpResponseMessage response = await PrivateGetChatCompletionAsync(chatCompletionOptions, cancellationToken);
 
-            using (HttpClient client = new HttpClient())
+            if (!response.IsSuccessStatusCode)
             {
-                string jsonBody = "{}";
-                HttpContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-                if (_clientOptions != null && _clientOptions.HttpHeaders != null)
-                {
-                    foreach (var header in _clientOptions.HttpHeaders)
-                    {
-                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
-                    }
-                }   
-
-                HttpResponseMessage response = await client.PostAsync(_endpoint, content, cancellationToken);
-                return response;
+                throw new HttpRequestException($"The request failed with status code: {response.StatusCode}." +
+                    $" Reason: {response.ReasonPhrase}");
             }
-*/
-            /*
-                        RequestContext context = FromCancellationToken(cancellationToken);
-                        using RequestContent requestContent = chatCompletionOptions.ToRequestContent();
-                        using HttpMessage message = CreateCreateRequest(_chatRoute, requestContent, context);
 
-                        Response response = ProcessMessage("ChatProtocolClient.Create", message, context);
-                        return Response.FromValue(ChatCompletion.FromResponse(response), response);
-            */
+            if (_logger != null)
+            {
+                _logger.LogHttpRequest(response.RequestMessage /*, response.RequestMessage?.Content?.ReadAsStringAsync().Result*/);
+                _logger.LogHttpResponse(response, response.Content.ReadAsStringAsync().Result);
+            }
+
+            string jsonString = response.Content.ReadAsStringAsync().Result;
+
+            using JsonDocument document = JsonDocument.Parse(jsonString);
+
+            ChatCompletion chatCompletion = ChatCompletion.DeserializeChatCompletion(document.RootElement);
+
+            return chatCompletion;
         }
     }
 }

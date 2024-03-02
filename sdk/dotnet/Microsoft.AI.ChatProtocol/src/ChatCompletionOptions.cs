@@ -26,40 +26,16 @@ namespace Microsoft.AI.ChatProtocol
         /// Context allows the chat app to receive extra parameters from the client, such as temperature, functions, or
         /// customer_info. These parameters are specific to the chat app and not understood by the generic clients.
         /// </param>
-        internal ChatCompletionOptions(IList<ChatMessage> messages, bool stream /*, Byte[] sessionState, IDictionary<string, Byte[]> context*/)
+        public ChatCompletionOptions(IList<ChatMessage> messages, bool stream = false /*, Byte[] sessionState, IDictionary<string, Byte[]> context*/)
         {
             Messages = messages;
             Stream = stream;
             //SessionState = sessionState;
             //Context = context;
         }
-/*
-        /// <summary> Initializes a new instance of ChatCompletionOptions. </summary>
-        /// <param name="messages"> The collection of context messages associated with this completion request. </param>
-        /// <param name="sessionState"> Backend-specific information for the tracking of a session. </param>
-        /// <param name="context"> Backend-specific context or arguments. </param>
-        public ChatCompletionOptions(IList<ChatMessage> messages, Byte[] sessionState, IDictionary<string, Byte[]> context)
-        {
-            Argument.AssertNotNull(messages, nameof(messages));
-            Messages = messages;
-            //SessionState = sessionState;
-            //Context = context;
-        }
-*/
-        /// <summary> Initializes a new instance of ChatCompletionOptions. </summary>
-        /// <param name="messages"> The collection of context messages associated with this completion request. </param>
-        /// <param name="context"> Backend-specific context or arguments. </param>
-        public ChatCompletionOptions(IList<ChatMessage> messages /*, IDictionary<String, Byte[]> context*/)
-        {
-            Argument.AssertNotNull(messages, nameof(messages));
-            Messages = messages;
-            //Context = context;
-        }
 
         /// <summary>
         /// The collection of context messages associated with this completion request.
-        /// Please note <see cref="ChatMessage"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="TextChatMessage"/>.
         /// </summary>
         public IList<ChatMessage> Messages { get; }
 
@@ -129,14 +105,14 @@ namespace Microsoft.AI.ChatProtocol
         /// </list>
         /// </para>
         /// </summary>
-        //public IDictionary<String, Byte[]> Context { get; } = new Dictionary<string, byte[]> { };
+        //public IDictionary<string, Byte[]> Context { get; } = new Dictionary<string, byte[]> { };
 
         /// <summary>
         /// TODO
         /// </summary>
         public bool Stream { get; } = false;
 
-        public string SerializeToJson()
+        internal string SerializeToJson()
         {
             using (MemoryStream stream = new MemoryStream())
             {
@@ -153,9 +129,9 @@ namespace Microsoft.AI.ChatProtocol
             writer.WriteStartObject();
             writer.WritePropertyName(Encoding.UTF8.GetBytes("messages"));
             writer.WriteStartArray();
-            foreach (ChatMessage item in Messages)
+            foreach (ChatMessage chatMessage in Messages)
             {
-                item.Write(writer);
+                ((IUtf8JsonSerializable)chatMessage).Write(writer);
                 //writer.WriteObjectValue(item);
             }
             writer.WriteEndArray();
