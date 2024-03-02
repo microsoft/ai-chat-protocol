@@ -11,9 +11,31 @@ import { getAsyncIterable } from "./util/ndjson.js";
 export class AIChatProtocolClient {
   private endpoint: string;
   private httpClient: HttpClient;
-  constructor(endpoint: string) {
+  private middleware?: HttpMiddleware;
+
+  constructor(endpoint: string);
+  constructor(endpoint: string, middleware: HttpMiddleware);
+  constructor(endpoint: string, middleware?: HttpMiddleware) {
     this.endpoint = endpoint;
+    this.middleware = middleware;
     this.httpClient = new HttpClient();
+  }
+
+  private composeMiddleware(
+    middleware?: HttpMiddleware,
+  ): HttpMiddleware | undefined {
+    if (this.middleware && middleware) {
+      return async (request) => {
+        const first = await this.middleware(request);
+        return middleware(first);
+      };
+    } else if (this.middleware) {
+      return this.middleware;
+    } else if (middleware) {
+      return middleware;
+    } else {
+      return undefined;
+    }
   }
 
   getCompletion(messages: AIChatMessage[]): Promise<AIChatCompletion>;
@@ -38,9 +60,11 @@ export class AIChatProtocolClient {
     const options: AIChatComplationOptions = (arg1 as AIChatComplationOptions)
       ? (arg1 as AIChatComplationOptions)
       : {};
-    const middleware = (arg1 as HttpMiddleware)
-      ? (arg1 as HttpMiddleware)
-      : (arg2 as HttpMiddleware);
+    const middleware = this.composeMiddleware(
+      (arg1 as HttpMiddleware)
+        ? (arg1 as HttpMiddleware)
+        : (arg2 as HttpMiddleware),
+    );
 
     const response = await this.httpClient.send(
       {
@@ -93,9 +117,11 @@ export class AIChatProtocolClient {
     const options: AIChatComplationOptions = (arg1 as AIChatComplationOptions)
       ? (arg1 as AIChatComplationOptions)
       : {};
-    const middleware = (arg1 as HttpMiddleware)
-      ? (arg1 as HttpMiddleware)
-      : (arg2 as HttpMiddleware);
+    const middleware = this.composeMiddleware(
+      (arg1 as HttpMiddleware)
+        ? (arg1 as HttpMiddleware)
+        : (arg2 as HttpMiddleware),
+    );
     const response = await this.httpClient.send(
       {
         method: "POST",
