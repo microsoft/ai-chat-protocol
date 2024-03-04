@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Text;
+using System.Diagnostics;
 
 namespace Microsoft.AI.ChatProtocol.Test
 {
@@ -101,14 +102,24 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             var client = new ChatProtocolClient(new Uri(_endpoint), options);
 
-            ChatCompletion chatCompletion = client.GetChatCompletionAsync(new ChatCompletionOptions(
+            Task<ChatCompletion> task = client.GetChatCompletionAsync(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new ChatMessage(ChatRole.User, "How many feet are in a mile?")
                 }
-            )).Result;
+            ));
 
-            Console.WriteLine(chatCompletion);
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            while (!task.IsCompleted)
+            {
+                Console.WriteLine($"Waiting for task completion ({stopwatch.ElapsedMilliseconds} ms) ...");
+                Thread.Sleep(100);
+            }
+            Console.WriteLine($"Done! ({stopwatch.ElapsedMilliseconds} ms)");
+            stopwatch.Stop();
+
+            Console.WriteLine(task.Result);
         }
     }
 }
