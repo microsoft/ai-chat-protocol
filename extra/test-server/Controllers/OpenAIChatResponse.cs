@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using Azure.AI.OpenAI;
 using Azure.Core.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.Tracing;
+using System.Net;
+using System.Text.Json;
+using System.Text;
 
 namespace Azure.AI.Chat.SampleService;
 
