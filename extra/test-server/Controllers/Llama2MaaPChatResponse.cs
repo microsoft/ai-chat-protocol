@@ -1,15 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using Azure.Core.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics.Tracing;
 using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using System.Net.Http;
+using System.Net;
+using System.Text.Json;
+using System.Text;
 
 namespace Azure.AI.Chat.SampleService;
 
@@ -132,33 +131,17 @@ internal class Llama2MaaPChatResponse: Llama2MaaPChatResponseBaseClass, IActionR
         JObject jObjectResponse = JObject.Parse(stringResponse);
         var chatChoice = new ChatProtocolChoice();
 
-        if (GlobalSettings.backendChatService == BackendChatService.Llama2MaaP)
+        // Example of response: "{\"output\": \"There are 5,280 feet in a mile.\"}"
+        chatChoice = new ChatProtocolChoice
         {
-            // Example of response: "{\"output\": \"There are 5,280 feet in a mile.\"}"
-            chatChoice = new ChatProtocolChoice
+            Index = 0,
+            FinishReason = "stop",
+            Message = new ChatProtocolMessage
             {
-                Index = 0,
-                Message = new ChatProtocolMessage
-                {
-                    Content = (string ?)jObjectResponse["output"] ?? "",
-                    Role = "assistant"
-                },
-            };
-        }
-        else
-        {
-            // Example of response:
-            // {"id":"9502fee4-bb8f-4eee-a7d0-ac54d732695c","object":"chat.completion","created":881436,"model":"","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"  There are 5,280 feet in a mile."}}],"usage":{"prompt_tokens":15,"total_tokens":30,"completion_tokens":15}}
-            chatChoice = new ChatProtocolChoice
-            {
-                Index = 0,
-                Message = new ChatProtocolMessage
-                {
-                    Content = (string?)jObjectResponse["choices"]?[0]?["message"]?["content"] ?? "",
-                    Role = "assistant"
-                },
-            };
-        }
+                Content = (string?)jObjectResponse["output"] ?? "",
+                Role = "assistant"
+            },
+        };
 
         var completion = new ChatProtocolCompletion
         {
@@ -171,7 +154,7 @@ internal class Llama2MaaPChatResponse: Llama2MaaPChatResponseBaseClass, IActionR
         await httpResponse.WriteAsync(JsonSerializer.Serialize(completion), Encoding.UTF8);
     }
 }
-/*
+/* Note: Azure does not yet support streaming mode for MaaP
 internal class Llama2MaaPStreamingChatResponse : Llama2MaaPChatResponseBaseClass, IActionResult
 {
     internal Llama2MaaPStreamingChatResponse(HttpClient client, string? deployment, ChatProtocolCompletionOptions options)
