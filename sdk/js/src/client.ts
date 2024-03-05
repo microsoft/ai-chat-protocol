@@ -82,6 +82,7 @@ export class AIChatProtocolClient {
           },
         },
       },
+      options.signal,
       middleware,
     );
     if (response.status !== 200) {
@@ -138,6 +139,7 @@ export class AIChatProtocolClient {
           },
         },
       },
+      options.signal,
       middleware,
     );
     if (response.status !== 200) {

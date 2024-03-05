@@ -11,8 +11,8 @@ export interface AIChatMessage {
 export interface AIChatChoice {
   index: number;
   message: AIChatMessage;
-  sessionState: any;
-  context: any;
+  sessionState?: any;
+  context?: object;
   finishReason: AIChatFinishReason;
 }
 
@@ -23,8 +23,8 @@ export interface AIChatCompletion {
 export interface AIChatChoiceDelta {
   index: number;
   delta: AIChatMessage;
-  sessionState: any;
-  context: any;
+  sessionState?: any;
+  context?: object;
   finishReason: AIChatFinishReason;
 }
 
@@ -35,4 +35,5 @@ export interface AIChatCompletionDelta {
 export interface AIChatCompletionOptions {
   context?: object;
   sessionState?: any;
+  signal?: AbortSignal;
 }

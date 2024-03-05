@@ -2,11 +2,13 @@ import { HttpRequest, HttpRequestBody, HttpResponse } from "./interfaces.js";
 
 export async function _sendRequest(
   request: HttpRequest,
+  abortSignal?: AbortSignal,
 ): Promise<HttpResponse> {
   const _request = new Request(request.url, {
     method: request.method,
     headers: request.headers,
     body: toRequestBody(request.body),
+    signal: abortSignal,
   });
   const response = await fetch(_request);
   return {
