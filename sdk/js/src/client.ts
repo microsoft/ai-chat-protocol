@@ -4,7 +4,7 @@ import {
   AIChatMessage,
   AIChatCompletion,
   AIChatCompletionDelta,
-  AIChatComplationOptions,
+  AIChatCompletionOptions,
 } from "./models/index.js";
 import { getAsyncIterable } from "./util/ndjson.js";
 
@@ -45,20 +45,20 @@ export class AIChatProtocolClient {
   ): Promise<AIChatCompletion>;
   getCompletion(
     messages: AIChatMessage[],
-    options: AIChatComplationOptions,
+    options: AIChatCompletionOptions,
   ): Promise<AIChatCompletion>;
   getCompletion(
     messages: AIChatMessage[],
-    options: AIChatComplationOptions,
+    options: AIChatCompletionOptions,
     middleware?: HttpMiddleware,
   ): Promise<AIChatCompletion>;
   async getCompletion(
     messages: AIChatMessage[],
-    arg1?: AIChatComplationOptions | HttpMiddleware,
+    arg1?: AIChatCompletionOptions | HttpMiddleware,
     arg2?: HttpMiddleware,
   ): Promise<AIChatCompletion> {
-    const options: AIChatComplationOptions = (arg1 as AIChatComplationOptions)
-      ? (arg1 as AIChatComplationOptions)
+    const options: AIChatCompletionOptions = (arg1 as AIChatCompletionOptions)
+      ? (arg1 as AIChatCompletionOptions)
       : {};
     const middleware = this.composeMiddleware(
       (arg1 as HttpMiddleware)
@@ -102,20 +102,20 @@ export class AIChatProtocolClient {
   ): Promise<AsyncIterable<AIChatCompletionDelta>>;
   getStreamedCompletion(
     messages: AIChatMessage[],
-    options: AIChatComplationOptions,
+    options: AIChatCompletionOptions,
   ): Promise<AsyncIterable<AIChatCompletionDelta>>;
   getStreamedCompletion(
     messages: AIChatMessage[],
-    options: AIChatComplationOptions,
+    options: AIChatCompletionOptions,
     middleware?: HttpMiddleware,
   ): Promise<AsyncIterable<AIChatCompletionDelta>>;
   async getStreamedCompletion(
     messages: AIChatMessage[],
-    arg1?: AIChatComplationOptions | HttpMiddleware,
+    arg1?: AIChatCompletionOptions | HttpMiddleware,
     arg2?: HttpMiddleware,
   ): Promise<AsyncIterable<AIChatCompletionDelta>> {
-    const options: AIChatComplationOptions = (arg1 as AIChatComplationOptions)
-      ? (arg1 as AIChatComplationOptions)
+    const options: AIChatCompletionOptions = (arg1 as AIChatCompletionOptions)
+      ? (arg1 as AIChatCompletionOptions)
       : {};
     const middleware = this.composeMiddleware(
       (arg1 as HttpMiddleware)

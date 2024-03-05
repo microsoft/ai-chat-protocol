@@ -3,5 +3,5 @@ export {
   AIChatRole,
   AIChatCompletion,
   AIChatCompletionDelta,
-  AIChatComplationOptions,
+  AIChatCompletionOptions,
 } from "./models.js";
