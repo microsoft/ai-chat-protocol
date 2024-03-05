@@ -5,13 +5,13 @@ export type AIChatFinishReason = "stop" | "length";
 export interface AIChatMessage {
   role: AIChatRole;
   content: string;
-  sessionState?: any;
+  sessionState?: unknown;
 }
 
 export interface AIChatChoice {
   index: number;
   message: AIChatMessage;
-  sessionState?: any;
+  sessionState?: unknown;
   context?: object;
   finishReason: AIChatFinishReason;
 }
@@ -23,7 +23,7 @@ export interface AIChatCompletion {
 export interface AIChatChoiceDelta {
   index: number;
   delta: AIChatMessage;
-  sessionState?: any;
+  sessionState?: unknown;
   context?: object;
   finishReason: AIChatFinishReason;
 }
@@ -34,6 +34,6 @@ export interface AIChatCompletionDelta {
 
 export interface AIChatCompletionOptions {
   context?: object;
-  sessionState?: any;
+  sessionState?: unknown;
   signal?: AbortSignal;
 }

@@ -7,7 +7,7 @@
     "build": "tshy",
     "watch": "tshy -w",
     "bundle": "npm run build && rollup -c",
-    "lint": "eslint --ext .ts",
+    "lint": "eslint src",
     "format": "prettier --write src test",
     "clean": "rimraf dist",
     "test": "vitest --run"
@@ -28,7 +28,6 @@
   "devDependencies": {
     "@types/node": "^20.11.20",
     "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "rollup": "^4.12.0",
