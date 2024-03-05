@@ -1,65 +1,46 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
-using System;
-using System.ComponentModel;
-using System.Data;
-using System.Reflection.Metadata;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.AI.ChatProtocol
 {
+    using System.Text.Json;
+
     /// <summary>
     /// A single, role-attributed message within a chat completion interaction.
     /// </summary>
-    public class ChatMessage: IUtf8JsonSerializable
+    public class ChatMessage : IUtf8JsonSerializable
     {
         /// <summary>
-        /// Write this ChatMessage object into a JSON writer ("serialize" the object).
+        /// Write the content of this object to a JSON Writer.
         /// </summary>
+        /// <param name="writer"> The JSON writer to be updated.</param>
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            //     writer.WriteString("kind", Kind.ToString());
-            writer.WriteString("role", Role.ToString());
-            writer.WriteString("content", Content);
+            writer.WriteString("role", this.Role.ToString());
+            writer.WriteString("content", this.Content);
             writer.WriteEndObject();
         }
 
-        /// <summary>
-        /// Create a new ChatMessage object representing a given JSON object ("deserialize").
-        /// </summary>  
+        /// <summary> Returns a new ChatMessage object representing the data read from the input JSON element. </summary>
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <returns> The deserialized ChatMessage object. </returns>
         internal static ChatMessage DeserializeChatMessage(JsonElement element)
         {
             if (element.ValueKind == JsonValueKind.Null)
             {
-                return null;
+                throw new Exception("Null JSON element in `messages`");
             }
-            string content = default;
-        //    MessageKind kind = default;
-            ChatRole role = default;
-           // Optional<BinaryData> sessionState = default;
-            foreach (var property in element.EnumerateObject())
-            {
-                if (property.NameEquals(Encoding.UTF8.GetBytes("content")))
-                {
-                    content = property.Value.GetString() ?? "";
-                    continue;
-                }
-/*
-                if (property.NameEquals("kind"u8))
-                {
-                    kind = new MessageKind(property.Value.GetString());
-                    continue;
-                }
-*/
-                if (property.NameEquals(Encoding.UTF8.GetBytes("role")))
-                {
-                    role = new ChatRole(property.Value.GetString());
-                    continue;
-                }
+
+            ChatRole role = element.TryGetProperty("role", out JsonElement jsonRole)
+                ? ((jsonRole.GetString() != null) ?
+                        new ChatRole(jsonRole.GetString() ?? string.Empty)
+                        : throw new Exception("Null `role` in `messages` element"))
+                : throw new Exception("Missing JSON `role` in `messages` element");
+
+            string content = element.TryGetProperty("content", out JsonElement jsonContent)
+                ? (jsonContent.GetString() ?? throw new Exception("Null `content` in `messages` element"))
+                : throw new Exception("Missing JSON `content` in `choices` element");
 /*
                 if (property.NameEquals("sessionState"u8))
                 {
@@ -70,8 +51,9 @@ namespace Microsoft.AI.ChatProtocol
                     sessionState = BinaryData.FromString(property.Value.GetRawText());
                     continue;
                 }
-*/
+
             }
+*/
             return new ChatMessage(role, content);
         }
 
@@ -83,8 +65,8 @@ namespace Microsoft.AI.ChatProtocol
                 {
                 }
         */
+
         /// <summary> Initializes a new instance of ChatMessage. </summary>
-        /// <param name="kind"> The type of the message. If not specified, the message is assumed to be text. </param>
         /// <param name="role"> The role associated with the message. </param>
         /// <param name="sessionState">
         /// Field that allows the chat app to store and retrieve data, the structure of such data is dependent on the backend
@@ -92,32 +74,28 @@ namespace Microsoft.AI.ChatProtocol
         /// sends a new one. The data in this field can be used to implement stateful services, such as remembering previous
         /// conversations or user preferences.
         /// </param>
-        public ChatMessage(/*MessageKind kind,*/ ChatRole role, string content /*, Byte[] sessionState */)
+        public ChatMessage(ChatRole role, string content /*, Byte[] sessionState */)
         {
             Argument.AssertNotNullOrEmpty(content, nameof(content));
 
-            //     Kind = kind;
             Role = role;
             Content = content;
          //   SessionState = sessionState;
         }
-/*
-        /// <summary> The type of the message. If not specified, the message is assumed to be text. </summary>
-        internal MessageKind Kind { get; set; }
-*/
+
         /// <summary> The role associated with the message. </summary>
         public ChatRole Role { get; set; }
 
         /// <summary>
-        /// Field that allows the chat app to store and retrieve data, the structure of such data is dependent on the backend
+        /// Gets or sets the field that allows the chat app to store and retrieve data, the structure of such data is dependent on the backend
         /// being used. The client must send back the data in this field unchanged in subsequent requests, until the chat app
         /// sends a new one. The data in this field can be used to implement stateful services, such as remembering previous
         /// conversations or user preferences.
         /// <para>
-        /// To assign an object to this property use <see cref="Byte[].FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// To assign an object to this property use <see cref="byte[].FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
         /// </para>
         /// <para>
-        /// To assign an already formatted json string to this property use <see cref="Byte[].FromString(string)"/>.
+        /// To assign an already formatted json string to this property use <see cref="byte[].FromString(string)"/>.
         /// </para>
         /// <para>
         /// Examples:
@@ -143,12 +121,14 @@ namespace Microsoft.AI.ChatProtocol
         /// </summary>
       //  public Byte[] SessionState { get; set; }
 
-        /// <summary> The text associated with the message. </summary>
+        /// <summary> Gets or sets the text associated with the message. </summary>
         public string Content { get; set; }
 
+        /// <summary> A string representation of the ChatMessage object for console or logging printout </summary>
+        /// <returns> A string representation of the ChatMessage object. </returns>
         public override string ToString()
         {
-            return $"ChatMessage(Role: {Role}, Content: \"{Content}\")";
+            return $"ChatMessage(Role: {this.Role}, Content: \"{this.Content}\")";
         }
     }
 }

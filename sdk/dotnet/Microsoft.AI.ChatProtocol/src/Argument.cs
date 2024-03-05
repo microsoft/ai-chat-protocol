@@ -1,13 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.AI.ChatProtocol
 {
+    using System.Collections;
+
     /// <summary>
     /// Argument validation.
     /// </summary>
@@ -18,6 +15,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <summary>
         /// Throws if <paramref name="value"/> is null.
         /// </summary>
+        /// <typeparam name="T">The type of the input object to validate.</typeparam>
         /// <param name="value">The value to validate.</param>
         /// <param name="name">The name of the parameter.</param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
@@ -32,10 +30,12 @@ namespace Microsoft.AI.ChatProtocol
         /// <summary>
         /// Throws if <paramref name="value"/> has not been initialized.
         /// </summary>
+        /// <typeparam name="T">The type of the input object to validate.</typeparam>
         /// <param name="value">The value to validate.</param>
         /// <param name="name">The name of the parameter.</param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> has not been initialized.</exception>
-        public static void AssertNotNull<T>(T? value, string name) where T : struct
+        public static void AssertNotNull<T>(T? value, string name)
+            where T : struct
         {
             if (!value.HasValue)
             {
@@ -46,6 +46,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <summary>
         /// Throws if <paramref name="value"/> is null or an empty collection.
         /// </summary>
+        /// <typeparam name="T">The type of the input object to validate.</typeparam>
         /// <param name="value">The value to validate.</param>
         /// <param name="name">The name of the parameter.</param>
         /// <exception cref="ArgumentException"><paramref name="value"/> is an empty collection.</exception>
@@ -122,7 +123,8 @@ namespace Microsoft.AI.ChatProtocol
         /// <param name="value">The value to validate.</param>
         /// <param name="name">The name of the parameter.</param>
         /// <exception cref="ArgumentException"><paramref name="value"/> is the default value for type <typeparamref name="T"/>.</exception>
-        public static void AssertNotDefault<T>(ref T value, string name) where T : struct, IEquatable<T>
+        public static void AssertNotDefault<T>(ref T value, string name)
+            where T : struct, IEquatable<T>
         {
             if (value.Equals(default))
             {
@@ -138,7 +140,8 @@ namespace Microsoft.AI.ChatProtocol
         /// <param name="minimum">The minimum value to compare.</param>
         /// <param name="maximum">The maximum value to compare.</param>
         /// <param name="name">The name of the parameter.</param>
-        public static void AssertInRange<T>(T value, T minimum, T maximum, string name) where T : notnull, IComparable<T>
+        public static void AssertInRange<T>(T value, T minimum, T maximum, string name)
+            where T : notnull, IComparable<T>
         {
             if (minimum.CompareTo(value) > 0)
             {
@@ -169,10 +172,12 @@ namespace Microsoft.AI.ChatProtocol
         /// <summary>
         /// Throws if <paramref name="value"/> has not been initialized; otherwise, returns <paramref name="value"/>.
         /// </summary>
+        /// <typeparam name="T">The type of the input object to validate.</typeparam>
         /// <param name="value">The value to validate.</param>
         /// <param name="name">The name of the parameter.</param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> has not been initialized.</exception>
-        public static T CheckNotNull<T>(T value, string name) where T : class
+        public static T CheckNotNull<T>(T value, string name)
+            where T : class
         {
             AssertNotNull(value, name);
             return value;
@@ -183,6 +188,7 @@ namespace Microsoft.AI.ChatProtocol
         /// </summary>
         /// <param name="value">The value to validate.</param>
         /// <param name="name">The name of the parameter.</param>
+        /// <returns>The input value, unmodified.</returns>
         /// <exception cref="ArgumentException"><paramref name="value"/> is an empty string.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
         public static string CheckNotNullOrEmpty(string value, string name)
@@ -194,6 +200,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <summary>
         /// Throws if <paramref name="value"/> is not null.
         /// </summary>
+        /// <typeparam name="T">The type of the input object to validate.</typeparam>
         /// <param name="value">The value to validate.</param>
         /// <param name="name">The name of the parameter.</param>
         /// <param name="message">The error message.</param>
