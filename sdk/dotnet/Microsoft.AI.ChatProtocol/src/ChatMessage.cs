@@ -11,17 +11,20 @@ namespace Microsoft.AI.ChatProtocol
     /// </summary>
     public class ChatMessage : IUtf8JsonSerializable
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatMessage"/> class.
-        /// </summary>
-        /// <param name="role"> The role associated with the message. </param>
-        /// <param name="content"> The message content. </param>
+/*
         /// <param name="sessionState">
         /// Field that allows the chat app to store and retrieve data, the structure of such data is dependent on the backend
         /// being used. The client must send back the data in this field unchanged in subsequent requests, until the chat app
         /// sends a new one. The data in this field can be used to implement stateful services, such as remembering previous
         /// conversations or user preferences.
         /// </param>
+*/
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatMessage"/> class.
+        /// </summary>
+        /// <param name="role"> The role associated with the message. </param>
+        /// <param name="content"> The message content. </param>
         public ChatMessage(ChatRole role, string content /*, Byte[] sessionState */)
         {
             Argument.AssertNotNullOrEmpty(content, nameof(content));
@@ -42,7 +45,7 @@ namespace Microsoft.AI.ChatProtocol
 
         /// <summary> Gets or sets the role associated with the message. </summary>
         public ChatRole Role { get; set; }
-
+/*
         /// <summary>
         /// Gets or sets the field that allows the chat app to store and retrieve data, the structure of such data is dependent on the backend
         /// being used. The client must send back the data in this field unchanged in subsequent requests, until the chat app
@@ -77,6 +80,7 @@ namespace Microsoft.AI.ChatProtocol
         /// </para>
         /// </summary>
         // public Byte[] SessionState { get; set; }
+*/
 
         /// <summary> Gets or sets the text of the message. </summary>
         public string Content { get; set; }

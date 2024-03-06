@@ -27,8 +27,10 @@ namespace Microsoft.AI.ChatProtocol
             this.Choices = choices;
         }
 
+/*
         /// <summary> Gets the HttpResponseMessage. </summary>
         // public HttpResponseMessage Response { get; internal set; }
+*/
 
         /// <summary> Gets the collection of generated completions. </summary>
         public IReadOnlyList<ChatChoice> Choices { get; }

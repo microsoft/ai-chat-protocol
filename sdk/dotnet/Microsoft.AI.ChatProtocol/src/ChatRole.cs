@@ -49,7 +49,7 @@ namespace Microsoft.AI.ChatProtocol
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj) => obj is ChatRole other && this.Equals(other);
+        public override bool Equals(object? obj) => obj is ChatRole other && this.Equals(other);
 
         /// <inheritdoc />
         public bool Equals(ChatRole other) => string.Equals(this.value, other.value, StringComparison.InvariantCultureIgnoreCase);

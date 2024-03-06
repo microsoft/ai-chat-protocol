@@ -8,19 +8,23 @@ namespace Microsoft.AI.ChatProtocol
     /// <summary> The representation of a single generated completion. </summary>
     public class ChatChoice
     {
+        /*
+                 /// <param name="sessionState">
+                /// Field that allows the chat app to store and retrieve data, the structure of such data is dependent on the backend
+                /// being used. The client must send back the data in this field unchanged in subsequent requests, until the chat app
+                /// sends a new one. The data in this field can be used to implement stateful services, such as remembering previous
+                /// conversations or user preferences.
+                /// </param>
+                /// <param name="context">
+                /// Context allows the chat app to receive extra parameters from the client, such as temperature, functions, or
+                /// customer_info. These parameters are specific to the chat app and not understood by the generic clients.
+                /// </param>
+
+         */
+
         /// <summary>Initializes a new instance of the <see cref="ChatChoice"/> class.</summary>
         /// <param name="index"> The index of the of the chat choice, relative to the other choices in the same completion. </param>
         /// <param name="message"> The chat message for a given chat completion. </param>
-        /// <param name="sessionState">
-        /// Field that allows the chat app to store and retrieve data, the structure of such data is dependent on the backend
-        /// being used. The client must send back the data in this field unchanged in subsequent requests, until the chat app
-        /// sends a new one. The data in this field can be used to implement stateful services, such as remembering previous
-        /// conversations or user preferences.
-        /// </param>
-        /// <param name="context">
-        /// Context allows the chat app to receive extra parameters from the client, such as temperature, functions, or
-        /// customer_info. These parameters are specific to the chat app and not understood by the generic clients.
-        /// </param>
         /// <param name="finishReason"> The reason this chat completion completed its generation. </param>
         internal ChatChoice(long index, ChatMessage message /*, BinaryData sessionState*/ /*, IReadOnlyDictionary<string, BinaryData> context*/, FinishReason finishReason)
         {
@@ -157,7 +161,7 @@ namespace Microsoft.AI.ChatProtocol
                     FinishReason = finishReason;
                 }
         */
-
+/*
         /// <summary>
         /// Field that allows the chat app to store and retrieve data, the structure of such data is dependant on the backend
         /// being used. The client must send back the data in this field unchanged in subsequent requests, until the chat app
@@ -225,5 +229,6 @@ namespace Microsoft.AI.ChatProtocol
         /// </para>
         /// </summary>
         // public IReadOnlyDictionary<string, BinaryData> Context { get; }
+*/
     }
 }

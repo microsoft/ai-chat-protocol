@@ -11,11 +11,7 @@ namespace Microsoft.AI.ChatProtocol
     /// </summary>
     public class ChatCompletionOptions : IUtf8JsonSerializable
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatCompletionOptions"/> class.
-        /// </summary>
-        /// <param name="messages"> The collection of context messages associated with this completion request. </param>
-        /// <param name="stream"> Indicates whether the completion is a streaming or non-streaming completion. </param>
+        /*
         /// <param name="sessionState">
         /// Field that allows the chat app to store and retrieve data, the structure of such data is dependent on the backend
         /// being used. The client must send back the data in this field unchanged in subsequent requests, until the chat app
@@ -26,6 +22,13 @@ namespace Microsoft.AI.ChatProtocol
         /// Context allows the chat app to receive extra parameters from the client, such as temperature, functions, or
         /// customer_info. These parameters are specific to the chat app and not understood by the generic clients.
         /// </param>
+        */
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatCompletionOptions"/> class.
+        /// </summary>
+        /// <param name="messages"> The collection of context messages associated with this completion request. </param>
+        /// <param name="stream"> Indicates whether the completion is a streaming or non-streaming completion. </param>
         public ChatCompletionOptions(IList<ChatMessage> messages, bool stream = false /*, Byte[] sessionState, IDictionary<string, Byte[]> context*/)
         {
             this.Messages = messages;

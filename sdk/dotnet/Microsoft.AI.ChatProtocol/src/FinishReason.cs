@@ -45,7 +45,7 @@ namespace Microsoft.AI.ChatProtocol
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj) => obj is FinishReason other && this.Equals(other);
+        public override bool Equals(object? obj) => obj is FinishReason other && this.Equals(other);
 
         /// <inheritdoc />
         public bool Equals(FinishReason other) => string.Equals(this.value, other.value, StringComparison.InvariantCultureIgnoreCase);
