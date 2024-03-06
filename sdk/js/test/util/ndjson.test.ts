@@ -1,6 +1,8 @@
-import { expect, test, vi } from "vitest";
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+import { expect, test } from "vitest";
 import { getAsyncIterable } from "../../src/util/ndjson.js";
-import exp from "constants";
 
 function getReadableStream(lines: string[]) {
   return new ReadableStream({

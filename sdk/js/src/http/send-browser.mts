@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { HttpRequest, HttpRequestBody, HttpResponse } from "./interfaces.js";
 
 export async function _sendRequest(

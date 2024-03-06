@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import * as http from "node:http";
 import * as https from "node:https";
 import * as zlib from "node:zlib";

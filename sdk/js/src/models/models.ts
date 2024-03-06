@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 export type AIChatRole = "user" | "assistant" | "system";
 
 export type AIChatFinishReason = "stop" | "length";

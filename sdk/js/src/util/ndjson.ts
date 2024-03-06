@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 function makeAsyncIterable<T>(stream: ReadableStream<T>): AsyncIterable<T> {
   return {
     async *[Symbol.asyncIterator]() {

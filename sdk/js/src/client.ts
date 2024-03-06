@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { HttpClient } from "./http/client.js";
 import { HttpMiddleware } from "./http/interfaces.js";
 import {

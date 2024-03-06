@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 export interface HttpRequestBody {
