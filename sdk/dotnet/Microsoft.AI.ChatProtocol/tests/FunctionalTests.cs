@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace Microsoft.AI.ChatProtocol.Test
 {
     [TestClass]
-    public class ChatProtocolClientTests
+    public class FunctionalTests
     {
         string _endpoint = "";
         string? _httpRequestHeaderName;
