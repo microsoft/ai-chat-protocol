@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 // TODO:
+// - Add unit-tests to test JSON serialization and deserialization
 // - Add support for JSON-L streaming
 // - Use class names that are different than AOAI SDK
-// - Do we need the Arguments.cs class? 
+// - Do we need the Arguments.cs class?
 // - Should I expose HttpResponseMessage to the caller?
 //   When I updated the test app to get chatCompletion.Response.RequestMessage?.Content?.ReadAsStringAsync().Result
 //   I got an exception saying the Content was already disposed. Should I just expose response status code, response
 //   headers and raw JSON as sperate properties?
 // - Test with CancellationToken
-
 namespace Microsoft.AI.ChatProtocol
 {
     using System.Text;
@@ -33,7 +33,7 @@ namespace Microsoft.AI.ChatProtocol
         /// </summary>
         /// <param name="endpoint"> The connection URL to use. </param>
         /// <param name="clientOptions"> Additional client options. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/></exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/>.</exception>
         public ChatProtocolClient(Uri endpoint, ChatProtocolClientOptions? clientOptions = null)
         {
             Argument.AssertNotNull(endpoint, nameof(endpoint));

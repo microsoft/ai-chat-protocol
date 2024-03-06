@@ -1,5 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 namespace Microsoft.AI.ChatProtocol
 {
@@ -10,8 +10,8 @@ namespace Microsoft.AI.ChatProtocol
     /// </summary>
     internal static partial class LogMessages
     {
+        // Message = "Request = {request}\n\t  Request body = {body}",
         [LoggerMessage(
- // Message = "Request = {request}\n\t  Request body = {body}",
             Message = "Request = {request}",
             Level = LogLevel.Information)]
         internal static partial void LogHttpRequest(

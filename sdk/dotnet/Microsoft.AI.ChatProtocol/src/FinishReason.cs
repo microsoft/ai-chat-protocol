@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 namespace Microsoft.AI.ChatProtocol
 {
@@ -18,7 +18,7 @@ namespace Microsoft.AI.ChatProtocol
         /// </summary>
         /// <param name="value"> The finish reason as a string. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
-        public FinishReason(string value)
+        public FinishReason(string? value)
         {
             this.value = value ?? throw new ArgumentNullException(nameof(value));
         }

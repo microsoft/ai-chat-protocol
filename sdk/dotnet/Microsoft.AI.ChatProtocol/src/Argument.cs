@@ -1,5 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 namespace Microsoft.AI.ChatProtocol
 {
@@ -175,6 +175,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <typeparam name="T">The type of the input object to validate.</typeparam>
         /// <param name="value">The value to validate.</param>
         /// <param name="name">The name of the parameter.</param>
+        /// <returns>The input object to validate (unmodified).</returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> has not been initialized.</exception>
         public static T CheckNotNull<T>(T value, string name)
             where T : class

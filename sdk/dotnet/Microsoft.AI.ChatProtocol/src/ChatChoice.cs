@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 namespace Microsoft.AI.ChatProtocol
 {
@@ -64,15 +64,13 @@ namespace Microsoft.AI.ChatProtocol
                 ? jsonIndex.GetInt64()
                 : throw new Exception("Missing JSON `index` in `choices` element");
 
-            FinishReason finishReason = element.TryGetProperty("finish_reason", out JsonElement jsonFinishReason)
-                ? ((jsonFinishReason.GetString() != null) ?
-                        new FinishReason(jsonFinishReason.GetString() ?? string.Empty)
-                        : throw new Exception("Null `finish_reason` in `choices` element"))
-                : throw new Exception("Missing JSON `finish_reason` in `choices` element");
-
             ChatMessage message = element.TryGetProperty("message", out JsonElement jsonMessage)
                 ? ChatMessage.DeserializeChatMessage(jsonMessage)
                 : throw new Exception("Missing JSON `message` in `choices` element");
+
+            FinishReason finishReason = element.TryGetProperty("finish_reason", out JsonElement jsonFinishReason)
+                ? new FinishReason(jsonFinishReason.GetString())
+                : throw new Exception("Missing JSON `finish_reason` in `choices` element");
 
             // BinaryData? sessionState = default;
             // IReadOnlyDictionary<string, BinaryData>? context = default;
