@@ -7,6 +7,7 @@ export {
   AIChatCompletionDelta,
   AIChatMessage,
   AIChatRole,
+  AIChatCompletionOptions,
 } from "./models/index.js";
 
 export {
