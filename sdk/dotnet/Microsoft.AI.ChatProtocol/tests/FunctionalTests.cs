@@ -68,10 +68,10 @@ namespace Microsoft.AI.ChatProtocol.Test
             ));
 
             Console.WriteLine(chatCompletion);
-            Assert.IsTrue(chatCompletion.Choices.Count == 1);
-            Assert.IsTrue(chatCompletion.Choices[0].Index == 0);
-            Assert.IsTrue(chatCompletion.Choices[0].FinishReason == "stop");
-            Assert.IsTrue(chatCompletion.Choices[0].Message.Role == "assistant");
+            Assert.AreEqual(1, chatCompletion.Choices.Count);
+            Assert.AreEqual(0, chatCompletion.Choices[0].Index);
+            Assert.AreEqual(FinishReason.Stopped, chatCompletion.Choices[0].FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, chatCompletion.Choices[0].Message.Role);
             Assert.IsTrue(chatCompletion.Choices[0].Message.Content.Contains("5280") || chatCompletion.Choices[0].Message.Content.Contains("5,280"));
 
 
@@ -92,10 +92,10 @@ namespace Microsoft.AI.ChatProtocol.Test
             ));
 
             Console.WriteLine(chatCompletion);
-            Assert.IsTrue(chatCompletion.Choices.Count == 1);
-            Assert.IsTrue(chatCompletion.Choices[0].Index == 0);
-            Assert.IsTrue(chatCompletion.Choices[0].FinishReason == "stop");
-            Assert.IsTrue(chatCompletion.Choices[0].Message.Role == "assistant");
+            Assert.AreEqual(1, chatCompletion.Choices.Count);
+            Assert.AreEqual(0, chatCompletion.Choices[0].Index);
+            Assert.AreEqual(FinishReason.Stopped, chatCompletion.Choices[0].FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, chatCompletion.Choices[0].Message.Role);
             Assert.IsTrue(chatCompletion.Choices[0].Message.Content.Contains("3280") || chatCompletion.Choices[0].Message.Content.Contains("3,280"));
         }
 
@@ -140,10 +140,10 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             ChatCompletion chatCompletion = task.Result;
             Console.WriteLine(chatCompletion);
-            Assert.IsTrue(chatCompletion.Choices.Count == 1);
-            Assert.IsTrue(chatCompletion.Choices[0].Index == 0);
-            Assert.IsTrue(chatCompletion.Choices[0].FinishReason == "stop");
-            Assert.IsTrue(chatCompletion.Choices[0].Message.Role == "assistant");
+            Assert.AreEqual(1, chatCompletion.Choices.Count);
+            Assert.AreEqual(0, chatCompletion.Choices[0].Index);
+            Assert.AreEqual(FinishReason.Stopped, chatCompletion.Choices[0].FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, chatCompletion.Choices[0].Message.Role);
             Assert.IsTrue(chatCompletion.Choices[0].Message.Content.Contains("5280") || chatCompletion.Choices[0].Message.Content.Contains("5,280"));
         }
     }
