@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 // TODO:
-// - Add unit-tests to test JSON serialization and deserialization
+// - Add unit-tests to test invalid JSON parsing
 // - Add support for JSON-L streaming
 // - Use class names that are different than AOAI SDK
 // - Do we need the Arguments.cs class?
@@ -37,7 +37,6 @@ namespace Microsoft.AI.ChatProtocol
         public ChatProtocolClient(Uri endpoint, ChatProtocolClientOptions? clientOptions = null)
         {
             Argument.AssertNotNull(endpoint, nameof(endpoint));
-            Argument.AssertNotNull(clientOptions, nameof(clientOptions));
 
             this.endpoint = endpoint;
             this.clientOptions = clientOptions;

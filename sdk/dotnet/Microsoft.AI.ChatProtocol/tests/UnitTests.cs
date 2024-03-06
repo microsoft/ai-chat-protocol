@@ -1,13 +1,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
-using System.Text.Json;
-
 namespace Microsoft.AI.ChatProtocol.Test
 {
+    using System.Text.Json;
+
+    /// <summary>
+    /// Unit tests for Microsoft AI Chat Protocol SDK.
+    /// </summary>
     [TestClass]
     public class UnitTests
     {
+        /// <summary>
+        /// Test deserialization (JSON string to C# class objects).
+        /// </summary>
         [TestMethod]
         public void TestParsingJsonResponseBody()
         {
@@ -24,6 +30,9 @@ namespace Microsoft.AI.ChatProtocol.Test
             Assert.AreEqual(ChatRole.Assistant, chatCompletion.Choices[0].Message.Role);
         }
 
+        /// <summary>
+        /// Test serialization (C# class object sto JSON strings).
+        /// </summary>
         [TestMethod]
         public void TestCreatingJsonRequestBody()
         {
@@ -32,10 +41,9 @@ namespace Microsoft.AI.ChatProtocol.Test
                 {
                     new ChatMessage(ChatRole.User, "user message"),
                     new ChatMessage(ChatRole.Assistant, "assistant message"),
-                    new ChatMessage(ChatRole.System, "system message")
+                    new ChatMessage(ChatRole.System, "system message"),
                 },
-                stream: true
-            );
+                stream: true);
 
             string jsonString = chatCompletionOptions.SerializeToJson();
 

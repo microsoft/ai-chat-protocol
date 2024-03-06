@@ -10,6 +10,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AI.ChatProtocol.T
 		{DE86D100-12D5-44C3-82EA-5115590F7ED4} = {DE86D100-12D5-44C3-82EA-5115590F7ED4}
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AI.ChatProtocol.Samples", "samples\Microsoft.AI.ChatProtocol.Samples.csproj", "{3969C3E1-F635-4681-9E46-436549CAC938}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DE86D100-12D5-44C3-82EA-5115590F7ED4} = {DE86D100-12D5-44C3-82EA-5115590F7ED4}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +29,10 @@ Global
 		{4A104C84-FAAC-4312-B859-2D8533CAE21C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A104C84-FAAC-4312-B859-2D8533CAE21C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A104C84-FAAC-4312-B859-2D8533CAE21C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3969C3E1-F635-4681-9E46-436549CAC938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3969C3E1-F635-4681-9E46-436549CAC938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3969C3E1-F635-4681-9E46-436549CAC938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3969C3E1-F635-4681-9E46-436549CAC938}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
