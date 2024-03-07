@@ -146,9 +146,9 @@ namespace Microsoft.AI.ChatProtocol.Test
             string? endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT");
 
             // Override as needed. These are Pamela's endpoints:
-            // endpoint = "https://app-backend-5hhse4yls5chk.azurewebsites.net";
-            // endpoint = "https://app-backend-j25rgqsibtmlo.azurewebsites.net";
-            // endpoint = "https://app-backend-xw55anu4yrb3k.azurewebsites.net";
+            // endpoint = "https://app-backend-5hhse4yls5chk.azurewebsites.net/chat";
+            // endpoint = "https://app-backend-j25rgqsibtmlo.azurewebsites.net/chat";
+            // endpoint = "https://app-backend-xw55anu4yrb3k.azurewebsites.net/chat";
             if (string.IsNullOrEmpty(endpoint))
             {
                 throw new Exception("Environment variables not defined");
