@@ -4,7 +4,6 @@
 namespace Microsoft.AI.ChatProtocol.Test
 {
     using System.Diagnostics;
-    using System.Text;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

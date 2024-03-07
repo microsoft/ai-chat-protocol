@@ -10,15 +10,15 @@ public struct ChatProtocolChoice
     [JsonPropertyName("index")]
     public int Index { get; set; }
 
+    [JsonPropertyName("finish_reason")]
+    public string FinishReason { get; set; }
+
     [JsonPropertyName("message")]
     public ChatProtocolMessage Message { get; set; }
 
     [JsonPropertyName("context")]
-    public Dictionary<string, BinaryData>? Context { get; set; }
+    public string? Context { get; set; }
 
     [JsonPropertyName("session_state")]
-    public BinaryData? SessionState { get; set; }
-
-    [JsonPropertyName("finish_reason")]
-    public string FinishReason { get; set; }
+    public string? SessionState { get; set; }
 }

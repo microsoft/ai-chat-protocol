@@ -14,8 +14,8 @@ public struct ChatProtocolCompletionOptions
     public bool Stream { get; set; }
 
     [JsonPropertyName("session_state")]
-    public BinaryData? SessionState { get; set; }
+    public string? SessionState { get; set; }
 
     [JsonPropertyName("context")]
-    public Dictionary<string, BinaryData>? Context { get; set; }
+    public string? Context { get; set; }
 }
