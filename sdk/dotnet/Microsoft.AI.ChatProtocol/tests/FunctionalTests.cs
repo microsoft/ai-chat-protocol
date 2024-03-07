@@ -4,6 +4,7 @@
 namespace Microsoft.AI.ChatProtocol.Test
 {
     using System.Diagnostics;
+    using System.Runtime.Intrinsics.Arm;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -50,10 +51,10 @@ namespace Microsoft.AI.ChatProtocol.Test
                 },
                 sessionState: "\"12345\"",
                 context: "\"67890\"");
-                //context: "67890"); // why doesn't this work?
-                //context: "{\"key1\":\"value1\",\"key2\":\"value2\"}"); // why doesn't this work?
-                //context: "{\"element1\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"element2\":\"value3\"}"); // Why doesn't this work?
 
+                // context: "67890"); // why doesn't this work?
+                // context: "{\"key1\":\"value1\",\"key2\":\"value2\"}"); // why doesn't this work?
+                // context: "{\"element1\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"element2\":\"value3\"}"); // Why doesn't this work?
             Console.WriteLine(chatCompletionOptions);
 
             ChatCompletion chatCompletion = client.GetChatCompletion(chatCompletionOptions);
@@ -144,6 +145,10 @@ namespace Microsoft.AI.ChatProtocol.Test
         {
             string? endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT");
 
+            // Override as needed. These are Pamela's endpoints:
+            // endpoint = "https://app-backend-5hhse4yls5chk.azurewebsites.net";
+            // endpoint = "https://app-backend-j25rgqsibtmlo.azurewebsites.net";
+            // endpoint = "https://app-backend-xw55anu4yrb3k.azurewebsites.net";
             if (string.IsNullOrEmpty(endpoint))
             {
                 throw new Exception("Environment variables not defined");

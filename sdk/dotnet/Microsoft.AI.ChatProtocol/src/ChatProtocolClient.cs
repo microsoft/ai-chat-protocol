@@ -62,7 +62,7 @@ namespace Microsoft.AI.ChatProtocol
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException($"The request failed with status code: {response.StatusCode}." +
+                throw new HttpRequestException($"The request failed with status code: {response.StatusCode} ({(int)response.StatusCode})." +
                     $" Reason: {response.ReasonPhrase}");
             }
 
