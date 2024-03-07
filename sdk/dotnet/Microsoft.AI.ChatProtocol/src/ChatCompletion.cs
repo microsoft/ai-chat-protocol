@@ -39,7 +39,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <returns> A string representation of the ChatCompletion object. </returns>
         public override string ToString()
         {
-            string output = $"ChatCompletion: {this.Choices.Count} choices";
+            string output = $"ChatCompletion: {this.Choices.Count} Choices";
 
             foreach (ChatChoice chatChoice in this.Choices)
             {

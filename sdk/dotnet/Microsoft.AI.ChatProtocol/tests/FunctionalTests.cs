@@ -4,6 +4,7 @@
 namespace Microsoft.AI.ChatProtocol.Test
 {
     using System.Diagnostics;
+    using System.Text;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -41,21 +42,22 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             var client = new ChatProtocolClient(new Uri(this.endpoint), options);
 
-            ChatCompletion chatCompletion = client.GetChatCompletion(new ChatCompletionOptions(
+            var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
                 {
                 // new ChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
                 // new ChatMessage(ChatRole.Assistant, "Hello, how can I help you?"),
                     new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
-                }));
+                },
+                sessionState: "\"12345\"",
+                context: "\"67890\"");
+                //context: "67890"); // why doesn't this work?
+                //context: "{\"key1\":\"value1\",\"key2\":\"value2\"}"); // why doesn't this work?
+                //context: "{\"element1\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"element2\":\"value3\"}"); // Why doesn't this work?
 
-                /*,
-                sessionState: Encoding.UTF8.GetBytes("{\"key\":\"value\"}"),
-                context: new Dictionary<string, Byte[]>
-                {
-                    ["key1"] = Encoding.UTF8.GetBytes("value1"),
-                    ["key2"] = Encoding.UTF8.GetBytes("value2")
-                }*/
+            Console.WriteLine(chatCompletionOptions);
+
+            ChatCompletion chatCompletion = client.GetChatCompletion(chatCompletionOptions);
 
             Console.WriteLine(chatCompletion);
             Assert.AreEqual(1, chatCompletion.Choices.Count);
