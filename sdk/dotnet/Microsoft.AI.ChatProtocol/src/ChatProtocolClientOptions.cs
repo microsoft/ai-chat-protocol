@@ -3,12 +3,13 @@
 
 namespace Microsoft.AI.ChatProtocol
 {
+    using System.ClientModel.Primitives;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Represents the options used when constructing a <see cref="ChatProtocolClient"/>.
     /// </summary>
-    public class ChatProtocolClientOptions
+    public class ChatProtocolClientOptions : ClientPipelineOptions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatProtocolClientOptions"/> class.
@@ -18,7 +19,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <see href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-library-authors">Logging guidance for .NET library authors</see>.
         /// </param>
         /// <exception cref="ArgumentException"><paramref name="httpRequestHeaders"/> is a non-empty dictionary with null or empty keys or values.</exception>
-        public ChatProtocolClientOptions(Dictionary<string, string>? httpRequestHeaders, ILoggerFactory? loggerFactory)
+        public ChatProtocolClientOptions(Dictionary<string, string>? httpRequestHeaders = null, ILoggerFactory? loggerFactory = null)
         {
             if (httpRequestHeaders != null)
             {

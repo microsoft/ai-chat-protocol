@@ -2,7 +2,10 @@
 
 ## SDK
 
-- Add support for JSON-L streaming
+- Should I implement the [NoThrow](https://learn.microsoft.com/dotnet/api/system.clientmodel.primitives.clienterrorbehaviors?view=azure-dotnet-preview) option of RequestOptions ?
+- Should I use the serialization/deserialization provided with System.ClientModel?
+  (see https://github.com/Azure/azure-sdk-for-net/blob/863cec65455e1f54fa9d3131c779d1f1c6072174/sdk/core/System.ClientModel/README.md) - Add unit-tests to test invalid JSON parsing
+- Add support for JSON-ND streaming
 - Use class names that are different than AOAI SDK
 - Change name space (to Microsoft.AI.Chat instead of Microsoft.AI.ChatProtocol?)
 - Do we need the Arguments.cs class?

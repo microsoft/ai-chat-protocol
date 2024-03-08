@@ -69,6 +69,7 @@ namespace Microsoft.AI.ChatProtocol.Samples
         /// </summary>
         private static void NonStreamingSyncSample()
         {
+/*
             string question = "How many feet are in a mile?";
 
             string endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT")
@@ -85,6 +86,7 @@ namespace Microsoft.AI.ChatProtocol.Samples
             Console.WriteLine($" Question: {question}");
             Console.WriteLine($" Answer: {chatCompletion.Choices[0].Message.Content}");
             Console.WriteLine(" Done!");
+*/
         }
 
         /// <summary>
@@ -92,6 +94,7 @@ namespace Microsoft.AI.ChatProtocol.Samples
         /// </summary>
         private static void NonStreamingAsyncSample()
         {
+/*
             string question = "How many feet are in a mile?";
 
             string endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT")
@@ -119,6 +122,7 @@ namespace Microsoft.AI.ChatProtocol.Samples
             Console.WriteLine($" Question: {question}");
             Console.WriteLine($" Answer: {task.Result.Choices[0].Message.Content}");
             Console.WriteLine(" Done!");
+*/
         }
 
         /// <summary>

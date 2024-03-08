@@ -3,9 +3,9 @@
 
 namespace Microsoft.AI.ChatProtocol.Test
 {
+    using System.ClientModel;
+    using System.ClientModel.Primitives;
     using System.Diagnostics;
-    using System.Runtime.Intrinsics.Arm;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Functional (end-to-end) tests for Microsoft AI Chat Protocol SDK.
@@ -21,16 +21,16 @@ namespace Microsoft.AI.ChatProtocol.Test
         /// Test live chat completion (non-streaming, sync) against a real endpoint.
         /// </summary>
         [TestMethod]
-        public void TestGetChatCompletion()
+        public void TestGetChatCompletionMultiTurn()
         {
             this.ReadEnvironmentVariables();
-
+/*
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Information);
             });
-
+*/
             Dictionary<string, string> httpHeaders = new Dictionary<string, string> { { "TestHeader1", "TestValue1" }, { "TestHeader2", "TestValue2" } };
 
             if (!string.IsNullOrEmpty(this.httpRequestHeaderName) && !string.IsNullOrEmpty(this.httpRequestHeaderValue))
@@ -38,7 +38,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                 httpHeaders.Add(this.httpRequestHeaderName, this.httpRequestHeaderValue);
             }
 
-            var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
+            var options = new ChatProtocolClientOptions(httpHeaders, null /* loggerFactory*/);
 
             var client = new ChatProtocolClient(new Uri(this.endpoint), options);
 
@@ -57,34 +57,38 @@ namespace Microsoft.AI.ChatProtocol.Test
                 // context: "{\"element1\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"element2\":\"value3\"}"); // Why doesn't this work?
             Console.WriteLine(chatCompletionOptions);
 
-            ChatCompletion chatCompletion = client.GetChatCompletion(chatCompletionOptions);
+            ClientResult<ChatCompletion> clientResult = client.GetChatCompletion(chatCompletionOptions);
 
-            Console.WriteLine(chatCompletion);
-            Assert.AreEqual(1, chatCompletion.Choices.Count);
-            Assert.AreEqual(0, chatCompletion.Choices[0].Index);
-            Assert.AreEqual(FinishReason.Stopped, chatCompletion.Choices[0].FinishReason);
-            Assert.AreEqual(ChatRole.Assistant, chatCompletion.Choices[0].Message.Role);
-            Assert.IsTrue(chatCompletion.Choices[0].Message.Content.Contains("5280") || chatCompletion.Choices[0].Message.Content.Contains("5,280"));
+            this.PrintResponse(clientResult.GetRawResponse());
+            Console.WriteLine(clientResult.Value);
+
+            Assert.AreEqual(1, clientResult.Value.Choices.Count);
+            Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
+            Assert.AreEqual(FinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
+            Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("5280") || clientResult.Value.Choices[0].Message.Content.Contains("5,280"));
 
             // Console.WriteLine("Request: " + chatCompletion.Response.RequestMessage);
             // Console.WriteLine("Request body: " + chatCompletion.Response.RequestMessage?.Content?.ReadAsStringAsync().Result);
             // Console.WriteLine("Response: " + chatCompletion.Response);
             // Console.WriteLine("Response body: " + chatCompletion.Response.Content.ReadAsStringAsync().Result);
             // Assert.AreEqual(HttpStatusCode.OK, chatCompletion.Response.StatusCode);
-            chatCompletion = client.GetChatCompletion(new ChatCompletionOptions(
+            clientResult = client.GetChatCompletion(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
-                    new ChatMessage(ChatRole.Assistant, chatCompletion.Choices[0].Message.Content.Trim()),
+                    new ChatMessage(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Content.Trim()),
                     new ChatMessage(ChatRole.User, "And how many feet in one kilometer?"),
                 }));
 
-            Console.WriteLine(chatCompletion);
-            Assert.AreEqual(1, chatCompletion.Choices.Count);
-            Assert.AreEqual(0, chatCompletion.Choices[0].Index);
-            Assert.AreEqual(FinishReason.Stopped, chatCompletion.Choices[0].FinishReason);
-            Assert.AreEqual(ChatRole.Assistant, chatCompletion.Choices[0].Message.Role);
-            Assert.IsTrue(chatCompletion.Choices[0].Message.Content.Contains("3280") || chatCompletion.Choices[0].Message.Content.Contains("3,280"));
+            this.PrintResponse(clientResult.GetRawResponse());
+            Console.WriteLine(clientResult.Value);
+
+            Assert.AreEqual(1, clientResult.Value.Choices.Count);
+            Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
+            Assert.AreEqual(FinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
+            Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("3280") || clientResult.Value.Choices[0].Message.Content.Contains("3,280"));
         }
 
         /// <summary>
@@ -94,13 +98,13 @@ namespace Microsoft.AI.ChatProtocol.Test
         public void TestGetChatCompletionAsync()
         {
             this.ReadEnvironmentVariables();
-
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-                builder.SetMinimumLevel(LogLevel.Information);
-            });
-
+            /*
+                        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+                        {
+                            builder.AddConsole();
+                            builder.SetMinimumLevel(LogLevel.Information);
+                        });
+            */
             Dictionary<string, string> httpHeaders = new Dictionary<string, string> { { "TestHeader1", "TestValue1" }, { "TestHeader2", "TestValue2" } };
 
             if (!string.IsNullOrEmpty(this.httpRequestHeaderName) && !string.IsNullOrEmpty(this.httpRequestHeaderValue))
@@ -108,11 +112,11 @@ namespace Microsoft.AI.ChatProtocol.Test
                 httpHeaders.Add(this.httpRequestHeaderName, this.httpRequestHeaderValue);
             }
 
-            var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
+            var options = new ChatProtocolClientOptions(httpHeaders /*, loggerFactory*/);
 
             var client = new ChatProtocolClient(new Uri(this.endpoint), options);
 
-            Task<ChatCompletion> task = client.GetChatCompletionAsync(new ChatCompletionOptions(
+            Task<ClientResult<ChatCompletion>> task = client.GetChatCompletionAsync(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
@@ -129,7 +133,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             Console.WriteLine($"Done! ({stopwatch.ElapsedMilliseconds} ms)");
             stopwatch.Stop();
 
-            ChatCompletion chatCompletion = task.Result;
+            ChatCompletion chatCompletion = task.Result.Value;
             Console.WriteLine(chatCompletion);
             Assert.AreEqual(1, chatCompletion.Choices.Count);
             Assert.AreEqual(0, chatCompletion.Choices[0].Index);
@@ -159,6 +163,18 @@ namespace Microsoft.AI.ChatProtocol.Test
             // Optional: Set one HTTP header
             this.httpRequestHeaderName = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_HTTP_REQUEST_HEADER_NAME");
             this.httpRequestHeaderValue = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_HTTP_REQUEST_HEADER_VALUE");
+        }
+
+        private void PrintResponse(PipelineResponse response)
+        {
+            Console.WriteLine($"Response status code: '{response.Status}'.");
+            Console.WriteLine("Response headers:");
+            foreach (KeyValuePair<string, string> header in response.Headers)
+            {
+                Console.WriteLine($"\t{header.Key} : {header.Value}");
+            }
+
+            Console.WriteLine($"Response body: '{response.Content}'");
         }
     }
 }
