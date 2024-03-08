@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { OperationOptions } from "@typespec/ts-http-runtime";
+
 export type AIChatRole = "user" | "assistant" | "system";
 
 export type AIChatFinishReason = "stop" | "length";
@@ -35,8 +37,7 @@ export interface AIChatCompletionDelta {
   choices: AIChatChoiceDelta[];
 }
 
-export interface AIChatCompletionOptions {
+export interface AIChatCompletionOptions extends OperationOptions {
   context?: object;
   sessionState?: unknown;
-  signal?: AbortSignal;
 }
