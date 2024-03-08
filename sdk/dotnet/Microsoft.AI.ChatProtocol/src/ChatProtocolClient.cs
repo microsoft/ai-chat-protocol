@@ -5,12 +5,10 @@ namespace Microsoft.AI.ChatProtocol
 {
     using System.ClientModel;
     using System.ClientModel.Primitives;
-    using System.Runtime.CompilerServices;
-    using System.Text;
     using System.Text.Json;
     using System.Threading;
     using Microsoft.Extensions.Logging;
-
+ 
     /// <summary>
     /// Client for the Chat Protocol API.
     /// </summary>
@@ -19,9 +17,8 @@ namespace Microsoft.AI.ChatProtocol
         private static readonly string VERSION = "1.0.0-beta.1";
 
         private readonly Uri endpoint;
-        private readonly ChatProtocolClientOptions clientOptions; // Do we need save this as class member?
-
-        // private readonly ILogger? logger;
+        private readonly ChatProtocolClientOptions clientOptions = new ();
+        private readonly ILogger? logger = null;
         private readonly ClientPipeline clientPipeline;
 
         /// <summary>
@@ -30,62 +27,26 @@ namespace Microsoft.AI.ChatProtocol
         /// <param name="endpoint"> The connection URL to use. </param>
         /// <param name="clientOptions"> Additional client options. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/>.</exception>
-        public ChatProtocolClient(Uri endpoint, ChatProtocolClientOptions? clientOptions = default)
+        public ChatProtocolClient(Uri endpoint, ChatProtocolClientOptions? clientOptions = null)
         {
             Argument.AssertNotNull(endpoint, nameof(endpoint));
 
             this.endpoint = endpoint;
+
             this.clientOptions = clientOptions ?? new ChatProtocolClientOptions();
 
-            // Authentication policy instance is created from the user-provided
-            // credential and service authentication scheme.
+            if (this.clientOptions != null && this.clientOptions.LoggerFactory != null)
+            {
+                this.logger = this.clientOptions.LoggerFactory.CreateLogger<ChatProtocolClient>();
+            }
+
             ApiKeyAuthenticationPolicy authenticationPolicy = ApiKeyAuthenticationPolicy.CreateBearerAuthorizationPolicy("my-credential");
 
-            // Pipeline is created from user-provided options and policies
-            // specific to the service client implementation.
             this.clientPipeline = ClientPipeline.Create(
-                this.clientOptions,
+                this.clientOptions!,
                 perCallPolicies: ReadOnlySpan<PipelinePolicy>.Empty,
                 perTryPolicies: new PipelinePolicy[] { authenticationPolicy },
                 beforeTransportPolicies: ReadOnlySpan<PipelinePolicy>.Empty);
-
-            /*
-                        if (this.clientOptions != null && this.clientOptions.LoggerFactory != null)
-                        {
-                            this.logger = this.clientOptions.LoggerFactory.CreateLogger<ChatProtocolClient>();
-                        }
-            */
-        }
-
-        /// <summary> Creates a new chat completion. </summary>
-        /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
-        /// <param name="requestOptions"> The request options. </param>
-        /// <returns> The ChatCompletion object containing the chat response from the service. </returns>
-        /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
-        /// <exception cref="ClientResultException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
-        /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
-        /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
-        public ClientResult<ChatCompletion> GetChatCompletion(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
-        {
-            using PipelineMessage pipelineMessage = this.clientPipeline.CreateMessage();
-
-            this.GetChatCompletionInternal(pipelineMessage, chatCompletionOptions, requestOptions).GetAwaiter().GetResult();
-
-            using PipelineResponse response = pipelineMessage.Response!;
-
-            if (response.IsError)
-            {
-                throw new ClientResultException(response);
-            }
-
-// var task = Task.Run(async () => await this.PrivateGetChatCompletionAsync(chatCompletionOptions, cancellationToken));
-            string jsonString = response.Content.ToString();
-
-            using JsonDocument document = JsonDocument.Parse(jsonString);
-
-            ChatCompletion chatCompletion = ChatCompletion.DeserializeChatCompletion(document.RootElement);
-
-            return ClientResult.FromValue(chatCompletion, response);
         }
 
         /// <summary> Creates a new chat completion. </summary>
@@ -98,62 +59,20 @@ namespace Microsoft.AI.ChatProtocol
         /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
         public ClientResult<ChatCompletion> GetChatCompletion(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
         {
-            RequestOptions requestOptions = new ();
-            requestOptions.CancellationToken = cancellationToken;
-
-            return this.GetChatCompletion(chatCompletionOptions, requestOptions);
+            return this.GetChatCompletionAsync(chatCompletionOptions, cancellationToken).GetAwaiter().GetResult();
         }
 
         /// <summary> Creates a new chat completion. </summary>
         /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
-        /// <param name="requestOptions"> The request options to use. </param>
-        /// <returns> A Task that encapsulates the ChatCompletion object containing the chat response from the service. </returns>
+        /// <param name="requestOptions"> The request options. </param>
+        /// <returns> The ChatCompletion object containing the chat response from the service. </returns>
         /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
-        /// <exception cref="HttpRequestException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="ClientResultException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
         /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
-        public async Task<ClientResult<ChatCompletion>> GetChatCompletionAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
+        public ClientResult<ChatCompletion> GetChatCompletion(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
-            using PipelineMessage pipelineMessage = this.clientPipeline.CreateMessage();
-
-            await this.GetChatCompletionInternal(pipelineMessage, chatCompletionOptions, requestOptions).AsTask();
-
-            using PipelineResponse response = pipelineMessage.Response!;
-
-            if (response.IsError)
-            {
-                throw new ClientResultException(response);
-            }
-
-            string jsonString = response.Content.ToString();
-
-            using JsonDocument document = JsonDocument.Parse(jsonString);
-
-            ChatCompletion chatCompletion = ChatCompletion.DeserializeChatCompletion(document.RootElement);
-
-            return ClientResult.FromValue(chatCompletion, response);
-
-            /*
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            throw new HttpRequestException($"The request failed with status code: {response.StatusCode}." +
-                                $" Reason: {response.ReasonPhrase}");
-                        }
-
-                        if (this.logger != null)
-                        {
-                            this.logger.LogHttpRequest(response.RequestMessage, response.RequestMessage?.Content?.ReadAsStringAsync().Result);
-                            this.logger.LogHttpResponse(response, response.Content.ReadAsStringAsync().Result);
-                        }
-
-                        string jsonString = response.Content.ReadAsStringAsync().Result;
-
-                        using JsonDocument document = JsonDocument.Parse(jsonString);
-
-                        ChatCompletion chatCompletion = ChatCompletion.DeserializeChatCompletion(document.RootElement);
-
-                        return chatCompletion;
-            */
+            return this.GetChatCompletionAsync(chatCompletionOptions, requestOptions).GetAwaiter().GetResult();
         }
 
         /// <summary> Creates a new chat completion. </summary>
@@ -174,48 +93,81 @@ namespace Microsoft.AI.ChatProtocol
             return result;
         }
 
-        private ValueTask GetChatCompletionInternal(
-            PipelineMessage pipelineMessage,
-            ChatCompletionOptions chatCompletionOptions,
-            RequestOptions? requestOptions)
+        /// <summary> Creates a new chat completion. </summary>
+        /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
+        /// <param name="requestOptions"> The request options to use. </param>
+        /// <returns> A Task that encapsulates the ChatCompletion object containing the chat response from the service. </returns>
+        /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
+        /// <exception cref="HttpRequestException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
+        /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
+        public async Task<ClientResult<ChatCompletion>> GetChatCompletionAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
-            Argument.AssertNotNull(chatCompletionOptions, nameof(chatCompletionOptions));
+            requestOptions ??= new RequestOptions();
 
-            string jsonBody = chatCompletionOptions.SerializeToJson();
+            using PipelineMessage pipelineMessage = this.CreatePipelineMessage(chatCompletionOptions, requestOptions);
 
-           // pipelineMessage.CancellationToken = requestOptions?.CancellationToken ?? default;
-            using PipelineRequest request = pipelineMessage.Request;
+            await this.clientPipeline.SendAsync(pipelineMessage).AsTask();
+
+            using PipelineResponse response = pipelineMessage.Response!;
+
+            if (response.IsError)
+            {
+                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
+                {
+                    return (ClientResult<ChatCompletion>)ClientResult.FromResponse(response);
+                }
+                else
+                {
+                    throw new ClientResultException(response);
+                }
+            }
+
+            string jsonString = response.Content.ToString();
+
+            using JsonDocument document = JsonDocument.Parse(jsonString);
+
+            ChatCompletion chatCompletion = ChatCompletion.DeserializeChatCompletion(document.RootElement);
+
+            return ClientResult.FromValue(chatCompletion, response);
+
+            /*
+            if (this.logger != null)
+            {
+                this.logger.LogHttpRequest(response.RequestMessage, response.RequestMessage?.Content?.ReadAsStringAsync().Result);
+                this.logger.LogHttpResponse(response, response.Content.ReadAsStringAsync().Result);
+            }
+            */
+        }
+
+        private PipelineMessage CreatePipelineMessage(ChatCompletionOptions chatCompletionOptions, RequestOptions requestOptions)
+        {
+            PipelineMessage message = this.clientPipeline.CreateMessage();
+
+            PipelineRequest request = message.Request;
+
             request.Method = "POST";
+
             request.Uri = this.endpoint;
 
-            // If User-Agent request header does not already exist, set it to default value
             const string userAgentHeader = "User-Agent";
+
             if (!request.Headers.TryGetValue(userAgentHeader, out _))
             {
                 request.Headers.Set(userAgentHeader, $"sdk-csharp-microsoft-ai-chatprotocol/{ChatProtocolClient.VERSION}");
             }
 
             request.Headers.Set("Content-Type", "application/json");
+
             request.Headers.Add("Accept", "application/json");
+
+            string jsonBody = chatCompletionOptions.SerializeToJson();
+
             request.Content = BinaryContent.Create(BinaryData.FromString(jsonBody));
 
-            return /*await*/ this.clientPipeline.SendAsync(pipelineMessage);
+            message.Apply(requestOptions);
 
-            // using HttpContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-            // using HttpClient client = new HttpClient();
-            /*
-                        client.DefaultRequestHeaders.Add("User-Agent", $"sdk-csharp-microsoft-ai-chatprotocol/{ChatProtocolClient.VERSION}");
-
-                        if (this.clientOptions != null && this.clientOptions.HttpRequestHeaders != null)
-                        {
-                            foreach (var header in this.clientOptions.HttpRequestHeaders)
-                            {
-                                client.DefaultRequestHeaders.Add(header.Key, header.Value);
-                            }
-                        }
-            */
-
-           // return await client.PostAsync(this.endpoint, content, cancellationToken);
+            return message;
         }
     }
 }
