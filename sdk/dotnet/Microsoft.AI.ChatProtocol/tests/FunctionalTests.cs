@@ -6,6 +6,7 @@ namespace Microsoft.AI.ChatProtocol.Test
     using System.ClientModel;
     using System.ClientModel.Primitives;
     using System.Diagnostics;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Functional (end-to-end) tests for Microsoft AI Chat Protocol SDK.
@@ -24,13 +25,13 @@ namespace Microsoft.AI.ChatProtocol.Test
         public void TestGetChatCompletionMultiTurn()
         {
             this.ReadEnvironmentVariables();
-/*
+
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Information);
             });
-*/
+
             Dictionary<string, string> httpHeaders = new Dictionary<string, string> { { "TestHeader1", "TestValue1" }, { "TestHeader2", "TestValue2" } };
 
             if (!string.IsNullOrEmpty(this.httpRequestHeaderName) && !string.IsNullOrEmpty(this.httpRequestHeaderValue))
@@ -38,7 +39,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                 httpHeaders.Add(this.httpRequestHeaderName, this.httpRequestHeaderValue);
             }
 
-            var options = new ChatProtocolClientOptions(httpHeaders, null /* loggerFactory*/);
+            var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
 
             var client = new ChatProtocolClient(new Uri(this.endpoint), options);
 
@@ -59,7 +60,9 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             ClientResult<ChatCompletion> clientResult = client.GetChatCompletion(chatCompletionOptions);
 
+            // this.PrintRequest(clientResult.GetRawResponse().////
             this.PrintResponse(clientResult.GetRawResponse());
+
             Console.WriteLine(clientResult.Value);
 
             Assert.AreEqual(1, clientResult.Value.Choices.Count);
@@ -98,13 +101,13 @@ namespace Microsoft.AI.ChatProtocol.Test
         public void TestGetChatCompletionAsync()
         {
             this.ReadEnvironmentVariables();
-            /*
-                        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-                        {
-                            builder.AddConsole();
-                            builder.SetMinimumLevel(LogLevel.Information);
-                        });
-            */
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+                    {
+                        builder.AddConsole();
+                        builder.SetMinimumLevel(LogLevel.Information);
+                    });
+
             Dictionary<string, string> httpHeaders = new Dictionary<string, string> { { "TestHeader1", "TestValue1" }, { "TestHeader2", "TestValue2" } };
 
             if (!string.IsNullOrEmpty(this.httpRequestHeaderName) && !string.IsNullOrEmpty(this.httpRequestHeaderValue))
@@ -112,7 +115,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                 httpHeaders.Add(this.httpRequestHeaderName, this.httpRequestHeaderValue);
             }
 
-            var options = new ChatProtocolClientOptions(httpHeaders /*, loggerFactory*/);
+            var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
 
             var client = new ChatProtocolClient(new Uri(this.endpoint), options);
 

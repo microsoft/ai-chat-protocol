@@ -8,7 +8,7 @@ namespace Microsoft.AI.ChatProtocol
     using System.Text.Json;
     using System.Threading;
     using Microsoft.Extensions.Logging;
- 
+
     /// <summary>
     /// Client for the Chat Protocol API.
     /// </summary>
@@ -29,8 +29,6 @@ namespace Microsoft.AI.ChatProtocol
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/>.</exception>
         public ChatProtocolClient(Uri endpoint, ChatProtocolClientOptions? clientOptions = null)
         {
-            Argument.AssertNotNull(endpoint, nameof(endpoint));
-
             this.endpoint = endpoint;
 
             this.clientOptions = clientOptions ?? new ChatProtocolClientOptions();

@@ -3,7 +3,6 @@
 
 namespace Microsoft.AI.ChatProtocol
 {
-    using System.Text;
     using System.Text.Json;
 
     /// <summary>
@@ -16,9 +15,17 @@ namespace Microsoft.AI.ChatProtocol
         /// </summary>
         /// <param name="role"> The role associated with the message. </param>
         /// <param name="content"> The message content. </param>
-        public ChatMessage(ChatRole role, string content /*, Byte[] sessionState */)
+        public ChatMessage(ChatRole role, string content)
         {
-            Argument.AssertNotNullOrEmpty(content, nameof(content));
+            if (content is null)
+            {
+                throw new ArgumentNullException(content);
+            }
+
+            if (content.Length == 0)
+            {
+                throw new ArgumentException("Value cannot be an empty string.", content);
+            }
 
             this.Role = role;
             this.Content = content;

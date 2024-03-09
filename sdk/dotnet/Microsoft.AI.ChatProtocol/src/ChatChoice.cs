@@ -95,15 +95,5 @@ namespace Microsoft.AI.ChatProtocol
 
             return new ChatChoice(index, message, finishReason, sessionState, context);
         }
-
-        /*
-                /// <summary> Deserializes the model from a raw response. </summary>
-                /// <param name="response"> The response to deserialize the model from. </param>
-                internal static ChatChoice FromResponse(Response response)
-                {
-                    using var document = JsonDocument.Parse(response.Content);
-                    return DeserializeChatChoice(document.RootElement);
-                }
-        */
     }
 }

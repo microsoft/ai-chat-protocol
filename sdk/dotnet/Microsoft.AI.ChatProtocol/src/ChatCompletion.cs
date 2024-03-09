@@ -14,7 +14,10 @@ namespace Microsoft.AI.ChatProtocol
         /// <exception cref="ArgumentNullException"> <paramref name="choices"/> is null. </exception>
         internal ChatCompletion(IEnumerable<ChatChoice> choices)
         {
-            Argument.AssertNotNull(choices, nameof(choices));
+            if (choices is null)
+            {
+                throw new ArgumentNullException(nameof(choices));
+            }
 
             this.Choices = choices.ToList();
         }
@@ -26,11 +29,6 @@ namespace Microsoft.AI.ChatProtocol
         {
             this.Choices = choices;
         }
-
-/*
-        /// <summary> Gets the HttpResponseMessage. </summary>
-        // public HttpResponseMessage Response { get; internal set; }
-*/
 
         /// <summary> Gets the collection of generated completions. </summary>
         public IReadOnlyList<ChatChoice> Choices { get; }
@@ -72,15 +70,5 @@ namespace Microsoft.AI.ChatProtocol
 
             return new ChatCompletion(choices);
         }
-
-/*
-        /// <summary> Deserializes the model from a raw response. </summary>
-        /// <param name="response"> The response to deserialize the model from. </param>
-        internal static ChatCompletion FromResponse(Response response)
-        {
-            using var document = JsonDocument.Parse(response.Content);
-            return DeserializeChatCompletion(document.RootElement);
-        }
-*/
     }
 }
