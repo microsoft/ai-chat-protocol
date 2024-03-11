@@ -4,18 +4,26 @@ The Microsoft AI Chat Protocol is a library for building AI Chat applications an
 
 With the AI Chat Protocol, you will be able to:
 
-* Stream text from LLM-powered backends with ease
+
 * Develop AI chat interfaces and applications in several languages:
   * Currently available: .NET, JavaScript
   * In the future: Python, Java
+* Stream text from LLM-powered backends with ease
+
+*Note: we are currently in public preview. Your feedback is greatly appreciated as we get ready to be generally available!*
+
+**Please star the repo to show your support for this project!**
 
 ## Getting Started
 
-Install the AI Chat Protocol library with npm:
+To get started with the AI Chat Protocol, check out our documentation *here*.
 
-```sh
- npm install ai-chat-protocol 
-```
+Alternatively, if you'd like to get started with our *samples*:
+
+* Sample React App
+* Sample NextJS App
+* Sample .NET MAUI App
+* Sample .NET Blazor App
 
 ## Contributing
 
