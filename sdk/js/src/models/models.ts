@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { OperationOptions } from "@typespec/ts-http-runtime";
+import { ClientOptions, OperationOptions } from "@typespec/ts-http-runtime";
 
 export type AIChatRole = "user" | "assistant" | "system";
 
@@ -36,6 +36,8 @@ export interface AIChatChoiceDelta {
 export interface AIChatCompletionDelta {
   choices: AIChatChoiceDelta[];
 }
+
+export interface AIChatClientOptions extends ClientOptions {}
 
 export interface AIChatCompletionOptions extends OperationOptions {
   context?: object;

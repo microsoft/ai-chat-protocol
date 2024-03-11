@@ -3,18 +3,13 @@
 
 export { AIChatProtocolClient } from "./client.js";
 export {
+  AIChatChoice,
+  AIChatChoiceDelta,
+  AIChatClientOptions,
   AIChatCompletion,
   AIChatCompletionDelta,
+  AIChatCompletionOptions,
+  AIChatFinishReason,
   AIChatMessage,
   AIChatRole,
-  AIChatCompletionOptions,
 } from "./models/index.js";
-
-export {
-  HttpMiddleware,
-  HttpRequest,
-  HttpResponse,
-  HttpMethod,
-  HttpHeaders,
-  HttpRequestBody,
-} from "./http/index.js";

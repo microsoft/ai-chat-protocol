@@ -2,22 +2,22 @@
 // Licensed under the MIT License.
 
 import {
+  Client,
+  getClient,
+  isKeyCredential,
   KeyCredential,
   RequestParameters,
-  isKeyCredential,
   TokenCredential,
-  getClient,
-  Client,
-  ClientOptions,
 } from "@typespec/ts-http-runtime";
 import {
-  AIChatMessage,
+  AIChatClientOptions,
   AIChatCompletion,
-  AIChatCompletionOptions,
   AIChatCompletionDelta,
+  AIChatCompletionOptions,
+  AIChatMessage,
 } from "./models/index.js";
 import { getAsyncIterable } from "./util/ndjson.js";
-import { asStream } from "./http/send.js";
+import { asStream } from "./util/stream.js";
 
 /* Replace with a version provided by the ts-http-runtime library once that is provided. */
 function isTokenCredential(credential: unknown): credential is TokenCredential {
@@ -43,17 +43,17 @@ export class AIChatProtocolClient {
   private client: Client;
 
   constructor(endpoint: string);
-  constructor(endpoint: string, options: ClientOptions);
+  constructor(endpoint: string, options: AIChatClientOptions);
   constructor(endpoint: string, credential: TokenCredential | KeyCredential);
   constructor(
     endpoint: string,
     credential: TokenCredential | KeyCredential,
-    options: ClientOptions,
+    options: AIChatClientOptions,
   );
   constructor(
     endpoint: string,
-    arg1?: TokenCredential | KeyCredential | ClientOptions,
-    arg2?: ClientOptions,
+    arg1?: TokenCredential | KeyCredential | AIChatClientOptions,
+    arg2?: AIChatClientOptions,
   ) {
     if (isCredential(arg1)) {
       this.client = getClient(endpoint, arg1, arg2);
