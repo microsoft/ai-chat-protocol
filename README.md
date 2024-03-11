@@ -4,11 +4,10 @@ The Microsoft AI Chat Protocol is a library for building AI Chat applications an
 
 With the AI Chat Protocol, you will be able to:
 
-
-* Develop AI chat interfaces and applications in several languages:
-  * Currently available: .NET, JavaScript
-  * In the future: Python, Java
+* Develop AI chat interfaces, components, and applications in several languages:
+  * **Currently available**: .NET, JavaScript
 * Stream text from LLM-powered backends with ease
+* Easily incorporate HTTP middleware for logging, authentication, and more.
 
 *Note: we are currently in public preview. Your feedback is greatly appreciated as we get ready to be generally available!*
 
@@ -18,12 +17,15 @@ With the AI Chat Protocol, you will be able to:
 
 To get started with the AI Chat Protocol, check out our documentation *here*.
 
-Alternatively, if you'd like to get started with our *samples*:
+Alternatively, if you'd like to get started with our *samples* [TODO: link]:
 
-* Sample React App
-* Sample NextJS App
-* Sample .NET MAUI App
-* Sample .NET Blazor App
+* **JavaScript**:
+  * Sample React App
+  * Sample NextJS App
+
+* **.NET**:
+  * Sample .NET MAUI App
+  * Sample .NET Blazor App
 
 ## Contributing
 
