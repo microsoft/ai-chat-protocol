@@ -8,6 +8,12 @@ GlobalSettings.backendChatService = BackendChatService.MaaS;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddScoped<ILlama2MaaPClientProvider, Llama2MaaPClientProvider>();
@@ -27,6 +33,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
