@@ -47,7 +47,7 @@ namespace Microsoft.AI.ChatProtocol
                 beforeTransportPolicies: ReadOnlySpan<PipelinePolicy>.Empty);
         }
 
-        /// <summary> Creates a new chat completion. </summary>
+        /// <summary> Creates a new chat completion, with cancellation token. </summary>
         /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> The ChatCompletion object containing the chat response from the service. </returns>
@@ -60,7 +60,21 @@ namespace Microsoft.AI.ChatProtocol
             return this.GetChatCompletionAsync(chatCompletionOptions, cancellationToken).GetAwaiter().GetResult();
         }
 
-        /// <summary> Creates a new chat completion. </summary>
+        /// <summary> Creates a new chat completion, with cancellation token and streaming response. </summary>
+        /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns> The ChatCompletion object containing the chat response from the service. </returns>
+        /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
+        /// <exception cref="ClientResultException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
+        /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
+        /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
+        public ClientResult<ChatCompletion> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
+        {
+            return this.GetChatCompletionStreamingAsync(chatCompletionOptions, cancellationToken).GetAwaiter().GetResult();
+        }
+
+        /// <summary> Creates a new chat completion with request options. </summary>
         /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
         /// <param name="requestOptions"> The request options. </param>
         /// <returns> The ChatCompletion object containing the chat response from the service. </returns>
@@ -73,7 +87,21 @@ namespace Microsoft.AI.ChatProtocol
             return this.GetChatCompletionAsync(chatCompletionOptions, requestOptions).GetAwaiter().GetResult();
         }
 
-        /// <summary> Creates a new chat completion. </summary>
+        /// <summary> Creates a new chat completion, with request options and streaming response. </summary>
+        /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
+        /// <param name="requestOptions"> The request options. </param>
+        /// <returns> The ChatCompletion object containing the chat response from the service. </returns>
+        /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
+        /// <exception cref="ClientResultException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
+        /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
+        /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
+        public ClientResult<ChatCompletion> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
+        {
+            return this.GetChatCompletionStreamingAsync(chatCompletionOptions, requestOptions).GetAwaiter().GetResult();
+        }
+
+        /// <summary> Creates a new async chat completion with cancellation token. </summary>
         /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <returns> A Task that encapsulates the ChatCompletion object containing the chat response from the service. </returns>
@@ -91,7 +119,26 @@ namespace Microsoft.AI.ChatProtocol
             return result;
         }
 
-        /// <summary> Creates a new chat completion. </summary>
+        /// <summary> Creates a new async chat completion with cancellation token and streaming response. </summary>
+        /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns> A Task that encapsulates the ChatCompletion object containing the chat response from the service. </returns>
+        /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
+        /// <exception cref="HttpRequestException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
+        /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
+        /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
+        public async Task<ClientResult<ChatCompletion>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
+        {
+            RequestOptions requestOptions = new ();
+            requestOptions.CancellationToken = cancellationToken;
+
+            ClientResult<ChatCompletion> result = await this.GetChatCompletionStreamingAsync(chatCompletionOptions, requestOptions);
+
+            return result;
+        }
+
+        /// <summary> Creates a new async chat completion with request options. </summary>
         /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
         /// <param name="requestOptions"> The request options to use. </param>
         /// <returns> A Task that encapsulates the ChatCompletion object containing the chat response from the service. </returns>
@@ -133,6 +180,22 @@ namespace Microsoft.AI.ChatProtocol
             }
 
             return ClientResult.FromValue(chatCompletion, response);
+        }
+
+        /// <summary> Creates a new async chat completion with request options and streaming response. </summary>
+        /// <param name="chatCompletionOptions"> The configuration for a chat completion request. </param>
+        /// <param name="requestOptions"> The request options to use. </param>
+        /// <returns> A Task that encapsulates the ChatCompletion object containing the chat response from the service. </returns>
+        /// <exception cref="ArgumentNullException"> <paramref name="chatCompletionOptions"/> is null. </exception>
+        /// <exception cref="HttpRequestException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
+        /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
+        /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
+        public async Task<ClientResult<ChatCompletion>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
+        {
+            chatCompletionOptions.SetStream(true);
+
+            return await this.GetChatCompletionAsync(chatCompletionOptions, requestOptions);
         }
 
         private PipelineMessage CreatePipelineMessage(ChatCompletionOptions chatCompletionOptions, RequestOptions requestOptions)

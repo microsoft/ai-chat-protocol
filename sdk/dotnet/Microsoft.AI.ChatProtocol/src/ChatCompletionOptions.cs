@@ -12,10 +12,15 @@ namespace Microsoft.AI.ChatProtocol
     public class ChatCompletionOptions : IUtf8JsonSerializable
     {
         /// <summary>
+        /// A value indicating whether the completion is a streaming or non-streaming.
+        /// </summary>
+        /// <remarks>Enable streaming only if the service supported <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format.</remarks>
+        private bool stream = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ChatCompletionOptions"/> class.
         /// </summary>
         /// <param name="messages"> The collection of context messages associated with this completion request. </param>
-        /// <param name="stream"> Indicates whether the completion is a streaming or non-streaming completion. </param>
         /// <param name="sessionState">
         /// The state of the conversation session. This state originates from the chat service.
         /// The client must send back this data unchanged in subsequent requests, until the chat
@@ -38,10 +43,9 @@ namespace Microsoft.AI.ChatProtocol
         /// 3. To pass a full JSON string, it should start with "{" and end with "}", for example:
         /// string sessionState = "{\"overrides\":{\"temperature\":0.5,\"top\":1,\"retrieval_mode\":\"text\"}}"; .
         /// </remarks>
-        public ChatCompletionOptions(IList<ChatMessage> messages, bool stream = false, string? sessionState = null, string? context = null)
+        public ChatCompletionOptions(IList<ChatMessage> messages, string? sessionState = null, string? context = null)
         {
             this.Messages = messages;
-            this.Stream = stream;
             this.SessionState = sessionState;
             this.Context = context;
         }
@@ -50,12 +54,6 @@ namespace Microsoft.AI.ChatProtocol
         /// Gets the collection of context messages associated with this completion request.
         /// </summary>
         public IList<ChatMessage> Messages { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether the completion is a streaming or non-streaming.
-        /// </summary>
-        /// <remarks>Enable streaming only if the service supported <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format.</remarks>
-        public bool Stream { get; } = false;
 
         /// <summary>
         /// Gets the state of the conversation session.
@@ -71,7 +69,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <returns> A string representation of the ChatCompletionOptions object. </returns>
         public override string ToString()
         {
-            string output = $"ChatCompletionOptions: {this.Messages.Count} Messages, Stream: {this.Stream}, SessionState: {this.SessionState}, Context: {this.Context}";
+            string output = $"ChatCompletionOptions: {this.Messages.Count} Messages, SessionState: {this.SessionState}, Context: {this.Context}";
 
             foreach (ChatMessage chatMessage in this.Messages)
             {
@@ -96,7 +94,7 @@ namespace Microsoft.AI.ChatProtocol
             }
 
             writer.WriteEndArray();
-            writer.WriteBoolean("stream", this.Stream);
+            writer.WriteBoolean("stream", this.stream);
 
             if (this.SessionState != null)
             {
@@ -131,5 +129,10 @@ namespace Microsoft.AI.ChatProtocol
                 return Encoding.UTF8.GetString(stream.ToArray());
             }
         }
+
+        /// <summary> Sets the type of response. </summary>
+        /// <param name="stream"> 'true' for streaming response, 'false' for non-streaming response. </param>
+        /// <remarks>Enable streaming only if the service supported <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format.</remarks>
+        internal void SetStream(bool stream) => this.stream = stream;
     }
 }

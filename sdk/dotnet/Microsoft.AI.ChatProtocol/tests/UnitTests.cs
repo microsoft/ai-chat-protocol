@@ -48,9 +48,10 @@ namespace Microsoft.AI.ChatProtocol.Test
                     new ChatMessage(ChatRole.Assistant, "assistant message"),
                     new ChatMessage(ChatRole.System, "system message"),
                 },
-                stream: true,
                 sessionState: sessionState,
                 context: context);
+
+            chatCompletionOptions.SetStream(true);
 
             string jsonString = chatCompletionOptions.SerializeToJson();
 
