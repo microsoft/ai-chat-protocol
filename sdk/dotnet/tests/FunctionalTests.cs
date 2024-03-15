@@ -146,6 +146,55 @@ namespace Microsoft.AI.ChatProtocol.Test
         }
 
         /// <summary>
+        /// Test live chat completion (streaming, sync) against a real endpoint.
+        /// TODO: Update this test once the SDK supports streaming.
+        /// </summary>
+        [TestMethod]
+        public void TestGetChatCompletionStreaming()
+        {
+            this.ReadEnvironmentVariables();
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+
+            var options = new ChatProtocolClientOptions(null, loggerFactory);
+
+            var client = new ChatProtocolClient(new Uri(this.endpoint), options);
+
+            var chatCompletionOptions = new ChatCompletionOptions(
+                messages: new[]
+                {
+                // new ChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
+                // new ChatMessage(ChatRole.Assistant, "Hello, how can I help you?"),
+                    new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
+                },
+                sessionState: "\"12345\"",
+                context: "\"67890\"");
+
+            // context: "67890"); // why doesn't this work?
+            // context: "{\"key1\":\"value1\",\"key2\":\"value2\"}"); // why doesn't this work?
+            // context: "{\"element1\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"element2\":\"value3\"}"); // Why doesn't this work?
+            Console.WriteLine(chatCompletionOptions);
+
+            ClientResult<ChatCompletion> clientResult = client.GetChatCompletionStreaming(chatCompletionOptions);
+
+            this.PrintResponse(clientResult.GetRawResponse());
+
+            Console.WriteLine(clientResult.Value);
+
+            Assert.IsFalse(clientResult.GetRawResponse().IsError);
+            Assert.AreEqual(200, clientResult.GetRawResponse().Status);
+            Assert.AreEqual(1, clientResult.Value.Choices.Count);
+            Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
+            Assert.AreEqual(FinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
+            Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("5280") || clientResult.Value.Choices[0].Message.Content.Contains("5,280"));
+        }
+
+        /// <summary>
         /// Helper method to read environment variables (endpoint and custom HTTP header).
         /// </summary>
         private void ReadEnvironmentVariables()

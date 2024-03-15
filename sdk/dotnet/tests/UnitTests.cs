@@ -51,7 +51,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                 sessionState: sessionState,
                 context: context);
 
-            chatCompletionOptions.SetStream(true);
+            chatCompletionOptions.Stream = true;
 
             string jsonString = chatCompletionOptions.SerializeToJson();
 

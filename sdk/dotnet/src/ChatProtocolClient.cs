@@ -193,7 +193,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
         public async Task<ClientResult<ChatCompletion>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
-            chatCompletionOptions.SetStream(true);
+            chatCompletionOptions.Stream = false; // Set to true when streaming is supported
 
             return await this.GetChatCompletionAsync(chatCompletionOptions, requestOptions);
         }
@@ -235,7 +235,7 @@ namespace Microsoft.AI.ChatProtocol
 
         private string HttpResponseToString(PipelineResponse response)
         {
-            string responseString = $"Status code = {response.Status}, Headers:\n\t  {{";
+            string responseString = $"Status = {response.ReasonPhrase} ({response.Status}), Headers:\n\t  {{";
 
             foreach (KeyValuePair<string, string> header in response.Headers)
             {

@@ -12,12 +12,6 @@ namespace Microsoft.AI.ChatProtocol
     public class ChatCompletionOptions : IUtf8JsonSerializable
     {
         /// <summary>
-        /// A value indicating whether the completion is a streaming or non-streaming.
-        /// </summary>
-        /// <remarks>Enable streaming only if the service supported <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format.</remarks>
-        private bool stream = false;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ChatCompletionOptions"/> class.
         /// </summary>
         /// <param name="messages"> The collection of context messages associated with this completion request. </param>
@@ -65,6 +59,10 @@ namespace Microsoft.AI.ChatProtocol
         /// </summary>
         public string? Context { get; } = null;
 
+        /// <summary>Gets or sets a value indicating whether to request a streaming response ('true') or non-streaming response ('false'). </summary>
+        /// <remarks>Enable streaming only if the service supported <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format.</remarks>
+        internal bool Stream { get; set; } = false;
+
         /// <summary> A string representation of the ChatCompletionOptions object for console or logging printout. </summary>
         /// <returns> A string representation of the ChatCompletionOptions object. </returns>
         public override string ToString()
@@ -94,7 +92,7 @@ namespace Microsoft.AI.ChatProtocol
             }
 
             writer.WriteEndArray();
-            writer.WriteBoolean("stream", this.stream);
+            writer.WriteBoolean("stream", this.Stream);
 
             if (this.SessionState != null)
             {
@@ -129,10 +127,5 @@ namespace Microsoft.AI.ChatProtocol
                 return Encoding.UTF8.GetString(stream.ToArray());
             }
         }
-
-        /// <summary> Sets the type of response. </summary>
-        /// <param name="stream"> 'true' for streaming response, 'false' for non-streaming response. </param>
-        /// <remarks>Enable streaming only if the service supported <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format.</remarks>
-        internal void SetStream(bool stream) => this.stream = stream;
     }
 }
