@@ -13,7 +13,7 @@ namespace Microsoft.AI.ChatProtocol.Test
     public class Samples
     {
         /// <summary>
-        /// Sample showing how submit a question to a chat endpoint
+        /// Sample showing how to submit a question to a chat endpoint
         /// - Using default request options
         /// - A synchronous (blocking) call
         /// - Non-streaming response.

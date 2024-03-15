@@ -127,15 +127,12 @@ namespace Microsoft.AI.ChatProtocol
 
             ChatCompletion chatCompletion = ChatCompletion.DeserializeChatCompletion(document.RootElement);
 
-            return ClientResult.FromValue(chatCompletion, response);
-
-            /*
-            if (this.logger != null)
+            if (this.logger != null && this.logger.IsEnabled(LogLevel.Information))
             {
-                this.logger.LogHttpRequest(response.RequestMessage, response.RequestMessage?.Content?.ReadAsStringAsync().Result);
-                this.logger.LogHttpResponse(response, response.Content.ReadAsStringAsync().Result);
+                this.logger.LogHttpResponse(this.HttpResponseToString(response), jsonString);
             }
-            */
+
+            return ClientResult.FromValue(chatCompletion, response);
         }
 
         private PipelineMessage CreatePipelineMessage(ChatCompletionOptions chatCompletionOptions, RequestOptions requestOptions)
@@ -165,7 +162,26 @@ namespace Microsoft.AI.ChatProtocol
 
             message.Apply(requestOptions);
 
+            if (this.logger != null)
+            {
+                this.logger.LogHttpRequest(request, jsonBody);
+            }
+
             return message;
+        }
+
+        private string HttpResponseToString(PipelineResponse response)
+        {
+            string responseString = $"Status code = {response.Status}, Headers:\n\t  {{";
+
+            foreach (KeyValuePair<string, string> header in response.Headers)
+            {
+                responseString += $"\n\t\t{header.Key}: {header.Value}";
+            }
+
+            responseString += "\n\t  }";
+
+            return responseString;
         }
     }
 }

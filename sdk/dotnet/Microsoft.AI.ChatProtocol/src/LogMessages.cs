@@ -3,28 +3,40 @@
 
 namespace Microsoft.AI.ChatProtocol
 {
+    using System.ClientModel.Primitives;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// A partial class to hold logging methods.
+    /// <see href = "https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-library-authors" > Logging guidance for .NET library authors</see>.
     /// </summary>
     internal static partial class LogMessages
     {
-        // Message = "Request = {request}\n\t  Request body = {body}",
         [LoggerMessage(
-            Message = "Request = {request}",
+            Message = "Request: {request}\n\t  Request body: {body}",
             Level = LogLevel.Information)]
         internal static partial void LogHttpRequest(
             this ILogger logger,
-            HttpRequestMessage? request /*,
-            string body*/);
+            PipelineRequest request,
+            string body);
 
+        /* If/when PipelineResponse is updated to support a ToString() method, use this instead of the below:
         [LoggerMessage(
-            Message = "Response = {response}\n\t  Response body = {body}",
+            Message = "Response: {response}\n\t  Response body = {body}",
             Level = LogLevel.Information)]
         internal static partial void LogHttpResponse(
             this ILogger logger,
-            HttpResponseMessage response,
+            PipelineResponse response,
+            string body);
+        */
+
+        [LoggerMessage(
+            Message = "Response: {response}\n\t  Response body: {body}",
+            Level = LogLevel.Information,
+            SkipEnabledCheck = true)]
+        internal static partial void LogHttpResponse(
+            this ILogger logger,
+            string response,
             string body);
     }
 }

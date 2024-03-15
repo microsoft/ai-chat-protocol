@@ -60,22 +60,18 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             ClientResult<ChatCompletion> clientResult = client.GetChatCompletion(chatCompletionOptions);
 
-            // this.PrintRequest(clientResult.GetRawResponse().////
             this.PrintResponse(clientResult.GetRawResponse());
 
             Console.WriteLine(clientResult.Value);
 
+            Assert.IsFalse(clientResult.GetRawResponse().IsError);
+            Assert.AreEqual(200, clientResult.GetRawResponse().Status);
             Assert.AreEqual(1, clientResult.Value.Choices.Count);
             Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
             Assert.AreEqual(FinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
             Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
             Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("5280") || clientResult.Value.Choices[0].Message.Content.Contains("5,280"));
 
-            // Console.WriteLine("Request: " + chatCompletion.Response.RequestMessage);
-            // Console.WriteLine("Request body: " + chatCompletion.Response.RequestMessage?.Content?.ReadAsStringAsync().Result);
-            // Console.WriteLine("Response: " + chatCompletion.Response);
-            // Console.WriteLine("Response body: " + chatCompletion.Response.Content.ReadAsStringAsync().Result);
-            // Assert.AreEqual(HttpStatusCode.OK, chatCompletion.Response.StatusCode);
             clientResult = client.GetChatCompletion(new ChatCompletionOptions(
                 messages: new[]
                 {
@@ -87,6 +83,8 @@ namespace Microsoft.AI.ChatProtocol.Test
             this.PrintResponse(clientResult.GetRawResponse());
             Console.WriteLine(clientResult.Value);
 
+            Assert.IsFalse(clientResult.GetRawResponse().IsError);
+            Assert.AreEqual(200, clientResult.GetRawResponse().Status);
             Assert.AreEqual(1, clientResult.Value.Choices.Count);
             Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
             Assert.AreEqual(FinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
@@ -136,6 +134,8 @@ namespace Microsoft.AI.ChatProtocol.Test
             Console.WriteLine($"Done! ({stopwatch.ElapsedMilliseconds} ms)");
             stopwatch.Stop();
 
+            Assert.IsFalse(task.Result.GetRawResponse().IsError);
+            Assert.AreEqual(200, task.Result.GetRawResponse().Status);
             ChatCompletion chatCompletion = task.Result.Value;
             Console.WriteLine(chatCompletion);
             Assert.AreEqual(1, chatCompletion.Choices.Count);
@@ -151,11 +151,6 @@ namespace Microsoft.AI.ChatProtocol.Test
         private void ReadEnvironmentVariables()
         {
             string? endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT");
-
-            // Override as needed. These are Pamela's endpoints:
-            // endpoint = "https://app-backend-5hhse4yls5chk.azurewebsites.net/chat";
-            // endpoint = "https://app-backend-j25rgqsibtmlo.azurewebsites.net/chat";
-            // endpoint = "https://app-backend-xw55anu4yrb3k.azurewebsites.net/chat";
             if (string.IsNullOrEmpty(endpoint))
             {
                 throw new Exception("Environment variables not defined");

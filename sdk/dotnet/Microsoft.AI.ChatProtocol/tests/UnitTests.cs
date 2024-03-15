@@ -33,7 +33,7 @@ namespace Microsoft.AI.ChatProtocol.Test
         }
 
         /// <summary>
-        /// Test serialization (C# class object sto JSON strings).
+        /// Test serialization (C# class object into JSON string).
         /// </summary>
         [TestMethod]
         public void TestCreatingJsonRequestBody()

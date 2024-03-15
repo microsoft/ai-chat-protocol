@@ -16,7 +16,7 @@ namespace Microsoft.AI.ChatProtocol
         /// </summary>
         /// <param name="httpRequestHeaders">Optional HTTP request headers and their values.</param>
         /// <param name="loggerFactory">Optional logger.
-        /// <see href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-library-authors">Logging guidance for .NET library authors</see>.
+        /// <see href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging">Logging in C# and .NET</see>.
         /// </param>
         /// <exception cref="ArgumentException"><paramref name="httpRequestHeaders"/> is a non-empty dictionary with null or empty keys or values.</exception>
         public ChatProtocolClientOptions(Dictionary<string, string>? httpRequestHeaders = null, ILoggerFactory? loggerFactory = null)
@@ -47,7 +47,7 @@ namespace Microsoft.AI.ChatProtocol
         public Dictionary<string, string>? HttpRequestHeaders { get; internal set; }
 
         /// <summary>
-        /// Gets the optional Logger factor. <see href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-library-authors">Logging guidance for .NET library authors</see>.
+        /// Gets the optional Logger factor. <see href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging">Logging in C# and .NET</see>.
         /// </summary>
         public ILoggerFactory? LoggerFactory { get; internal set; }
     }
