@@ -162,7 +162,7 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
         // Proper response to the client
         HttpResponse httpResponse = context.HttpContext.Response;
         httpResponse.StatusCode = (int)HttpStatusCode.OK;
-        httpResponse.ContentType = "text/event-stream";
+        httpResponse.ContentType = "application/x-ndjson";
 
         using var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
         string? role = null;
@@ -174,7 +174,6 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
             // Read one line of response at a time from the back-end service
             // Example first line:  data: {"id":"9af3749a-1ce8-4ddd-b6df-8c2824dd83a4","object":"","created":0,"model":"","choices":[{"finish_reason":null,"index":0,"delta":{"role":"assistant"}}]}
             // Example other lines: data: {"id":"9af3749a-1ce8-4ddd-b6df-8c2824dd83a4","object":"chat.completion.chunk","created":1047904,"model":"","choices":[{"finish_reason":null,"index":0,"delta":{"content":" reasons"}}]}
-            // Last line:           data: [DONE]
             // Note that "role" is only available in the first line.
             while (true)
             {
@@ -233,8 +232,5 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
             // Always dispose the stream immediately once enumeration is complete for any reason
             streamReader.Dispose();
         }
-
-        // TODO: Chat protocol supports JSONL response. We don't end with a DONE string ("data: [DONE]" is how you end a SSE payload, not JSONL)
-        await httpResponse.WriteAsync("[DONE]\n");
     }
 }

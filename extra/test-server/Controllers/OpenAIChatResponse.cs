@@ -105,7 +105,7 @@ internal class OpenAIStreamingChatResponse : OpenAIChatResponseBaseClass, IActio
 
         HttpResponse httpResponse = context.HttpContext.Response;
         httpResponse.StatusCode = (int)HttpStatusCode.OK;
-        httpResponse.ContentType = "text/event-stream";
+        httpResponse.ContentType = "application/x-ndjson";
 
         await foreach (StreamingChatCompletionsUpdate chatUpdate in streamingChatCompletionsUpdateResponse)
         {

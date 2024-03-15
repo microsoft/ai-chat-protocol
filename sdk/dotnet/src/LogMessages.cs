@@ -31,12 +31,18 @@ namespace Microsoft.AI.ChatProtocol
         */
 
         [LoggerMessage(
-            Message = "Response: {response}\n\t  Response body: {body}",
+            Message = "Response: {response}",
             Level = LogLevel.Information,
             SkipEnabledCheck = true)]
         internal static partial void LogHttpResponse(
             this ILogger logger,
-            string response,
+            string response);
+
+        [LoggerMessage(
+            Message = "Response body: {body}",
+            Level = LogLevel.Information)]
+        internal static partial void LogHttpResponseBody(
+            this ILogger logger,
             string body);
     }
 }

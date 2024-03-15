@@ -68,7 +68,9 @@ namespace Microsoft.AI.ChatProtocol
         /// <exception cref="ClientResultException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
         /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
-        /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
+        /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
+        /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
+        /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
         public ClientResult<ChatCompletion> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
         {
             return this.GetChatCompletionStreamingAsync(chatCompletionOptions, cancellationToken).GetAwaiter().GetResult();
@@ -95,7 +97,9 @@ namespace Microsoft.AI.ChatProtocol
         /// <exception cref="ClientResultException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
         /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
-        /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
+        /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
+        /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
+        /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
         public ClientResult<ChatCompletion> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
             return this.GetChatCompletionStreamingAsync(chatCompletionOptions, requestOptions).GetAwaiter().GetResult();
@@ -127,7 +131,9 @@ namespace Microsoft.AI.ChatProtocol
         /// <exception cref="HttpRequestException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
         /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
-        /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
+        /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
+        /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
+        /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
         public async Task<ClientResult<ChatCompletion>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
         {
             RequestOptions requestOptions = new ();
@@ -156,6 +162,11 @@ namespace Microsoft.AI.ChatProtocol
 
             using PipelineResponse response = pipelineMessage.Response!;
 
+            if (this.logger != null && this.logger.IsEnabled(LogLevel.Information))
+            {
+                this.logger.LogHttpResponse(this.HttpResponseToString(response));
+            }
+
             if (response.IsError)
             {
                 if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
@@ -168,16 +179,40 @@ namespace Microsoft.AI.ChatProtocol
                 }
             }
 
+            if (!response.Headers.TryGetValue("Content-Type", out string? contentType))
+            {
+                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
+                {
+                    return (ClientResult<ChatCompletion>)ClientResult.FromResponse(response);
+                }
+                else
+                {
+                    throw new ClientResultException("HTTP response header Content-Type is missing.", response);
+                }
+            }
+
+            if (!contentType!.Contains("application/json"))
+            {
+                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
+                {
+                    return (ClientResult<ChatCompletion>)ClientResult.FromResponse(response);
+                }
+                else
+                {
+                    throw new ClientResultException("Content-Type does not contain application/json.", response);
+                }
+            }
+
             string jsonString = response.Content.ToString();
+
+            if (this.logger != null)
+            {
+                this.logger.LogHttpResponseBody(jsonString);
+            }
 
             using JsonDocument document = JsonDocument.Parse(jsonString);
 
             ChatCompletion chatCompletion = ChatCompletion.DeserializeChatCompletion(document.RootElement);
-
-            if (this.logger != null && this.logger.IsEnabled(LogLevel.Information))
-            {
-                this.logger.LogHttpResponse(this.HttpResponseToString(response), jsonString);
-            }
 
             return ClientResult.FromValue(chatCompletion, response);
         }
@@ -190,12 +225,39 @@ namespace Microsoft.AI.ChatProtocol
         /// <exception cref="HttpRequestException"> The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="TaskCanceledException"> The request was canceled. </exception>
         /// <exception cref="InvalidOperationException"> The request URI must be an absolute URI or System.Net.Http.HttpClient.BaseAddress must be set. </exception>
-        /// <remarks> Call this method if the service supports streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format. </remarks>
+        /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
+        /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
+        /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
         public async Task<ClientResult<ChatCompletion>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
-            chatCompletionOptions.Stream = false; // Set to true when streaming is supported
+            requestOptions ??= new RequestOptions();
 
-            return await this.GetChatCompletionAsync(chatCompletionOptions, requestOptions);
+            chatCompletionOptions.Stream = true;
+
+            using PipelineMessage pipelineMessage = this.CreatePipelineMessage(chatCompletionOptions, requestOptions);
+
+            await this.clientPipeline.SendAsync(pipelineMessage).AsTask();
+
+            using PipelineResponse response = pipelineMessage.Response!;
+
+            if (this.logger != null && this.logger.IsEnabled(LogLevel.Information))
+            {
+                this.logger.LogHttpResponse(this.HttpResponseToString(response));
+            }
+
+            if (response.IsError)
+            {
+                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
+                {
+                    return (ClientResult<ChatCompletion>)ClientResult.FromResponse(response);
+                }
+                else
+                {
+                    throw new ClientResultException(response);
+                }
+            }
+
+            return ClientResult.FromValue(new ChatCompletion(new List<ChatChoice>()), response);
         }
 
         private PipelineMessage CreatePipelineMessage(ChatCompletionOptions chatCompletionOptions, RequestOptions requestOptions)
@@ -217,7 +279,10 @@ namespace Microsoft.AI.ChatProtocol
 
             request.Headers.Set("Content-Type", "application/json");
 
-            request.Headers.Add("Accept", "application/json");
+            if (!chatCompletionOptions.Stream)
+            {
+                request.Headers.Set("Accept", "application/json");
+            }
 
             string jsonBody = chatCompletionOptions.SerializeToJson();
 

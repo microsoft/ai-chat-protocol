@@ -19,9 +19,9 @@ IF "%~1"=="" (
 )
 
 REM Good for testing non-streaming:
-curl -v "https://localhost:%1/chat" -N -H "Content-Type: application/json" --data-ascii "{\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"How many feet in a mile??\"}],\"stream\": false}"
+REM curl -v "https://localhost:%1/chat" -N -H "Content-Type: application/json" --data-ascii "{\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"How many feet in a mile??\"}],\"stream\": false}"
 REM curl -v "https://localhost:%1/chat" -H "Content-Type: application/json" --data-ascii "{\"messages\": [{\"role\":\"system\",\"content\":\"You are a helpful assistant. You will talk like a pirate.\"},{\"role\":\"user\",\"content\":\"Can you help me?\"},{\"role\":\"assistant\",\"content\":\"Arrrr! Of course, me hearty! What can I do for ye?\"},{\"role\":\"user\",\"content\":\"What's the best way to train a parrot?\"}],\"stream\": false}"
 
 
 REM Good for testing streaming (long response):
-REM curl -v "https://localhost:%1/chat" -N -H "Content-Type: application/json" --data-ascii "{\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"Give me ten reasons to regularly exercise.\"}],\"stream\": true}"
+curl -v "https://localhost:%1/chat" -N -H "Content-Type: application/json" --data-ascii "{\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"Give me ten reasons to regularly exercise.\"}],\"stream\": true}"

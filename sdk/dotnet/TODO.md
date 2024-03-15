@@ -15,6 +15,7 @@
 ## Unit testing
 
 - Test parsing invalid JSON (null/missing JSON element). Validate the correct exception is thrown.
+- Test parsing empty JSON lines in the response (we should silently skip them)
 
 ## Functional (end-to-end) testing
 
