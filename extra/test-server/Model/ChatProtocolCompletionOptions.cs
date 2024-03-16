@@ -10,9 +10,6 @@ public struct ChatProtocolCompletionOptions
     [JsonPropertyName("messages")]
     public List<ChatProtocolMessage> Messages { get; set; }
 
-    [JsonPropertyName("stream")]
-    public bool Stream { get; set; }
-
     [JsonPropertyName("session_state")]
     public BinaryData? SessionState { get; set; }
 
