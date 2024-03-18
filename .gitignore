@@ -396,3 +396,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# For any other files you don't want Git to track
+.hide/
+
+# Chat Protocol local test service
+extra/test-server/Properties/

@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using Azure.Core.Diagnostics;
+using Azure.Core.Sse;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics.Tracing;
 using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using Azure.Core.Sse;
+using System.Net;
+using System.Text.Json;
+using System.Text;
 
 namespace Azure.AI.Chat.SampleService;
 
@@ -100,14 +100,17 @@ internal class MaaSChatResponse: MaaSChatResponseBaseClass, IActionResult
         JObject jObjectResponse = JObject.Parse(stringResponse);
 
         // Example of response:
-        // {"id":"9502fee4-bb8f-4eee-a7d0-ac54d732695c","object":"chat.completion","created":881436,"model":"","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"  There are 5,280 feet in a mile."}}],"usage":{"prompt_tokens":15,"total_tokens":30,"completion_tokens":15}}
+        // {"choices":[{"finish_reason":"stop","index":0,"message":{"content":"  There are 5,280 feet in a mile.","role":"assistant"}}],"created":1033408,"id":"02f77102-7e66-4dd7-98a0-8850e4aad32a","object":"chat.completion","usage":{"completion_tokens":15,"prompt_tokens":16,"total_tokens":31}}
+
+        JToken? firstChoice = jObjectResponse["choices"]?.First;
         var chatChoice = new ChatProtocolChoice
         {
-            Index = 0,
+            Index = firstChoice?["index"]?.Value<int>() ?? 0,
+            FinishReason = (string?)firstChoice?["finish_reason"] ?? "",
             Message = new ChatProtocolMessage
             {
-                Content = (string?)jObjectResponse["choices"]?[0]?["message"]?["content"] ?? "",
-                Role = "assistant"
+                Content = (string?)firstChoice?["message"]?["content"] ?? "",
+                Role = (string?)firstChoice?["message"]?["role"] ?? ""
             },
         };
 
