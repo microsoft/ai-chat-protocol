@@ -82,7 +82,7 @@ export class AIChatProtocolClient {
         sessionState: options.sessionState,
       },
     };
-    const response = await this.client.path("").post(request, options);
+    const response = await this.client.path("/").post(request, options);
     if (!/2\d\d/.test(response.status)) {
       throw new Error(`Request failed with status code ${response.status}`);
     }
@@ -112,7 +112,7 @@ export class AIChatProtocolClient {
       },
     };
     const response = await asStream(
-      this.client.path("").post(request, options),
+      this.client.path("/stream").post(request, options),
     );
     if (!/2\d\d/.test(response.status)) {
       throw new Error(`Request failed with status code ${response.status}`);
