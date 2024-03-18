@@ -3,7 +3,6 @@
 
 using Azure.AI.Chat.SampleService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Azure.AI.OpenAI;
 
 namespace Azure.AI.Chat.SampleService;
 
@@ -32,41 +31,26 @@ public class ChatController : ControllerBase
     public IActionResult Create(ChatProtocolCompletionOptions options)
     {
         Console.WriteLine($"\n========== Using backend chat service: {GlobalSettings.backendChatService} ==========\n");
-
-        switch (GlobalSettings.backendChatService)
+        return GlobalSettings.backendChatService switch
         {
-            case BackendChatService.MaaS:
-                {
-                    HttpClient client = _maaSClientProvider.GetClient();
-                    if (options.Stream)
-                    {
-                          return new MaaSStreamingChatResponse(client, options);
-                    }
-                    return new MaaSChatResponse(client, options);
-                }
-            case BackendChatService.Llama2MaaP:
-            {
-                HttpClient client = _llama2ClientProvider.GetClient();
-                string? deployment = _llama2ClientProvider.GetDeployment();
-                //TODO: Support streaming
-                //if (options.Stream)
-                //{
-                //      return new Llama2MaaPStreamingChatResponse(client, deployment, options);
-                //}
-                return new Llama2MaaPChatResponse(client, deployment, options);
-            }
-            case BackendChatService.AzureOpenAI:
-            {
-                OpenAIClient client = _openAiClientProvider.GetClient();
-                string deployment = _openAiClientProvider.GetDeployment();
-                if (options.Stream)
-                {
-                    return new OpenAIStreamingChatResponse(client, deployment, options);
-                }
-                return new OpenAIChatResponse(client, deployment, options);
-            }
-            default:
-                throw new Exception("There is no support for this backend chat service");
-        }
+            BackendChatService.MaaS => new MaaSChatResponse(_maaSClientProvider.GetClient(), options),
+            BackendChatService.Llama2MaaP => new Llama2MaaPChatResponse(_llama2ClientProvider.GetClient(), _llama2ClientProvider.GetDeployment(), options),
+            BackendChatService.AzureOpenAI => new OpenAIChatResponse(_openAiClientProvider.GetClient(), _openAiClientProvider.GetDeployment(), options),
+            _ => throw new Exception("There is no support for this backend chat service"),
+        };
+    }
+
+    [Route("stream")]
+    [HttpPost]
+    public IActionResult CreateStreaming(ChatProtocolCompletionOptions options)
+    {
+        Console.WriteLine($"\n========== Using backend chat service: {GlobalSettings.backendChatService} ==========\n");
+        return GlobalSettings.backendChatService switch
+        {
+            BackendChatService.MaaS => new MaaSStreamingChatResponse(_maaSClientProvider.GetClient(), options),
+            BackendChatService.Llama2MaaP => new BadRequestObjectResult("Not supported"),
+            BackendChatService.AzureOpenAI => new OpenAIStreamingChatResponse(_openAiClientProvider.GetClient(), _openAiClientProvider.GetDeployment(), options),
+            _ => throw new Exception("There is no support for this backend chat service"),
+        };
     }
 }
