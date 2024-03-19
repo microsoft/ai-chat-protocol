@@ -16,7 +16,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <param name="finishReason"> The reason this chat completion completed its generation. </param>
         /// <param name="sessionState"> The state of the conversation session. </param>
         /// <param name="context"> Additional chat context. </param>
-        internal ChatChoice(long index, ChatMessage message, FinishReason finishReason, string? sessionState = null, string? context = null)
+        internal ChatChoice(long index, ChatMessage message, ChatFinishReason finishReason, string? sessionState = null, string? context = null)
         {
             this.Index = index;
             this.Message = message;
@@ -38,7 +38,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <summary>
         /// Gets the reason this chat completion completed its generation.
         /// </summary>
-        public FinishReason FinishReason { get; }
+        public ChatFinishReason FinishReason { get; }
 
         /// <summary>
         /// Gets the state of the conversation session.
@@ -81,8 +81,8 @@ namespace Microsoft.AI.ChatProtocol
                 ? ChatMessage.DeserializeChatMessage(jsonMessage)
                 : throw new Exception("Missing JSON `message` in `choices` element");
 
-            FinishReason finishReason = element.TryGetProperty("finish_reason", out JsonElement jsonFinishReason)
-                ? new FinishReason(jsonFinishReason.GetString())
+            ChatFinishReason finishReason = element.TryGetProperty("finish_reason", out JsonElement jsonFinishReason)
+                ? new ChatFinishReason(jsonFinishReason.GetString())
                 : throw new Exception("Missing JSON `finish_reason` in `choices` element");
 
             string? sessionState = element.TryGetProperty("session_state", out JsonElement jsonSessionState)

@@ -71,7 +71,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
         /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
         /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
-        public ClientResult<ChatCompletion> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
+        public StreamingClientResult<StreamingChatUpdate> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
         {
             return this.GetChatCompletionStreamingAsync(chatCompletionOptions, cancellationToken).GetAwaiter().GetResult();
         }
@@ -100,7 +100,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
         /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
         /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
-        public ClientResult<ChatCompletion> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
+        public StreamingClientResult<StreamingChatUpdate> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
             return this.GetChatCompletionStreamingAsync(chatCompletionOptions, requestOptions).GetAwaiter().GetResult();
         }
@@ -134,12 +134,12 @@ namespace Microsoft.AI.ChatProtocol
         /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
         /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
         /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
-        public async Task<ClientResult<ChatCompletion>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
+        public async Task<StreamingClientResult<StreamingChatUpdate>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, CancellationToken cancellationToken)
         {
             RequestOptions requestOptions = new ();
             requestOptions.CancellationToken = cancellationToken;
 
-            ClientResult<ChatCompletion> result = await this.GetChatCompletionStreamingAsync(chatCompletionOptions, requestOptions);
+            StreamingClientResult<StreamingChatUpdate> result = await this.GetChatCompletionStreamingAsync(chatCompletionOptions, requestOptions);
 
             return result;
         }
@@ -158,9 +158,9 @@ namespace Microsoft.AI.ChatProtocol
 
             using PipelineMessage pipelineMessage = this.CreatePipelineMessage(chatCompletionOptions, requestOptions);
 
-            await this.clientPipeline.SendAsync(pipelineMessage).AsTask();
+            await this.clientPipeline.SendAsync(pipelineMessage);
 
-            using PipelineResponse response = pipelineMessage.Response!;
+            using PipelineResponse response = pipelineMessage.ExtractResponse() !;
 
             if (this.logger != null && this.logger.IsEnabled(LogLevel.Information))
             {
@@ -169,38 +169,17 @@ namespace Microsoft.AI.ChatProtocol
 
             if (response.IsError)
             {
-                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
-                {
-                    return (ClientResult<ChatCompletion>)ClientResult.FromResponse(response);
-                }
-                else
-                {
-                    throw new ClientResultException(response);
-                }
+                throw new ClientResultException(response);
             }
 
             if (!response.Headers.TryGetValue("Content-Type", out string? contentType))
             {
-                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
-                {
-                    return (ClientResult<ChatCompletion>)ClientResult.FromResponse(response);
-                }
-                else
-                {
-                    throw new ClientResultException("HTTP response header Content-Type is missing.", response);
-                }
+                throw new ClientResultException("HTTP response header Content-Type is missing.", response);
             }
 
             if (!contentType!.Contains("application/json"))
             {
-                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
-                {
-                    return (ClientResult<ChatCompletion>)ClientResult.FromResponse(response);
-                }
-                else
-                {
-                    throw new ClientResultException("Content-Type does not contain application/json.", response);
-                }
+                throw new ClientResultException("Content-Type does not contain application/json.", response);
             }
 
             string jsonString = response.Content.ToString();
@@ -228,36 +207,43 @@ namespace Microsoft.AI.ChatProtocol
         /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
         /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
         /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
-        public async Task<ClientResult<ChatCompletion>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
+        public async Task<StreamingClientResult<StreamingChatUpdate>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
             requestOptions ??= new RequestOptions();
 
             chatCompletionOptions.Stream = true;
 
-            using PipelineMessage pipelineMessage = this.CreatePipelineMessage(chatCompletionOptions, requestOptions);
+            /*using*/
+            PipelineMessage pipelineMessage = this.CreatePipelineMessage(chatCompletionOptions, requestOptions);
+            pipelineMessage.BufferResponse = false;
 
-            await this.clientPipeline.SendAsync(pipelineMessage).AsTask();
+            await this.clientPipeline.SendAsync(pipelineMessage);
 
-            using PipelineResponse response = pipelineMessage.Response!;
+            /*using*/
+            PipelineResponse response = pipelineMessage.ExtractResponse() !;
 
             if (this.logger != null && this.logger.IsEnabled(LogLevel.Information))
             {
                 this.logger.LogHttpResponse(this.HttpResponseToString(response));
             }
 
+            // Implementation note checking the response: since there is no standard for streaming JSON lines, this method does not check
+            // the value of the HTTP response header Content-Type header, as we do for the non-streaming case.
+            // We do, however, expect to see one of the 4 values mentioned in the above remarks.
             if (response.IsError)
             {
-                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
-                {
-                    return (ClientResult<ChatCompletion>)ClientResult.FromResponse(response);
-                }
-                else
-                {
-                    throw new ClientResultException(response);
-                }
+                throw new ClientResultException(response);
             }
 
-            return ClientResult.FromValue(new ChatCompletion(new List<ChatChoice>()), response);
+            ClientResult genericResult = ClientResult.FromResponse(response);
+
+            return StreamingClientResult<StreamingChatUpdate>.CreateFromResponse(
+                genericResult,
+                (responseForEnumeration) => JsonLinesAsyncEnumerator.EnumerateFromStream(
+                    responseForEnumeration.GetRawResponse().ContentStream,
+                    e => StreamingChatUpdate.DeserializeStreamingChatUpdate(e),
+                    this.logger,
+                    requestOptions.CancellationToken));
         }
 
         private PipelineMessage CreatePipelineMessage(ChatCompletionOptions chatCompletionOptions, RequestOptions requestOptions)

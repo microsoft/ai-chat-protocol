@@ -41,7 +41,7 @@ namespace Microsoft.AI.ChatProtocol
 
             foreach (ChatChoice chatChoice in this.Choices)
             {
-                output += $"\n{chatChoice}";
+                output += $"\n\t{chatChoice}";
             }
 
             return output;

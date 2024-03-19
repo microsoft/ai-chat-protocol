@@ -71,7 +71,7 @@ namespace Microsoft.AI.ChatProtocol
 
             foreach (ChatMessage chatMessage in this.Messages)
             {
-                output += $"\n{chatMessage}";
+                output += $"\n\t{chatMessage}";
             }
 
             return output;

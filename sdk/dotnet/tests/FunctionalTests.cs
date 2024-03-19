@@ -6,6 +6,7 @@ namespace Microsoft.AI.ChatProtocol.Test
     using System.ClientModel;
     using System.ClientModel.Primitives;
     using System.Diagnostics;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -14,6 +15,7 @@ namespace Microsoft.AI.ChatProtocol.Test
     [TestClass]
     public class FunctionalTests
     {
+        private readonly string label = "[Test]"; // All console printouts will be prefixed with this label.
         private string endpoint = string.Empty;
         private string? httpRequestHeaderName = null;
         private string? httpRequestHeaderValue = null;
@@ -50,25 +52,22 @@ namespace Microsoft.AI.ChatProtocol.Test
                 // new ChatMessage(ChatRole.Assistant, "Hello, how can I help you?"),
                     new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
                 },
-                sessionState: "\"12345\"",
-                context: "\"67890\"");
+                sessionState: null,
+                context: null);
 
-                // context: "67890"); // why doesn't this work?
-                // context: "{\"key1\":\"value1\",\"key2\":\"value2\"}"); // why doesn't this work?
-                // context: "{\"element1\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"element2\":\"value3\"}"); // Why doesn't this work?
-            Console.WriteLine(chatCompletionOptions);
+            Console.WriteLine($"{this.label} {chatCompletionOptions}");
 
             ClientResult<ChatCompletion> clientResult = client.GetChatCompletion(chatCompletionOptions);
 
             this.PrintResponse(clientResult.GetRawResponse());
 
-            Console.WriteLine(clientResult.Value);
+            Console.WriteLine($"{this.label} {clientResult.Value}");
 
             Assert.IsFalse(clientResult.GetRawResponse().IsError);
             Assert.AreEqual(200, clientResult.GetRawResponse().Status);
             Assert.AreEqual(1, clientResult.Value.Choices.Count);
             Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
-            Assert.AreEqual(FinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
+            Assert.AreEqual(ChatFinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
             Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
             Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("5280") || clientResult.Value.Choices[0].Message.Content.Contains("5,280"));
 
@@ -81,13 +80,13 @@ namespace Microsoft.AI.ChatProtocol.Test
                 }));
 
             this.PrintResponse(clientResult.GetRawResponse());
-            Console.WriteLine(clientResult.Value);
+            Console.WriteLine($"{this.label} {clientResult.Value}");
 
             Assert.IsFalse(clientResult.GetRawResponse().IsError);
             Assert.AreEqual(200, clientResult.GetRawResponse().Status);
             Assert.AreEqual(1, clientResult.Value.Choices.Count);
             Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
-            Assert.AreEqual(FinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
+            Assert.AreEqual(ChatFinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
             Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
             Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("3280") || clientResult.Value.Choices[0].Message.Content.Contains("3,280"));
         }
@@ -127,30 +126,32 @@ namespace Microsoft.AI.ChatProtocol.Test
             stopwatch.Start();
             while (!task.IsCompleted)
             {
-                Console.WriteLine($"Waiting for task completion ({stopwatch.ElapsedMilliseconds} ms) ...");
-                Thread.Sleep(100);
+                Console.WriteLine($"{this.label} Waiting for task completion ({stopwatch.ElapsedMilliseconds} ms) ...");
+                Thread.Sleep(50);
             }
 
-            Console.WriteLine($"Done! ({stopwatch.ElapsedMilliseconds} ms)");
+            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds} ms)");
             stopwatch.Stop();
 
             Assert.IsFalse(task.Result.GetRawResponse().IsError);
             Assert.AreEqual(200, task.Result.GetRawResponse().Status);
+
             ChatCompletion chatCompletion = task.Result.Value;
-            Console.WriteLine(chatCompletion);
+            Console.WriteLine($"{this.label} {chatCompletion}");
+
             Assert.AreEqual(1, chatCompletion.Choices.Count);
             Assert.AreEqual(0, chatCompletion.Choices[0].Index);
-            Assert.AreEqual(FinishReason.Stopped, chatCompletion.Choices[0].FinishReason);
+            Assert.AreEqual(ChatFinishReason.Stopped, chatCompletion.Choices[0].FinishReason);
             Assert.AreEqual(ChatRole.Assistant, chatCompletion.Choices[0].Message.Role);
             Assert.IsTrue(chatCompletion.Choices[0].Message.Content.Contains("5280") || chatCompletion.Choices[0].Message.Content.Contains("5,280"));
         }
 
         /// <summary>
         /// Test live chat completion (streaming, sync) against a real endpoint.
-        /// TODO: Update this test once the SDK supports streaming.
         /// </summary>
+        /// <returns>A Task.</returns>
         [TestMethod]
-        public void TestGetChatCompletionStreaming()
+        public async Task TestGetChatCompletionStreaming()
         {
             this.ReadEnvironmentVariables();
 
@@ -161,38 +162,89 @@ namespace Microsoft.AI.ChatProtocol.Test
             });
 
             var options = new ChatProtocolClientOptions(null, loggerFactory);
-
             var client = new ChatProtocolClient(new Uri(this.endpoint), options);
-
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
                 {
                 // new ChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
                 // new ChatMessage(ChatRole.Assistant, "Hello, how can I help you?"),
-                    new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
+                    new ChatMessage(ChatRole.User, "Give me three reasons to regularly exercise."),
                 },
-                sessionState: "\"12345\"",
-                context: "\"67890\"");
+                sessionState: null,
+                context: null);
 
-            // context: "67890"); // why doesn't this work?
-            // context: "{\"key1\":\"value1\",\"key2\":\"value2\"}"); // why doesn't this work?
-            // context: "{\"element1\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"element2\":\"value3\"}"); // Why doesn't this work?
-            Console.WriteLine(chatCompletionOptions);
+            Console.WriteLine($"{this.label} {chatCompletionOptions}");
 
-            ClientResult<ChatCompletion> clientResult = client.GetChatCompletionStreaming(chatCompletionOptions);
-/*
-            this.PrintResponse(clientResult.GetRawResponse());
+            StreamingClientResult<StreamingChatUpdate> streamingClientResult = client.GetChatCompletionStreaming(chatCompletionOptions);
 
-            Console.WriteLine(clientResult.Value);
+            this.PrintResponseStatusAndHeaders(streamingClientResult.GetRawResponse());
+            Assert.IsFalse(streamingClientResult.GetRawResponse().IsError);
+            Assert.AreEqual(200, streamingClientResult.GetRawResponse().Status);
 
-            Assert.IsFalse(clientResult.GetRawResponse().IsError);
-            Assert.AreEqual(200, clientResult.GetRawResponse().Status);
-            Assert.AreEqual(1, clientResult.Value.Choices.Count);
-            Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
-            Assert.AreEqual(FinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
-            Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
-            Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("5280") || clientResult.Value.Choices[0].Message.Content.Contains("5,280"));
-*/
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            await foreach (StreamingChatUpdate chatUpdate in streamingClientResult)
+            {
+                Console.WriteLine($"{this.label}[{stopwatch.ElapsedMilliseconds}ms] {chatUpdate}");
+                Assert.AreEqual(0, chatUpdate.ChoiceIndex);
+            }
+
+            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds} ms)");
+            stopwatch.Stop();
+        }
+
+        /// <summary>
+        /// Test live chat completion (streaming, async) against a real endpoint.
+        /// </summary>
+        /// <returns>A Task.</returns>
+        [TestMethod]
+        public async Task TestGetChatCompletionStreamingAsync()
+        {
+            this.ReadEnvironmentVariables();
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+
+            var options = new ChatProtocolClientOptions(null, loggerFactory);
+            var client = new ChatProtocolClient(new Uri(this.endpoint), options);
+            var chatCompletionOptions = new ChatCompletionOptions(
+                messages: new[]
+                {
+                // new ChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
+                // new ChatMessage(ChatRole.Assistant, "Hello, how can I help you?"),
+                    new ChatMessage(ChatRole.User, "Give me three reasons to regularly exercise."),
+                },
+                sessionState: null,
+                context: null);
+
+            Console.WriteLine($"{this.label} {chatCompletionOptions}");
+
+            Task<StreamingClientResult<StreamingChatUpdate>> task = client.GetChatCompletionStreamingAsync(chatCompletionOptions);
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            while (!task.IsCompleted)
+            {
+                Console.WriteLine($"{this.label} Waiting for task completion ({stopwatch.ElapsedMilliseconds}ms) ...");
+                Thread.Sleep(50);
+            }
+
+            var streamingClientResult = task.Result;
+            this.PrintResponseStatusAndHeaders(streamingClientResult.GetRawResponse());
+            Assert.IsFalse(streamingClientResult.GetRawResponse().IsError);
+            Assert.AreEqual(200, streamingClientResult.GetRawResponse().Status);
+
+            await foreach (StreamingChatUpdate chatUpdate in streamingClientResult)
+            {
+                Console.WriteLine($"{this.label}[{stopwatch.ElapsedMilliseconds}ms] {chatUpdate}");
+                Assert.AreEqual(0, chatUpdate.ChoiceIndex);
+            }
+
+            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds} ms)");
+            stopwatch.Stop();
         }
 
         /// <summary>
@@ -215,14 +267,19 @@ namespace Microsoft.AI.ChatProtocol.Test
 
         private void PrintResponse(PipelineResponse response)
         {
-            Console.WriteLine($"Response status: {response.ReasonPhrase} ({response.Status}).");
-            Console.WriteLine("Response headers:");
+            this.PrintResponseStatusAndHeaders(response);
+
+            Console.WriteLine($"{this.label} Response body: {response.Content}");
+        }
+
+        private void PrintResponseStatusAndHeaders(PipelineResponse response)
+        {
+            Console.WriteLine($"{this.label} Response status: {response.ReasonPhrase} ({response.Status}).");
+            Console.WriteLine($"{this.label} Response headers:");
             foreach (KeyValuePair<string, string> header in response.Headers)
             {
-                Console.WriteLine($"\t{header.Key} : {header.Value}");
+                Console.WriteLine($"{this.label}\t{header.Key} : {header.Value}");
             }
-
-            Console.WriteLine($"Response body: {response.Content}");
         }
     }
 }

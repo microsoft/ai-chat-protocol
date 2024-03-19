@@ -1,16 +1,19 @@
 # List of work items
 
+## Contacts
+
+- For anything related to .NET System.ClientModel (SCM) contact Anne Loomis Thompson.
+
 ## SDK
 
-- Should I implement the [NoThrow](https://learn.microsoft.com/dotnet/api/system.clientmodel.primitives.clienterrorbehaviors?view=azure-dotnet-preview) option of RequestOptions ?
+- Should we support requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow? (see [here](https://learn.microsoft.com/dotnet/api/system.clientmodel.primitives.clienterrorbehaviors?view=azure-dotnet-preview)). Does that mean the operator method never throws, or does it mean it does not throw if the HTTP response code is not 2xx?
 - Should I use the serialization/deserialization provided with System.ClientModel?
-  (see https://github.com/Azure/azure-sdk-for-net/blob/863cec65455e1f54fa9d3131c779d1f1c6072174/sdk/core/System.ClientModel/README.md) - Add unit-tests to test invalid JSON parsing
-- Add support for JSON-ND streaming
+  (see https://github.com/Azure/azure-sdk-for-net/blob/863cec65455e1f54fa9d3131c779d1f1c6072174/sdk/core/System.ClientModel/README.md).
+- Support `session_state` and `context` fields. Update tests.
 - Use class names that are different than AOAI SDK
 - Change name space (to Microsoft.AI.Chat instead of Microsoft.AI.ChatProtocol?)
 - Do we need the Arguments.cs class?
-- Expose HTTP request/response details via APIs. Should I expose HttpResponseMessage to the caller? When I updated the test app to get chatCompletion.Response.RequestMessage?.Content?.ReadAsStringAsync().Result I got an exception saying the Content was already disposed. Should I just expose response status code, response headers and raw JSON as separate properties?
-- Why can't I send a full JSON string as the "context" (see commented out lines in test TestGetChatCompletion
+- How do I expose HTTP request details via APIs? (this is easily done in Java). Should I expose HttpResponseMessage to the caller? When I updated the test app to get chatCompletion.Response.RequestMessage?.Content?.ReadAsStringAsync().Result I got an exception saying the Content was already disposed. Should I just expose response status code, response headers and raw JSON as separate properties?
 
 ## Unit testing
 
@@ -26,7 +29,6 @@
 
 ## Sample code
 
-- See TODOs in code
 
 ## Ref docs
 
