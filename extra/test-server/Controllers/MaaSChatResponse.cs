@@ -26,7 +26,7 @@ internal class MaaSChatResponseBaseClass
         _listener = AzureEventSourceListener.CreateConsoleLogger(EventLevel.Verbose);
     }
 
-    internal JObject BuildRequestBody()
+    internal JObject BuildRequestBody(bool stream)
     {
         // Get system/user/assistant messages from the client, and build the corresponding
         // message to the backend service
@@ -42,7 +42,7 @@ internal class MaaSChatResponseBaseClass
 
         JObject requestBody = new JObject(
             new JProperty("messages", messages),
-            new JProperty("stream", _options.Stream)
+            new JProperty("stream", stream)
         );
 
         return requestBody;
@@ -74,7 +74,7 @@ internal class MaaSChatResponseBaseClass
 
 internal class MaaSChatResponse: MaaSChatResponseBaseClass, IActionResult
 {
-    internal MaaSChatResponse(HttpClient httpClient, ChatProtocolCompletionOptions options) 
+    internal MaaSChatResponse(HttpClient httpClient, ChatProtocolCompletionOptions options)
         : base(httpClient, options)
     {
     }
@@ -82,7 +82,7 @@ internal class MaaSChatResponse: MaaSChatResponseBaseClass, IActionResult
     public async Task ExecuteResultAsync(ActionContext context)
     {
         // Example: "{\"input_data\":{\"input_string\":[{\"role\":\"user\",\"content\":\"how many feet in a mile?\"}]}}";
-        string requestBody = BuildRequestBody().ToString();
+        string requestBody = BuildRequestBody(false).ToString();
 
         var content = new StringContent(requestBody);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -136,7 +136,7 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
     public async Task ExecuteResultAsync(ActionContext context)
     {
         // For example: {\"messages\": [{\"role\":\"system\",\"content\":\"You are an AI assistant that helps people find information.\"},{\"role\":\"user\",\"content\":\"Give me ten reasons to regularly exercise.\"}],\"stream\": true}
-        string requestBody = BuildRequestBody().ToString();
+        string requestBody = BuildRequestBody(true).ToString();
 
         var content = new StringContent(requestBody);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
