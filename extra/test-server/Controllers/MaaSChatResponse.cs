@@ -221,8 +221,5 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
             // Always dispose the stream immediately once enumeration is complete for any reason
             streamReader.Dispose();
         }
-
-        // TODO: Chat protocol supports JSONL response. We don't end with a DONE string ("data: [DONE]" is how you end a SSE payload, not JSONL)
-        await httpResponse.WriteAsync("[DONE]\n");
     }
 }
