@@ -25,6 +25,6 @@
     "typescript": "^5.2.2",
     "vite": "^5.1.6",
     "@fluentui/react-components": "9.46.8",
-    "@microsoft/ai-chat-protocol": "file:../../sdk/js/microsoft-ai-chat-protocol-0.1.0-alpha.1.tgz"
+    "@microsoft/ai-chat-protocol": "file:../../../sdk/js/microsoft-ai-chat-protocol-0.1.0-alpha.1.tgz"
   }
 }
