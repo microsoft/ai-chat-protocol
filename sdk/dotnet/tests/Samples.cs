@@ -36,7 +36,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                     new ChatMessage(ChatRole.User, question),
                 }));
 
-            Console.WriteLine($" Answer: {result.Value.Choices[0].Message.Content}");
+            Console.WriteLine($" Answer: {result.Value.Message.Content}");
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             Console.WriteLine($" Task completed ({stopwatch.ElapsedMilliseconds}ms)");
             stopwatch.Stop();
 
-            Console.WriteLine($" Answer: {task.Result.Value.Choices[0].Message.Content}");
+            Console.WriteLine($" Answer: {task.Result.Value.Message.Content}");
         }
 
         /// <summary>
@@ -89,21 +89,21 @@ namespace Microsoft.AI.ChatProtocol.Test
         {
             string question = "Give me three good reasons why I should regularly exercise.";
 
-            string endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT")
+            string endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_STREAMING_ENDPOINT")
                 ?? throw new Exception("Missing environment variable");
 
             ChatProtocolClient client = new ChatProtocolClient(new Uri(endpoint));
 
             Console.WriteLine($" Question: {question}");
 
-            StreamingClientResult<StreamingChatUpdate> result = client.GetChatCompletionStreaming(new ChatCompletionOptions(
+            StreamingClientResult<ChatCompletionUpdate> result = client.GetChatCompletionStreaming(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new ChatMessage(ChatRole.User, question),
                 }));
 
             string answer = string.Empty;
-            await foreach (StreamingChatUpdate chatUpdate in result)
+            await foreach (ChatCompletionUpdate chatUpdate in result)
             {
                 answer += chatUpdate.ContentUpdate;
                 Console.Write($"\rAnswer: {answer}");
@@ -122,14 +122,14 @@ namespace Microsoft.AI.ChatProtocol.Test
         {
             string question = "Give me three good reasons why I should regularly exercise.";
 
-            string endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT")
+            string endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_STREAMING_ENDPOINT")
                 ?? throw new Exception("Missing environment variable");
 
             ChatProtocolClient client = new ChatProtocolClient(new Uri(endpoint));
 
             Console.WriteLine($" Question: {question}");
 
-            Task<StreamingClientResult<StreamingChatUpdate>> task = client.GetChatCompletionStreamingAsync(new ChatCompletionOptions(
+            Task<StreamingClientResult<ChatCompletionUpdate>> task = client.GetChatCompletionStreamingAsync(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new ChatMessage(ChatRole.User, question),
@@ -141,7 +141,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             }
 
             string answer = string.Empty;
-            await foreach (StreamingChatUpdate chatUpdate in task.Result)
+            await foreach (ChatCompletionUpdate chatUpdate in task.Result)
             {
                 answer += chatUpdate.ContentUpdate;
                 Console.Write($"\rAnswer: {answer}");

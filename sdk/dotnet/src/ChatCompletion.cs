@@ -5,70 +5,88 @@ namespace Microsoft.AI.ChatProtocol
 {
     using System.Text.Json;
 
-    /// <summary> Representation of the response to a chat completion request. </summary>
+    /// <summary> The representation of a single generated completion. </summary>
     public class ChatCompletion
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatCompletion"/> class. </summary>
-        /// <param name="choices"> The collection of generated completions. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="choices"/> is null. </exception>
-        internal ChatCompletion(IEnumerable<ChatChoice> choices)
+        /// Initializes a new instance of the <see cref="ChatCompletion"/> class.
+        /// </summary>
+        /// <param name="message"> The chat message for a given chat completion. </param>
+        /// <param name="finishReason"> The reason this chat completion completed its generation. </param>
+        /// <param name="sessionState"> The state of the conversation session. </param>
+        /// <param name="context"> Additional chat context. </param>
+        internal ChatCompletion(ChatMessage message, ChatFinishReason finishReason, string? sessionState = null, string? context = null)
         {
-            if (choices is null)
-            {
-                throw new ArgumentNullException(nameof(choices));
-            }
-
-            this.Choices = choices.ToList();
+            this.Message = message;
+            this.SessionState = sessionState;
+            this.Context = context;
+            this.FinishReason = finishReason;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatCompletion"/> class. </summary>
-        /// <param name="choices"> The collection of generated completions. </param>
-        internal ChatCompletion(IReadOnlyList<ChatChoice> choices)
-        {
-            this.Choices = choices;
-        }
+        /// Gets the chat message for a given chat completion.
+        /// </summary>
+        public ChatMessage Message { get; }
 
-        /// <summary> Gets the collection of generated completions. </summary>
-        public IReadOnlyList<ChatChoice> Choices { get; }
+        /// <summary>
+        /// Gets the reason this chat completion completed its generation.
+        /// </summary>
+        public ChatFinishReason FinishReason { get; }
 
-        /// <summary> A string representation of the ChatCompletion object for console or logging printout. </summary>
-        /// <returns> A string representation of the ChatCompletion object. </returns>
+        /// <summary>
+        /// Gets the state of the conversation session.
+        /// </summary>
+        public string? SessionState { get; } = null;
+
+        /// <summary>
+        /// Gets additional chat context.
+        /// </summary>
+        public string? Context { get; } = null;
+
+        /// <summary>
+        /// A string representation of the <see cref="ChatCompletion"/> object for console or logging printout.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the <see cref="ChatCompletion"/> object.
+        /// </returns>
         public override string ToString()
         {
-            string output = $"ChatCompletion: {this.Choices.Count} Choices";
-
-            foreach (ChatChoice chatChoice in this.Choices)
-            {
-                output += $"\n\t{chatChoice}";
-            }
-
-            return output;
+            return $"ChatCompletion(Message: {this.Message}, FinishReason: {this.FinishReason}, SessionState: {this.SessionState}, Context: {this.Context})";
         }
 
-        /// <summary> Returns a new ChatCompletion object representing the data read from teh input JSON element. </summary>
+        /// <summary>
+        /// Returns a new ChatCompletion object representing the data read from the input JSON element.
+        /// </summary>
         /// <param name="element"> The JSON element to deserialize. </param>
         /// <returns> The deserialized ChatCompletion object. </returns>
         internal static ChatCompletion DeserializeChatCompletion(JsonElement element)
         {
             if (element.ValueKind == JsonValueKind.Null)
             {
-                throw new Exception("Null value for JSON element representing service response");
+                throw new Exception("Null JSON element in `choices`");
             }
 
-            if (!element.TryGetProperty("choices", out JsonElement jsonChoices))
-            {
-                throw new Exception("Missing `choices` element in JSON");
-            }
+            // Mandatory
+            ChatMessage message = element.TryGetProperty("message", out JsonElement jsonMessage)
+                ? ChatMessage.DeserializeChatMessage(jsonMessage)
+                : throw new Exception("Missing JSON `message` element");
 
-            List<ChatChoice> choices = new List<ChatChoice>();
-            foreach (JsonElement item in jsonChoices.EnumerateArray())
-            {
-                choices.Add(ChatChoice.DeserializeChatChoice(item));
-            }
+            // Mandatory
+            ChatFinishReason finishReason = element.TryGetProperty("finish_reason", out JsonElement jsonFinishReason)
+                ? new ChatFinishReason(jsonFinishReason.GetString())
+                : throw new Exception("Missing JSON `finish_reason` element");
 
-            return new ChatCompletion(choices);
+            // Optional
+            string? sessionState = element.TryGetProperty("session_state", out JsonElement jsonSessionState) ?
+                ((jsonSessionState.ValueKind == JsonValueKind.Null) ? null : jsonSessionState.GetRawText())
+                : null;
+
+            // Optional
+            string? context = element.TryGetProperty("context", out JsonElement jsonContext) ?
+                ((jsonContext.ValueKind == JsonValueKind.Null) ? null : jsonContext.GetRawText())
+                : null;
+
+            return new ChatCompletion(message, finishReason, sessionState, context);
         }
     }
 }

@@ -66,17 +66,15 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Assert.IsFalse(clientResult.GetRawResponse().IsError);
             Assert.AreEqual(200, clientResult.GetRawResponse().Status);
-            Assert.AreEqual(1, clientResult.Value.Choices.Count);
-            Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
-            Assert.AreEqual(ChatFinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
-            Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
-            Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("5280") || clientResult.Value.Choices[0].Message.Content.Contains("5,280"));
+            Assert.AreEqual(ChatFinishReason.Stopped, clientResult.Value.FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Message.Role);
+            Assert.IsTrue(clientResult.Value.Message.Content.Contains("5280") || clientResult.Value.Message.Content.Contains("5,280"));
 
             clientResult = client.GetChatCompletion(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
-                    new ChatMessage(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Content.Trim()),
+                    new ChatMessage(ChatRole.Assistant, clientResult.Value.Message.Content.Trim()),
                     new ChatMessage(ChatRole.User, "And how many feet in one kilometer?"),
                 }));
 
@@ -85,11 +83,9 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Assert.IsFalse(clientResult.GetRawResponse().IsError);
             Assert.AreEqual(200, clientResult.GetRawResponse().Status);
-            Assert.AreEqual(1, clientResult.Value.Choices.Count);
-            Assert.AreEqual(0, clientResult.Value.Choices[0].Index);
-            Assert.AreEqual(ChatFinishReason.Stopped, clientResult.Value.Choices[0].FinishReason);
-            Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Choices[0].Message.Role);
-            Assert.IsTrue(clientResult.Value.Choices[0].Message.Content.Contains("3280") || clientResult.Value.Choices[0].Message.Content.Contains("3,280"));
+            Assert.AreEqual(ChatFinishReason.Stopped, clientResult.Value.FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Message.Role);
+            Assert.IsTrue(clientResult.Value.Message.Content.Contains("3280") || clientResult.Value.Message.Content.Contains("3,280"));
         }
 
         /// <summary>
@@ -140,11 +136,9 @@ namespace Microsoft.AI.ChatProtocol.Test
             ChatCompletion chatCompletion = task.Result.Value;
             Console.WriteLine($"{this.label} {chatCompletion}");
 
-            Assert.AreEqual(1, chatCompletion.Choices.Count);
-            Assert.AreEqual(0, chatCompletion.Choices[0].Index);
-            Assert.AreEqual(ChatFinishReason.Stopped, chatCompletion.Choices[0].FinishReason);
-            Assert.AreEqual(ChatRole.Assistant, chatCompletion.Choices[0].Message.Role);
-            Assert.IsTrue(chatCompletion.Choices[0].Message.Content.Contains("5280") || chatCompletion.Choices[0].Message.Content.Contains("5,280"));
+            Assert.AreEqual(ChatFinishReason.Stopped, chatCompletion.FinishReason);
+            Assert.AreEqual(ChatRole.Assistant, chatCompletion.Message.Role);
+            Assert.IsTrue(chatCompletion.Message.Content.Contains("5280") || chatCompletion.Message.Content.Contains("5,280"));
         }
 
         /// <summary>
@@ -176,7 +170,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Console.WriteLine($"{this.label} {chatCompletionOptions}");
 
-            StreamingClientResult<StreamingChatUpdate> streamingClientResult = client.GetChatCompletionStreaming(chatCompletionOptions);
+            StreamingClientResult<ChatCompletionUpdate> streamingClientResult = client.GetChatCompletionStreaming(chatCompletionOptions);
 
             this.PrintResponseStatusAndHeaders(streamingClientResult.GetRawResponse());
             Assert.IsFalse(streamingClientResult.GetRawResponse().IsError);
@@ -184,10 +178,9 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            await foreach (StreamingChatUpdate chatUpdate in streamingClientResult)
+            await foreach (ChatCompletionUpdate chatUpdate in streamingClientResult)
             {
                 Console.WriteLine($"{this.label}[{stopwatch.ElapsedMilliseconds}ms] {chatUpdate}");
-                Assert.AreEqual(0, chatUpdate.ChoiceIndex);
             }
 
             Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds} ms)");
@@ -223,7 +216,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Console.WriteLine($"{this.label} {chatCompletionOptions}");
 
-            Task<StreamingClientResult<StreamingChatUpdate>> task = client.GetChatCompletionStreamingAsync(chatCompletionOptions);
+            Task<StreamingClientResult<ChatCompletionUpdate>> task = client.GetChatCompletionStreamingAsync(chatCompletionOptions);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -238,10 +231,9 @@ namespace Microsoft.AI.ChatProtocol.Test
             Assert.IsFalse(streamingClientResult.GetRawResponse().IsError);
             Assert.AreEqual(200, streamingClientResult.GetRawResponse().Status);
 
-            await foreach (StreamingChatUpdate chatUpdate in streamingClientResult)
+            await foreach (ChatCompletionUpdate chatUpdate in streamingClientResult)
             {
                 Console.WriteLine($"{this.label}[{stopwatch.ElapsedMilliseconds}ms] {chatUpdate}");
-                Assert.AreEqual(0, chatUpdate.ChoiceIndex);
             }
 
             Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds} ms)");
