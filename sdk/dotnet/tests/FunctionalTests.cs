@@ -16,7 +16,8 @@ namespace Microsoft.AI.ChatProtocol.Test
     public class FunctionalTests
     {
         private readonly string label = "[Test]"; // All console printouts will be prefixed with this label.
-        private string endpoint = string.Empty;
+        private string chatEndpoint = string.Empty;
+        private string chatStreamingEndpoint = string.Empty;
         private string? httpRequestHeaderName = null;
         private string? httpRequestHeaderValue = null;
 
@@ -43,7 +44,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
 
-            var client = new ChatProtocolClient(new Uri(this.endpoint), options);
+            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), options);
 
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
@@ -114,7 +115,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
 
-            var client = new ChatProtocolClient(new Uri(this.endpoint), options);
+            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), options);
 
             Task<ClientResult<ChatCompletion>> task = client.GetChatCompletionAsync(new ChatCompletionOptions(
                 messages: new[]
@@ -162,7 +163,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             });
 
             var options = new ChatProtocolClientOptions(null, loggerFactory);
-            var client = new ChatProtocolClient(new Uri(this.endpoint), options);
+            var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint), options);
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
                 {
@@ -209,7 +210,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             });
 
             var options = new ChatProtocolClientOptions(null, loggerFactory);
-            var client = new ChatProtocolClient(new Uri(this.endpoint), options);
+            var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint), options);
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
                 {
@@ -252,13 +253,21 @@ namespace Microsoft.AI.ChatProtocol.Test
         /// </summary>
         private void ReadEnvironmentVariables()
         {
-            string? endpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT");
-            if (string.IsNullOrEmpty(endpoint))
+            string? chatEndpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT");
+            if (string.IsNullOrEmpty(chatEndpoint))
             {
                 throw new Exception("Environment variables not defined");
             }
 
-            this.endpoint = endpoint.ToString();
+            this.chatEndpoint = chatEndpoint!;
+
+            string? chatStreamingEndpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_STREAMING_ENDPOINT");
+            if (string.IsNullOrEmpty(chatStreamingEndpoint))
+            {
+                throw new Exception("Environment variables not defined");
+            }
+
+            this.chatStreamingEndpoint = chatStreamingEndpoint!;
 
             // Optional: Set one HTTP header
             this.httpRequestHeaderName = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_HTTP_REQUEST_HEADER_NAME");

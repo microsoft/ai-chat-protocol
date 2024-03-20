@@ -6,6 +6,7 @@
 
 ## SDK
 
+- Should we provide an easy way to set HTTP header for authentication? At the moment you need to use RequestOptions.
 - Should we support requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow? (see [here](https://learn.microsoft.com/dotnet/api/system.clientmodel.primitives.clienterrorbehaviors?view=azure-dotnet-preview)). Does that mean the operator method never throws, or does it mean it does not throw if the HTTP response code is not 2xx?
 - Should I use the serialization/deserialization provided with System.ClientModel?
   (see https://github.com/Azure/azure-sdk-for-net/blob/863cec65455e1f54fa9d3131c779d1f1c6072174/sdk/core/System.ClientModel/README.md).
