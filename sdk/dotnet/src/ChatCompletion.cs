@@ -63,7 +63,7 @@ namespace Microsoft.AI.ChatProtocol
         {
             if (element.ValueKind == JsonValueKind.Null)
             {
-                throw new Exception("Null JSON element in `choices`");
+                throw new ArgumentNullException(nameof(element));
             }
 
             // Mandatory

@@ -19,12 +19,7 @@ namespace Microsoft.AI.ChatProtocol
         {
             if (content is null)
             {
-                throw new ArgumentNullException(content);
-            }
-
-            if (content.Length == 0)
-            {
-                throw new ArgumentException("Value cannot be an empty string.", content);
+                throw new ArgumentNullException(nameof(content));
             }
 
             this.Role = role;
@@ -71,7 +66,7 @@ namespace Microsoft.AI.ChatProtocol
         {
             if (element.ValueKind == JsonValueKind.Null)
             {
-                throw new Exception("Null JSON element in `messages`");
+                throw new ArgumentNullException(nameof(element));
             }
 
             ChatRole role = element.TryGetProperty("role", out JsonElement jsonRole)

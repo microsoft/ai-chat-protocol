@@ -5,8 +5,8 @@ namespace Microsoft.AI.ChatProtocol
 {
     using System.ClientModel;
     using System.ClientModel.Primitives;
+    using System.Collections.Generic;
     using System.Text.Json;
-    using System.Threading;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -71,7 +71,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
         /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
         /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
-        public StreamingClientResult<ChatCompletionUpdate> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
+        public StreamingClientResult<ChatCompletionDelta> GetChatCompletionStreaming(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
             return this.GetChatCompletionStreamingAsync(chatCompletionOptions, requestOptions).GetAwaiter().GetResult();
         }
@@ -101,7 +101,15 @@ namespace Microsoft.AI.ChatProtocol
 
             if (response.IsError)
             {
-                throw new ClientResultException(response);
+                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
+                {
+                    ChatCompletion emptyCompletion = new ChatCompletion(new ChatMessage(string.Empty, string.Empty), string.Empty, null, null);
+                    return ClientResult.FromValue(emptyCompletion, response);
+                }
+                else
+                {
+                    throw new ClientResultException(response);
+                }
             }
 
             if (!response.Headers.TryGetValue("Content-Type", out string? contentType))
@@ -139,7 +147,7 @@ namespace Microsoft.AI.ChatProtocol
         /// <remarks> Call this method if the service supports response streaming using the <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see>
         /// or [JSON Lines](https://jsonlines.org/) response formats. NDJSON is identical to JSON Lines, but also allows blank lines. A streaming service will typically respond with
         /// a `Content-Type` request header `application/json-lines`, `application/jsonl`, `application/x-jsonlines` or `application/x-ndjson`.</remarks>
-        public async Task<StreamingClientResult<ChatCompletionUpdate>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
+        public async Task<StreamingClientResult<ChatCompletionDelta>> GetChatCompletionStreamingAsync(ChatCompletionOptions chatCompletionOptions, RequestOptions? requestOptions = null)
         {
             requestOptions ??= new RequestOptions();
 
@@ -159,23 +167,48 @@ namespace Microsoft.AI.ChatProtocol
                 this.logger.LogHttpResponse(this.HttpResponseToString(response));
             }
 
+            ClientResult genericResult = ClientResult.FromResponse(response);
+
             // Implementation note checking the response: since there is no standard for streaming JSON lines, this method does not check
             // the value of the HTTP response header Content-Type header, as we do for the non-streaming case.
             // We do, however, expect to see one of the 4 values mentioned in the above remarks.
             if (response.IsError)
             {
-                throw new ClientResultException(response);
+                if (requestOptions.ErrorOptions == ClientErrorBehaviors.NoThrow)
+                {
+                    Func<ClientResult, IAsyncEnumerable<ChatCompletionDelta>> asyncEnumerableProcessor = result => EmptyAsyncEnumerable<ChatCompletionDelta>();
+
+                    return StreamingClientResult<ChatCompletionDelta>.CreateFromResponse(
+                        genericResult,
+                        asyncEnumerableProcessor);
+                }
+                else
+                {
+                    throw new ClientResultException(response);
+                }
             }
 
-            ClientResult genericResult = ClientResult.FromResponse(response);
-
-            return StreamingClientResult<ChatCompletionUpdate>.CreateFromResponse(
+            return StreamingClientResult<ChatCompletionDelta>.CreateFromResponse(
                 genericResult,
                 (responseForEnumeration) => JsonLinesAsyncEnumerator.EnumerateFromStream(
                     responseForEnumeration.GetRawResponse().ContentStream,
-                    e => ChatCompletionUpdate.DeserializeStreamingChatUpdate(e),
+                    e => ChatCompletionDelta.DeserializeStreamingChatUpdate(e),
                     this.logger,
                     requestOptions.CancellationToken));
+        }
+
+        /// <summary>
+        /// Internal utility method to return emtpy async enumration.
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerated objects.</typeparam>
+        /// <returns>Any async enumerator of T types.</returns>
+        /// <remarks>
+        /// Defined here to avoid adding dependency on the System.Linq.Async package.
+        /// </remarks>
+        private static async IAsyncEnumerable<T> EmptyAsyncEnumerable<T>()
+        {
+            await Task.CompletedTask;
+            yield break;
         }
 
         private PipelineMessage CreatePipelineMessage(ChatCompletionOptions chatCompletionOptions, RequestOptions requestOptions)

@@ -34,11 +34,11 @@ namespace Microsoft.AI.ChatProtocol.Test
         /// Test deserialization StreamingChatUpdate (JSON string to C# class objects), with some typical (non null) values.
         /// </summary>
         [TestMethod]
-        public void TestChatCompletionUpdateDeserialization()
+        public void TestChatCompletionDeltaDeserialization()
         {
             string jsonString = "{\"delta\":{\"content\":\"this is the update\",\"role\":\"assistant\",\"session_state\":null},\"context\":null,\"session_state\":null,\"finish_reason\":\"stop\"}";
             using JsonDocument document = JsonDocument.Parse(jsonString);
-            ChatCompletionUpdate update = ChatCompletionUpdate.DeserializeStreamingChatUpdate(document.RootElement);
+            ChatCompletionDelta update = ChatCompletionDelta.DeserializeStreamingChatUpdate(document.RootElement);
 
             Assert.AreEqual("stop", update.FinishReason);
             Assert.AreEqual(ChatFinishReason.Stopped, update.FinishReason);
@@ -53,11 +53,11 @@ namespace Microsoft.AI.ChatProtocol.Test
         /// Test deserialization StreamingChatUpdate (JSON string to C# class objects), with mostly null or empty values.
         /// </summary>
         [TestMethod]
-        public void TestChatCompletionUpdateDeserializationWithEmptyAndNullElements()
+        public void TestChatCompletionDeltaDeserializationWithEmptyAndNullElements()
         {
             string jsonString = "{\"delta\":{\"content\":\"\",\"role\":null,\"session_state\":null},\"context\":null,\"session_state\":null,\"finish_reason\":null}";
             using JsonDocument document = JsonDocument.Parse(jsonString);
-            ChatCompletionUpdate update = ChatCompletionUpdate.DeserializeStreamingChatUpdate(document.RootElement);
+            ChatCompletionDelta update = ChatCompletionDelta.DeserializeStreamingChatUpdate(document.RootElement);
 
             Assert.AreEqual(string.Empty, update.ContentUpdate);
             Assert.IsNull(update.FinishReason);

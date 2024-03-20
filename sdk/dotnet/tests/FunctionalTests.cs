@@ -15,7 +15,10 @@ namespace Microsoft.AI.ChatProtocol.Test
     [TestClass]
     public class FunctionalTests
     {
-        private readonly string label = "[Test]"; // All console printouts will be prefixed with this label.
+        // All console printouts from this test code will be prefixed with this label, to
+        // distinguish them from client library logging directed to console output.
+        private readonly string label = "[Test]";
+
         private string chatEndpoint = string.Empty;
         private string chatStreamingEndpoint = string.Empty;
 
@@ -80,6 +83,62 @@ namespace Microsoft.AI.ChatProtocol.Test
             Assert.AreEqual(ChatFinishReason.Stopped, clientResult.Value.FinishReason);
             Assert.AreEqual(ChatRole.Assistant, clientResult.Value.Message.Role);
             Assert.IsTrue(clientResult.Value.Message.Content.Contains("3280") || clientResult.Value.Message.Content.Contains("3,280"));
+        }
+
+        /// <summary>
+        /// Test live chat completion (non-streaming, sync) against a real endpoint, with expected service error
+        /// response.
+        /// </summary>
+        [TestMethod]
+        public void TestGetChatCompletionWithServiceError()
+        {
+            this.ReadEnvironmentVariables();
+
+            var client = new ChatProtocolClient(new Uri(this.chatEndpoint));
+
+            var chatCompletionOptions = new ChatCompletionOptions(
+                messages: new[]
+                {
+                    // Use un-supported role to trigger error response from the service
+                    new ChatMessage("not-a-valid-role", "anything here..."),
+                },
+                sessionState: null,
+                context: null);
+
+            Console.WriteLine($"{this.label} {chatCompletionOptions}");
+
+            ClientResultException e = Assert.ThrowsException<ClientResultException>(() => client.GetChatCompletion(chatCompletionOptions));
+
+            // Assert response contains error details
+            PipelineResponse? pipelineResponse = e.GetRawResponse();
+            Assert.IsNotNull(pipelineResponse);
+            this.PrintResponseStatusAndHeaders(pipelineResponse);
+            Assert.IsTrue(pipelineResponse.IsError);
+            Assert.AreEqual(500, pipelineResponse.Status);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(pipelineResponse.Content.ToString()));
+            Assert.IsTrue(pipelineResponse.Content.ToString().Contains("The request failed with status code: FailedDependency"));
+
+            // Repeat the call, but now configure the request to not throw on error from the service
+            ClientResult<ChatCompletion> clientResult = client.GetChatCompletion(
+                chatCompletionOptions,
+                new RequestOptions() { ErrorOptions = ClientErrorBehaviors.NoThrow });
+
+            // Assert response contains error details
+            pipelineResponse = clientResult.GetRawResponse();
+            Assert.IsNotNull(pipelineResponse);
+            this.PrintResponseStatusAndHeaders(pipelineResponse);
+            Assert.IsTrue(pipelineResponse.IsError);
+            Assert.AreEqual(500, pipelineResponse.Status);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(pipelineResponse.Content.ToString()));
+            Assert.IsTrue(pipelineResponse.Content.ToString().Contains("The request failed with status code: FailedDependency"));
+
+            // Assert empty ChatCompletion object returned on error
+            ChatCompletion chatCompletion = clientResult.Value;
+            Assert.IsNull(chatCompletion.Context);
+            Assert.IsNull(chatCompletion.SessionState);
+            Assert.AreEqual(string.Empty, chatCompletion.FinishReason);
+            Assert.AreEqual(string.Empty, chatCompletion.Message.Content);
+            Assert.AreEqual(string.Empty, chatCompletion.Message.Role);
         }
 
         /// <summary>
@@ -174,7 +233,7 @@ namespace Microsoft.AI.ChatProtocol.Test
         /// <summary>
         /// Test live chat completion (streaming, sync) against a real endpoint.
         /// </summary>
-        /// <returns>A Task.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [TestMethod]
         public async Task TestGetChatCompletionStreaming()
         {
@@ -200,7 +259,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Console.WriteLine($"{this.label} {chatCompletionOptions}");
 
-            StreamingClientResult<ChatCompletionUpdate> streamingClientResult = client.GetChatCompletionStreaming(chatCompletionOptions);
+            StreamingClientResult<ChatCompletionDelta> streamingClientResult = client.GetChatCompletionStreaming(chatCompletionOptions);
 
             this.PrintResponseStatusAndHeaders(streamingClientResult.GetRawResponse());
             Assert.IsFalse(streamingClientResult.GetRawResponse().IsError);
@@ -208,13 +267,64 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            await foreach (ChatCompletionUpdate chatUpdate in streamingClientResult)
+            await foreach (ChatCompletionDelta chatUpdate in streamingClientResult)
             {
                 Console.WriteLine($"{this.label}[{stopwatch.ElapsedMilliseconds}ms] {chatUpdate}");
             }
 
             Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds}ms)");
             stopwatch.Stop();
+        }
+
+        /// <summary>
+        /// Test live chat completion (streaming, sync) against a real endpoint, with expected
+        /// error response from the service.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [TestMethod]
+        public async Task TestGetChatCompletionStreamingWithServiceError()
+        {
+            this.ReadEnvironmentVariables();
+            var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint));
+            var chatCompletionOptions = new ChatCompletionOptions(
+                messages: new[]
+                {
+                    // Use un-supported role to trigger error response from the service
+                    new ChatMessage("not-a-valid-role", "anything here..."),
+                },
+                sessionState: null,
+                context: null);
+
+            Console.WriteLine($"{this.label} {chatCompletionOptions}");
+
+            ClientResultException e = Assert.ThrowsException<ClientResultException>(() => client.GetChatCompletionStreaming(chatCompletionOptions));
+
+            // Assert response contains error details
+            PipelineResponse? pipelineResponse = e.GetRawResponse();
+            Assert.IsNotNull(pipelineResponse);
+            this.PrintResponseStatusAndHeaders(pipelineResponse);
+            Assert.IsTrue(pipelineResponse.IsError);
+            Assert.AreEqual(500, pipelineResponse.Status);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(pipelineResponse.Content.ToString()));
+            Assert.IsTrue(pipelineResponse.Content.ToString().Contains("The request failed with status code: FailedDependency"));
+
+            // Repeat the call, but now configure the request to not throw on error from the service
+            StreamingClientResult<ChatCompletionDelta> streamingClientResult = client.GetChatCompletionStreaming(
+                chatCompletionOptions,
+                new RequestOptions() { ErrorOptions = ClientErrorBehaviors.NoThrow });
+
+            // Assert response contains error details
+            pipelineResponse = streamingClientResult.GetRawResponse();
+            Assert.IsNotNull(pipelineResponse);
+            this.PrintResponseStatusAndHeaders(pipelineResponse);
+            Assert.IsTrue(pipelineResponse.IsError);
+            Assert.AreEqual(500, pipelineResponse.Status);
+
+            // If you try to async enumerate the list of ChatCompletionDelta objects, you will get none
+            await foreach (ChatCompletionDelta chatUpdate in streamingClientResult)
+            {
+                Assert.IsTrue(false);
+            }
         }
 
         /// <summary>
@@ -246,7 +356,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Console.WriteLine($"{this.label} {chatCompletionOptions}");
 
-            Task<StreamingClientResult<ChatCompletionUpdate>> task = client.GetChatCompletionStreamingAsync(chatCompletionOptions);
+            Task<StreamingClientResult<ChatCompletionDelta>> task = client.GetChatCompletionStreamingAsync(chatCompletionOptions);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -261,7 +371,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             Assert.IsFalse(streamingClientResult.GetRawResponse().IsError);
             Assert.AreEqual(200, streamingClientResult.GetRawResponse().Status);
 
-            await foreach (ChatCompletionUpdate chatUpdate in streamingClientResult)
+            await foreach (ChatCompletionDelta chatUpdate in streamingClientResult)
             {
                 Console.WriteLine($"{this.label}[{stopwatch.ElapsedMilliseconds}ms] {chatUpdate}");
             }
@@ -278,7 +388,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             string? chatEndpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_ENDPOINT");
             if (string.IsNullOrEmpty(chatEndpoint))
             {
-                throw new Exception("Environment variables not defined");
+                throw new Exception("Environment variable not defined");
             }
 
             this.chatEndpoint = chatEndpoint!;
@@ -286,7 +396,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             string? chatStreamingEndpoint = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_STREAMING_ENDPOINT");
             if (string.IsNullOrEmpty(chatStreamingEndpoint))
             {
-                throw new Exception("Environment variables not defined");
+                throw new Exception("Environment variable not defined");
             }
 
             this.chatStreamingEndpoint = chatStreamingEndpoint!;

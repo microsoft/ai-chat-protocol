@@ -9,17 +9,17 @@ namespace Microsoft.AI.ChatProtocol
     /// <summary>
     /// Represents an incremental item of new data in a streaming response to a chat completion request.
     /// </summary>
-    public partial class ChatCompletionUpdate
+    public partial class ChatCompletionDelta
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatCompletionUpdate"/> class.
+        /// Initializes a new instance of the <see cref="ChatCompletionDelta"/> class.
         /// </summary>
         /// <param name="role">The <see cref="ChatRole"/> associated with this update.</param>
         /// <param name="contentUpdate">The content fragment associated with this update.</param>
         /// <param name="finishReason">The <see cref="ChatFinishReason"/> associated with this update.</param>
         /// <param name="sessionState"> The state of the conversation session. </param>
         /// <param name="context"> Additional chat context. </param>
-        internal ChatCompletionUpdate(
+        internal ChatCompletionDelta(
             ChatRole? role = null,
             string? contentUpdate = null,
             ChatFinishReason? finishReason = null,
@@ -71,10 +71,10 @@ namespace Microsoft.AI.ChatProtocol
         public string? Context { get; } = null;
 
         /// <summary>
-        /// A string representation of the <see cref="ChatCompletionUpdate"/> object for console or logging printout.
+        /// A string representation of the <see cref="ChatCompletionDelta"/> object for console or logging printout.
         /// </summary>
         /// <returns>
-        /// A string representation of the <see cref="ChatCompletionUpdate"/> object.
+        /// A string representation of the <see cref="ChatCompletionDelta"/> object.
         /// </returns>
         public override string ToString()
         {
@@ -82,16 +82,16 @@ namespace Microsoft.AI.ChatProtocol
         }
 
         /// <summary>
-        /// Deserializes a <see cref="ChatCompletionUpdate"/> from a <see cref="JsonElement"/>.
+        /// Deserializes a <see cref="ChatCompletionDelta"/> from a <see cref="JsonElement"/>.
         /// </summary>
         /// <param name="element">The <see cref="JsonElement"/> to deserialize.</param>
-        /// <returns>A <see cref="ChatCompletionUpdate"/> deserialized from the <see cref="JsonElement"/>.</returns>
+        /// <returns>A <see cref="ChatCompletionDelta"/> deserialized from the <see cref="JsonElement"/>.</returns>
         /// <exception cref="ArgumentException">Thrown when the <see cref="JsonElement"/> is null or not in the expected format.</exception>
-        internal static ChatCompletionUpdate DeserializeStreamingChatUpdate(JsonElement element)
+        internal static ChatCompletionDelta DeserializeStreamingChatUpdate(JsonElement element)
         {
             if (element.ValueKind == JsonValueKind.Null)
             {
-                throw new ArgumentException(nameof(element));
+                throw new ArgumentNullException(nameof(element));
             }
 
             ChatRole? role = null;
@@ -175,7 +175,7 @@ namespace Microsoft.AI.ChatProtocol
                 }
             }
 
-            return new ChatCompletionUpdate(role, contentUpdate, finishReason, sessionState, context);
+            return new ChatCompletionDelta(role, contentUpdate, finishReason, sessionState, context);
         }
     }
 }

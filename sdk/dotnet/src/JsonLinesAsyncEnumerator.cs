@@ -9,7 +9,6 @@ namespace Microsoft.AI.ChatProtocol
     using System.Runtime.CompilerServices;
     using System.Text.Json;
     using System.Threading;
-
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -18,16 +17,16 @@ namespace Microsoft.AI.ChatProtocol
     internal static class JsonLinesAsyncEnumerator
     {
         /// <summary>
-        /// Enumerates a stream of JSON lines from the specified stream, deserializing each line into an instance of <see cref="ChatCompletionUpdate"/>.
+        /// Enumerates a stream of JSON lines from the specified stream, deserializing each line into an instance of <see cref="ChatCompletionDelta"/>.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
-        /// <param name="elementDeserializer">The function to use to deserialize each JSON line into an instance of <see cref="ChatCompletionUpdate"/>.</param>
+        /// <param name="elementDeserializer">The function to use to deserialize each JSON line into an instance of <see cref="ChatCompletionDelta"/>.</param>
         /// <param name="logger">The logger to use to log the JSON lines as they are read from the stream.</param>
         /// <param name="cancellationToken">The cancellation token to use to cancel the enumeration.</param>
         /// <returns>An async enumerable that yields the deserialized elements from the stream.</returns>
-        internal static async IAsyncEnumerable<ChatCompletionUpdate> EnumerateFromStream(
+        internal static async IAsyncEnumerable<ChatCompletionDelta> EnumerateFromStream(
             Stream? stream,
-            Func<JsonElement, ChatCompletionUpdate> elementDeserializer,
+            Func<JsonElement, ChatCompletionDelta> elementDeserializer,
             ILogger? logger,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
@@ -58,7 +57,7 @@ namespace Microsoft.AI.ChatProtocol
                     {
                         using JsonDocument sseMessageJson = JsonDocument.Parse(jsonLine);
 
-                        ChatCompletionUpdate update = elementDeserializer.Invoke(sseMessageJson.RootElement);
+                        ChatCompletionDelta update = elementDeserializer.Invoke(sseMessageJson.RootElement);
 
                         if (update.FinishReason == ChatFinishReason.Stopped)
                         {

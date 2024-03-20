@@ -102,14 +102,14 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Console.WriteLine($" Question: {question}");
 
-            StreamingClientResult<ChatCompletionUpdate> result = client.GetChatCompletionStreaming(new ChatCompletionOptions(
+            StreamingClientResult<ChatCompletionDelta> result = client.GetChatCompletionStreaming(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new ChatMessage(ChatRole.User, question),
                 }));
 
             string answer = string.Empty;
-            await foreach (ChatCompletionUpdate chatUpdate in result)
+            await foreach (ChatCompletionDelta chatUpdate in result)
             {
                 answer += chatUpdate.ContentUpdate;
                 Console.Write($"\rAnswer: {answer}");
@@ -135,7 +135,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Console.WriteLine($" Question: {question}");
 
-            Task<StreamingClientResult<ChatCompletionUpdate>> task = client.GetChatCompletionStreamingAsync(new ChatCompletionOptions(
+            Task<StreamingClientResult<ChatCompletionDelta>> task = client.GetChatCompletionStreamingAsync(new ChatCompletionOptions(
                 messages: new[]
                 {
                     new ChatMessage(ChatRole.User, question),
@@ -147,7 +147,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             }
 
             string answer = string.Empty;
-            await foreach (ChatCompletionUpdate chatUpdate in task.Result)
+            await foreach (ChatCompletionDelta chatUpdate in task.Result)
             {
                 answer += chatUpdate.ContentUpdate;
                 Console.Write($"\rAnswer: {answer}");
