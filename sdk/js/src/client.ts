@@ -42,13 +42,11 @@ function isCredential(
 export class AIChatProtocolClient {
   private client: Client;
 
-  constructor(endpoint: string);
-  constructor(endpoint: string, options: AIChatClientOptions);
-  constructor(endpoint: string, credential: TokenCredential | KeyCredential);
+  constructor(endpoint: string, options?: AIChatClientOptions);
   constructor(
     endpoint: string,
     credential: TokenCredential | KeyCredential,
-    options: AIChatClientOptions,
+    options?: AIChatClientOptions,
   );
   constructor(
     endpoint: string,
@@ -62,11 +60,6 @@ export class AIChatProtocolClient {
     }
   }
 
-  getCompletion(messages: AIChatMessage[]): Promise<AIChatCompletion>;
-  getCompletion(
-    messages: AIChatMessage[],
-    options: AIChatCompletionOptions,
-  ): Promise<AIChatCompletion>;
   async getCompletion(
     messages: AIChatMessage[],
     options: AIChatCompletionOptions = {},
@@ -89,13 +82,6 @@ export class AIChatProtocolClient {
     return response.body as AIChatCompletion;
   }
 
-  getStreamedCompletion(
-    messages: AIChatMessage[],
-  ): Promise<AsyncIterable<AIChatCompletionDelta>>;
-  getStreamedCompletion(
-    messages: AIChatMessage[],
-    options: AIChatCompletionOptions,
-  ): Promise<AsyncIterable<AIChatCompletionDelta>>;
   async getStreamedCompletion(
     messages: AIChatMessage[],
     options: AIChatCompletionOptions = {},
