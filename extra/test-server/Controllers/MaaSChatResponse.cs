@@ -153,13 +153,12 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
             throw new Exception($"The request failed with status code: {response.StatusCode}");
         }
 
-        // Proper response to the client
+        // Prepare response to the client
         HttpResponse httpResponse = context.HttpContext.Response;
         httpResponse.StatusCode = (int)HttpStatusCode.OK;
-        httpResponse.ContentType = "text/event-stream";
+        httpResponse.ContentType = "application/x-ndjson";
 
         using var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-        string? role = null;
 
         try
         {
@@ -192,24 +191,16 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
 
                     JObject jObjectResponse = JObject.Parse(value.ToString());
 
-                    if (role == null)
-                    {
-                        role = (string?)jObjectResponse["choices"]?[0]?["delta"]?["role"];
-                    }
-
-                    if (role == null)
-                    {
-                        throw new InvalidDataException();
-                    }
-
                     ChatProtocolCompletionChunk completion = new()
                     {
                         Delta = new ChatProtocolMessageDelta
                         {
                             Content = (string?)jObjectResponse["choices"]?[0]?["delta"]?["content"],
-                            Role = role
+                            Role = (string?)jObjectResponse["choices"]?[0]?["delta"]?["role"]
                         },
-                        FinishReason = (string?)jObjectResponse["choices"]?[0]?["finish_reason"]
+                        FinishReason = (string?)jObjectResponse["choices"]?[0]?["finish_reason"],
+                        Context = null, // TODO ...  jObjectResponse["choices"]?[0]?["context"]
+                        SessionState = null, //TODO ... jObjectResponse["choices"]?[0]?["session_state"]
                     };
 
                     await httpResponse.WriteAsync($"{JsonSerializer.Serialize(completion)}\n", Encoding.UTF8);
