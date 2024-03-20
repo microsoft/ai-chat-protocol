@@ -12,7 +12,4 @@ public struct ChatProtocolMessageDelta
 
     [JsonPropertyName("role")]
     public string? Role { get; set; }
-
-    [JsonPropertyName("session_state")]
-    public BinaryData? SessionState { get; set; }
 }
