@@ -45,19 +45,19 @@ namespace Microsoft.AI.ChatProtocol
         }
 
         /// <summary>
-        /// Gets the collection of context messages associated with this completion request.
+        /// Gets or sets the collection of context messages associated with this completion request.
         /// </summary>
-        public IList<ChatMessage> Messages { get; }
+        public IList<ChatMessage> Messages { get; set; } = new List<ChatMessage>();
 
         /// <summary>
-        /// Gets the state of the conversation session.
+        /// Gets or sets the state of the conversation session.
         /// </summary>
-        public string? SessionState { get; } = null;
+        public string? SessionState { get; set; } = null;
 
         /// <summary>
-        /// Gets additional chat context.
+        /// Gets or sets additional chat context.
         /// </summary>
-        public string? Context { get; } = null;
+        public string? Context { get; set; } = null;
 
         /// <summary>Gets or sets a value indicating whether to request a streaming response ('true') or non-streaming response ('false'). </summary>
         /// <remarks>Enable streaming only if the service supported <see href="https://github.com/ndjson/ndjson-spec">Newline Delimited JSON (NDJSON)</see> response format.</remarks>

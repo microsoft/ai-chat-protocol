@@ -25,6 +25,6 @@ namespace Microsoft.AI.ChatProtocol
         /// <summary>
         /// Gets the optional Logger factor. <see href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging">Logging in C# and .NET</see>.
         /// </summary>
-        public ILoggerFactory? LoggerFactory { get; internal set; }
+        public ILoggerFactory? LoggerFactory { get; set; }
     }
 }
