@@ -13,28 +13,18 @@ export interface AIChatMessage {
   sessionState?: unknown;
 }
 
-export interface AIChatChoice {
-  index: number;
+export interface AIChatCompletion {
   message: AIChatMessage;
   sessionState?: unknown;
   context?: object;
   finishReason: AIChatFinishReason;
 }
 
-export interface AIChatCompletion {
-  choices: AIChatChoice[];
-}
-
-export interface AIChatChoiceDelta {
-  index: number;
+export interface AIChatCompletionDelta {
   delta: AIChatMessage;
   sessionState?: unknown;
   context?: object;
   finishReason: AIChatFinishReason;
-}
-
-export interface AIChatCompletionDelta {
-  choices: AIChatChoiceDelta[];
 }
 
 export interface AIChatClientOptions extends ClientOptions {}

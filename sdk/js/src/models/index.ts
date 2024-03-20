@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 export {
-  AIChatChoice,
-  AIChatChoiceDelta,
   AIChatClientOptions,
   AIChatCompletion,
   AIChatCompletionDelta,

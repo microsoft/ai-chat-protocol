@@ -66,21 +66,20 @@ export default function Chat() {
       const result = await client.getStreamedCompletion([configMessage, ...updatedMessages]);
       const latestMessage: AIChatMessage = { content: "", role: 'assistant' };
       for await (const response of result) {
-        const choice = response.choices[0];
-        if (!choice.delta) {
+        if (!response.delta) {
           continue;
         }
-        if (choice.delta.role) {
-          latestMessage.role = choice.delta.role;
+        if (response.delta.role) {
+          latestMessage.role = response.delta.role;
         }
-        if (choice.delta.content) {
-          latestMessage.content += choice.delta.content;
+        if (response.delta.content) {
+          latestMessage.content += response.delta.content;
           setMessages([...updatedMessages, latestMessage]);
         }
       }
     } else {
       const result = await client.getCompletion([configMessage, ...updatedMessages]);
-      setMessages([...updatedMessages, result.choices[0].message]);
+      setMessages([...updatedMessages, result.message]);
     }
   };
 

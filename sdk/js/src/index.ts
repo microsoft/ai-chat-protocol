@@ -3,8 +3,6 @@
 
 export { AIChatProtocolClient } from "./client.js";
 export {
-  AIChatChoice,
-  AIChatChoiceDelta,
   AIChatClientOptions,
   AIChatCompletion,
   AIChatCompletionDelta,
