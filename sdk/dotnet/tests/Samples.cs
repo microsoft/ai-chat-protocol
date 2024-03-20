@@ -4,6 +4,7 @@
 namespace Microsoft.AI.ChatProtocol.Test
 {
     using System.ClientModel;
+    using System.ClientModel.Primitives;
     using System.Diagnostics;
 
     /// <summary>
@@ -41,7 +42,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
         /// <summary>
         /// Sample showing how submit a question to a chat endpoint,
-        /// - Using default request options
+        /// - Using request options with "Authorization" HTTP request header
         /// - An asynchronous (non-blocking) call
         /// - With non-streaming response.
         /// </summary>
@@ -55,13 +56,18 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             ChatProtocolClient client = new ChatProtocolClient(new Uri(endpoint));
 
+            var requestOptions = new RequestOptions();
+            requestOptions.SetHeader("Authorization", "Bearer <your-key-here>");
+
             Console.WriteLine($" Question: {question}");
 
-            Task<ClientResult<ChatCompletion>> task = client.GetChatCompletionAsync(new ChatCompletionOptions(
-                messages: new[]
-                {
-                        new ChatMessage(ChatRole.User, question),
-                }));
+            Task<ClientResult<ChatCompletion>> task = client.GetChatCompletionAsync(
+                new ChatCompletionOptions(
+                    messages: new[]
+                    {
+                            new ChatMessage(ChatRole.User, question),
+                    }),
+                requestOptions);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();

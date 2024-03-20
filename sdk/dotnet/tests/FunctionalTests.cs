@@ -18,8 +18,6 @@ namespace Microsoft.AI.ChatProtocol.Test
         private readonly string label = "[Test]"; // All console printouts will be prefixed with this label.
         private string chatEndpoint = string.Empty;
         private string chatStreamingEndpoint = string.Empty;
-        private string? httpRequestHeaderName = null;
-        private string? httpRequestHeaderValue = null;
 
         /// <summary>
         /// Test live chat completion (non-streaming, sync) against a real endpoint.
@@ -35,22 +33,18 @@ namespace Microsoft.AI.ChatProtocol.Test
                 builder.SetMinimumLevel(LogLevel.Information);
             });
 
-            Dictionary<string, string> httpHeaders = new Dictionary<string, string> { { "TestHeader1", "TestValue1" }, { "TestHeader2", "TestValue2" } };
-
-            if (!string.IsNullOrEmpty(this.httpRequestHeaderName) && !string.IsNullOrEmpty(this.httpRequestHeaderValue))
-            {
-                httpHeaders.Add(this.httpRequestHeaderName, this.httpRequestHeaderValue);
-            }
-
-            var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
+            var options = new ChatProtocolClientOptions(loggerFactory);
 
             var client = new ChatProtocolClient(new Uri(this.chatEndpoint), options);
+
+            var requestOptions = new RequestOptions();
+            requestOptions.SetHeader("TestHeader1", "TestValue1");
+            requestOptions.SetHeader("TestHeader2", "TestValue2");
 
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
                 {
-                // new ChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
-                // new ChatMessage(ChatRole.Assistant, "Hello, how can I help you?"),
+                    new ChatMessage(ChatRole.System, "You are an AI assistant that helps people find information"),
                     new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
                 },
                 sessionState: null,
@@ -58,7 +52,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             Console.WriteLine($"{this.label} {chatCompletionOptions}");
 
-            ClientResult<ChatCompletion> clientResult = client.GetChatCompletion(chatCompletionOptions);
+            ClientResult<ChatCompletion> clientResult = client.GetChatCompletion(chatCompletionOptions, requestOptions);
 
             this.PrintResponse(clientResult.GetRawResponse());
 
@@ -102,32 +96,27 @@ namespace Microsoft.AI.ChatProtocol.Test
                         builder.SetMinimumLevel(LogLevel.Information);
                     });
 
-            Dictionary<string, string> httpHeaders = new Dictionary<string, string> { { "TestHeader1", "TestValue1" }, { "TestHeader2", "TestValue2" } };
-
-            if (!string.IsNullOrEmpty(this.httpRequestHeaderName) && !string.IsNullOrEmpty(this.httpRequestHeaderValue))
-            {
-                httpHeaders.Add(this.httpRequestHeaderName, this.httpRequestHeaderValue);
-            }
-
-            var options = new ChatProtocolClientOptions(httpHeaders, loggerFactory);
+            var options = new ChatProtocolClientOptions(loggerFactory);
 
             var client = new ChatProtocolClient(new Uri(this.chatEndpoint), options);
 
-            Task<ClientResult<ChatCompletion>> task = client.GetChatCompletionAsync(new ChatCompletionOptions(
-                messages: new[]
-                {
-                    new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
-                }));
+            Task<ClientResult<ChatCompletion>> task = client.GetChatCompletionAsync(
+                new ChatCompletionOptions(
+                    messages: new[]
+                    {
+                        new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
+                    }),
+                new RequestOptions() { CancellationToken = CancellationToken.None });
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             while (!task.IsCompleted)
             {
-                Console.WriteLine($"{this.label} Waiting for task completion ({stopwatch.ElapsedMilliseconds} ms) ...");
+                Console.WriteLine($"{this.label} Waiting for task completion ({stopwatch.ElapsedMilliseconds}ms) ...");
                 Thread.Sleep(50);
             }
 
-            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds} ms)");
+            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds}ms)");
             stopwatch.Stop();
 
             Assert.IsFalse(task.Result.GetRawResponse().IsError);
@@ -139,6 +128,47 @@ namespace Microsoft.AI.ChatProtocol.Test
             Assert.AreEqual(ChatFinishReason.Stopped, chatCompletion.FinishReason);
             Assert.AreEqual(ChatRole.Assistant, chatCompletion.Message.Role);
             Assert.IsTrue(chatCompletion.Message.Content.Contains("5280") || chatCompletion.Message.Content.Contains("5,280"));
+        }
+
+        /// <summary>
+        /// Test live chat completion (non-streaming, async) against a real endpoint, while
+        /// using CancellationToken to cancel the on-going async operation.
+        /// </summary>
+        [TestMethod]
+        public void TestGetChatCompletionAsyncWithCancellationToken()
+        {
+            this.ReadEnvironmentVariables();
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+
+            var options = new ChatProtocolClientOptions(loggerFactory);
+
+            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), options);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            Task<ClientResult<ChatCompletion>> task = client.GetChatCompletionAsync(
+                new ChatCompletionOptions(
+                    messages: new[]
+                    {
+                        new ChatMessage(ChatRole.User, "How many feet are in a mile?"),
+                    }),
+                new RequestOptions() { CancellationToken = cancellationTokenSource.Token });
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            while (!task.IsCompleted)
+            {
+                Thread.Sleep(50);
+                Console.WriteLine($"{this.label} Waiting for task completion ({stopwatch.ElapsedMilliseconds}ms) ...");
+                cancellationTokenSource.Cancel();
+            }
+
+            Assert.IsTrue(task.IsCanceled);
         }
 
         /// <summary>
@@ -156,7 +186,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                 builder.SetMinimumLevel(LogLevel.Information);
             });
 
-            var options = new ChatProtocolClientOptions(null, loggerFactory);
+            var options = new ChatProtocolClientOptions(loggerFactory);
             var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint), options);
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
@@ -183,7 +213,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                 Console.WriteLine($"{this.label}[{stopwatch.ElapsedMilliseconds}ms] {chatUpdate}");
             }
 
-            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds} ms)");
+            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds}ms)");
             stopwatch.Stop();
         }
 
@@ -202,7 +232,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                 builder.SetMinimumLevel(LogLevel.Information);
             });
 
-            var options = new ChatProtocolClientOptions(null, loggerFactory);
+            var options = new ChatProtocolClientOptions(loggerFactory);
             var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint), options);
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
@@ -236,7 +266,7 @@ namespace Microsoft.AI.ChatProtocol.Test
                 Console.WriteLine($"{this.label}[{stopwatch.ElapsedMilliseconds}ms] {chatUpdate}");
             }
 
-            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds} ms)");
+            Console.WriteLine($"{this.label} Done! ({stopwatch.ElapsedMilliseconds}ms)");
             stopwatch.Stop();
         }
 
@@ -260,10 +290,6 @@ namespace Microsoft.AI.ChatProtocol.Test
             }
 
             this.chatStreamingEndpoint = chatStreamingEndpoint!;
-
-            // Optional: Set one HTTP header
-            this.httpRequestHeaderName = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_HTTP_REQUEST_HEADER_NAME");
-            this.httpRequestHeaderValue = Environment.GetEnvironmentVariable("CHAT_PROTOCOL_HTTP_REQUEST_HEADER_VALUE");
         }
 
         private void PrintResponse(PipelineResponse response)
