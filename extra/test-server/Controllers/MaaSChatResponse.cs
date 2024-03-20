@@ -103,20 +103,14 @@ internal class MaaSChatResponse: MaaSChatResponseBaseClass, IActionResult
         // {"choices":[{"finish_reason":"stop","index":0,"message":{"content":"  There are 5,280 feet in a mile.","role":"assistant"}}],"created":1033408,"id":"02f77102-7e66-4dd7-98a0-8850e4aad32a","object":"chat.completion","usage":{"completion_tokens":15,"prompt_tokens":16,"total_tokens":31}}
 
         JToken? firstChoice = jObjectResponse["choices"]?.First;
-        var chatChoice = new ChatProtocolChoice
+        ChatProtocolCompletion completion = new()
         {
-            Index = firstChoice?["index"]?.Value<int>() ?? 0,
             FinishReason = (string?)firstChoice?["finish_reason"] ?? "",
             Message = new ChatProtocolMessage
             {
                 Content = (string?)firstChoice?["message"]?["content"] ?? "",
                 Role = (string?)firstChoice?["message"]?["role"] ?? ""
             },
-        };
-
-        var completion = new ChatProtocolCompletion
-        {
-            Choices = new List<ChatProtocolChoice> { chatChoice }
         };
 
         HttpResponse httpResponse = context.HttpContext.Response;
@@ -208,20 +202,14 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
                         throw new InvalidDataException();
                     }
 
-                    ChoiceProtocolChoiceDelta delta = new()
+                    ChatProtocolCompletionChunk completion = new()
                     {
-                        Index = Int32.Parse((string?)jObjectResponse["choices"]?[0]?["index"] ?? "0"),
                         Delta = new ChatProtocolMessageDelta
                         {
                             Content = (string?)jObjectResponse["choices"]?[0]?["delta"]?["content"],
                             Role = role
                         },
                         FinishReason = (string?)jObjectResponse["choices"]?[0]?["finish_reason"]
-                    };
-
-                    ChatProtocolCompletionChunk completion = new()
-                    {
-                        Choices = new List<ChoiceProtocolChoiceDelta> { delta }
                     };
 
                     await httpResponse.WriteAsync($"{JsonSerializer.Serialize(completion)}\n", Encoding.UTF8);
@@ -233,8 +221,5 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
             // Always dispose the stream immediately once enumeration is complete for any reason
             streamReader.Dispose();
         }
-
-        // TODO: Chat protocol supports JSONL response. We don't end with a DONE string ("data: [DONE]" is how you end a SSE payload, not JSONL)
-        await httpResponse.WriteAsync("[DONE]\n");
     }
 }

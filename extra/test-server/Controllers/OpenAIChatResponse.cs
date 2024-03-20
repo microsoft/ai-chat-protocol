@@ -56,7 +56,7 @@ internal class OpenAIChatResponseBaseClass
     }
 }
 
-internal class OpenAIChatResponse: OpenAIChatResponseBaseClass, IActionResult
+internal class OpenAIChatResponse : OpenAIChatResponseBaseClass, IActionResult
 {
     internal OpenAIChatResponse(OpenAIClient client, string deployment, ChatProtocolCompletionOptions options)
         : base(client, deployment, options)
@@ -69,19 +69,15 @@ internal class OpenAIChatResponse: OpenAIChatResponseBaseClass, IActionResult
         Response<ChatCompletions> chatCompletionsResponse =
             await _client.GetChatCompletionsAsync(GetChatCompletionsOptions());
 
-        ChatProtocolCompletion completion = new()
+        ChatProtocolCompletion completion = chatCompletionsResponse.Value.Choices.Select(choice => new ChatProtocolCompletion
         {
-            Choices = chatCompletionsResponse.Value.Choices.Select(choice => new ChatProtocolChoice
+            Message = new ChatProtocolMessage
             {
-                Index = choice.Index,
-                Message = new ChatProtocolMessage
-                {
-                    Content = choice.Message.Content,
-                    Role = choice.Message.Role.ToString()
-                },
-                FinishReason = choice.FinishReason?.ToString() ?? ""
-            }).ToList()
-        };
+                Content = choice.Message.Content,
+                Role = choice.Message.Role.ToString()
+            },
+            FinishReason = choice.FinishReason?.ToString() ?? ""
+        }).First();
 
         HttpResponse httpResponse = context.HttpContext.Response;
         httpResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -114,11 +110,8 @@ internal class OpenAIStreamingChatResponse : OpenAIChatResponseBaseClass, IActio
                 continue;
             }
 
-            int choiceIndex = chatUpdate.ChoiceIndex.Value;
-
-            ChoiceProtocolChoiceDelta delta = new()
+            ChatProtocolCompletionChunk chunk = new()
             {
-                Index = choiceIndex,
                 Delta = new ChatProtocolMessageDelta
                 {
                     Content = chatUpdate.ContentUpdate,
@@ -127,12 +120,7 @@ internal class OpenAIStreamingChatResponse : OpenAIChatResponseBaseClass, IActio
                 FinishReason = chatUpdate.FinishReason?.ToString()
             };
 
-            ChatProtocolCompletionChunk completion = new()
-            {
-                Choices = new List<ChoiceProtocolChoiceDelta> { delta }
-            };
-
-            await httpResponse.WriteAsync($"{JsonSerializer.Serialize(completion)}\n", Encoding.UTF8);
+            await httpResponse.WriteAsync($"{JsonSerializer.Serialize(chunk)}\n", Encoding.UTF8);
         }
     }
 }
