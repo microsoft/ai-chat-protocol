@@ -99,7 +99,7 @@ internal class Llama2MaaPChatResponseBaseClass
 
 internal class Llama2MaaPChatResponse: Llama2MaaPChatResponseBaseClass, IActionResult
 {
-    internal Llama2MaaPChatResponse(HttpClient client, string? deployment, ChatProtocolCompletionOptions options) 
+    internal Llama2MaaPChatResponse(HttpClient client, string? deployment, ChatProtocolCompletionOptions options)
         : base(client, deployment, options)
     {
     }
@@ -129,23 +129,16 @@ internal class Llama2MaaPChatResponse: Llama2MaaPChatResponseBaseClass, IActionR
 
         string stringResponse = await response.Content.ReadAsStringAsync();
         JObject jObjectResponse = JObject.Parse(stringResponse);
-        var chatChoice = new ChatProtocolChoice();
 
         // Example of response: "{\"output\": \"There are 5,280 feet in a mile.\"}"
-        chatChoice = new ChatProtocolChoice
+        ChatProtocolCompletion completion = new()
         {
-            Index = 0,
             FinishReason = "stop",
             Message = new ChatProtocolMessage
             {
                 Content = (string?)jObjectResponse["output"] ?? "",
                 Role = "assistant"
             },
-        };
-
-        var completion = new ChatProtocolCompletion
-        {
-            Choices = new List<ChatProtocolChoice> { chatChoice }
         };
 
         HttpResponse httpResponse = context.HttpContext.Response;

@@ -23,6 +23,8 @@ services:
       - llama2_maap_key
       - llama2_maap_endpoint
       - llama2_maap_deployment
+    ports:
+      - 8080:8080
 
   development:
     build:
@@ -34,6 +36,8 @@ services:
         dotnet_version: 8.0.100
     volumes:
       - ..:/workspace
+    ports:
+      - 3000:3000
     environment:
       TEST_SERVER_URL: http://test-server:8080
     depends_on:
