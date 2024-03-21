@@ -11,8 +11,8 @@ public struct ChatProtocolCompletionOptions
     public List<ChatProtocolMessage> Messages { get; set; }
 
     [JsonPropertyName("session_state")]
-    public string? SessionState { get; set; }
+    public BinaryData? SessionState { get; set; }
 
     [JsonPropertyName("context")]
-    public string? Context { get; set; }
+    public Dictionary<string, BinaryData>? Context { get; set; }
 }

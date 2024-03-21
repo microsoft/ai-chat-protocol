@@ -7,6 +7,15 @@ namespace Azure.AI.Chat.SampleService;
 
 public struct ChatProtocolCompletionChunk
 {
-    [JsonPropertyName("choices")]
-    public List<ChoiceProtocolChoiceDelta> Choices { get; set; }
+    [JsonPropertyName("delta")]
+    public ChatProtocolMessageDelta? Delta { get; set; }
+
+    [JsonPropertyName("context")]
+    public Dictionary<string, BinaryData>? Context { get; set; }
+
+    [JsonPropertyName("session_state")]
+    public BinaryData? SessionState { get; set; }
+
+    [JsonPropertyName("finish_reason")]
+    public string? FinishReason { get; set; }
 }

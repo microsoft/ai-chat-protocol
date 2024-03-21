@@ -103,20 +103,14 @@ internal class MaaSChatResponse: MaaSChatResponseBaseClass, IActionResult
         // {"choices":[{"finish_reason":"stop","index":0,"message":{"content":"  There are 5,280 feet in a mile.","role":"assistant"}}],"created":1033408,"id":"02f77102-7e66-4dd7-98a0-8850e4aad32a","object":"chat.completion","usage":{"completion_tokens":15,"prompt_tokens":16,"total_tokens":31}}
 
         JToken? firstChoice = jObjectResponse["choices"]?.First;
-        var chatChoice = new ChatProtocolChoice
+        ChatProtocolCompletion completion = new()
         {
-            Index = firstChoice?["index"]?.Value<int>() ?? 0,
             FinishReason = (string?)firstChoice?["finish_reason"] ?? "",
             Message = new ChatProtocolMessage
             {
                 Content = (string?)firstChoice?["message"]?["content"] ?? "",
                 Role = (string?)firstChoice?["message"]?["role"] ?? ""
             },
-        };
-
-        var completion = new ChatProtocolCompletion
-        {
-            Choices = new List<ChatProtocolChoice> { chatChoice }
         };
 
         HttpResponse httpResponse = context.HttpContext.Response;
@@ -159,13 +153,12 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
             throw new Exception($"The request failed with status code: {response.StatusCode}");
         }
 
-        // Proper response to the client
+        // Prepare response to the client
         HttpResponse httpResponse = context.HttpContext.Response;
         httpResponse.StatusCode = (int)HttpStatusCode.OK;
         httpResponse.ContentType = "application/x-ndjson";
 
         using var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-        string? role = null;
 
         try
         {
@@ -174,6 +167,7 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
             // Read one line of response at a time from the back-end service
             // Example first line:  data: {"id":"9af3749a-1ce8-4ddd-b6df-8c2824dd83a4","object":"","created":0,"model":"","choices":[{"finish_reason":null,"index":0,"delta":{"role":"assistant"}}]}
             // Example other lines: data: {"id":"9af3749a-1ce8-4ddd-b6df-8c2824dd83a4","object":"chat.completion.chunk","created":1047904,"model":"","choices":[{"finish_reason":null,"index":0,"delta":{"content":" reasons"}}]}
+            // Last line:           data: [DONE]
             // Note that "role" is only available in the first line.
             while (true)
             {
@@ -197,30 +191,16 @@ internal class MaaSStreamingChatResponse : MaaSChatResponseBaseClass, IActionRes
 
                     JObject jObjectResponse = JObject.Parse(value.ToString());
 
-                    if (role == null)
+                    ChatProtocolCompletionChunk completion = new()
                     {
-                        role = (string?)jObjectResponse["choices"]?[0]?["delta"]?["role"];
-                    }
-
-                    if (role == null)
-                    {
-                        throw new InvalidDataException();
-                    }
-
-                    ChoiceProtocolChoiceDelta delta = new()
-                    {
-                        Index = Int32.Parse((string?)jObjectResponse["choices"]?[0]?["index"] ?? "0"),
                         Delta = new ChatProtocolMessageDelta
                         {
                             Content = (string?)jObjectResponse["choices"]?[0]?["delta"]?["content"],
-                            Role = role
+                            Role = (string?)jObjectResponse["choices"]?[0]?["delta"]?["role"]
                         },
-                        FinishReason = (string?)jObjectResponse["choices"]?[0]?["finish_reason"]
-                    };
-
-                    ChatProtocolCompletionChunk completion = new()
-                    {
-                        Choices = new List<ChoiceProtocolChoiceDelta> { delta }
+                        FinishReason = (string?)jObjectResponse["choices"]?[0]?["finish_reason"],
+                        Context = null, // TODO ...  jObjectResponse["choices"]?[0]?["context"]
+                        SessionState = null, //TODO ... jObjectResponse["choices"]?[0]?["session_state"]
                     };
 
                     await httpResponse.WriteAsync($"{JsonSerializer.Serialize(completion)}\n", Encoding.UTF8);

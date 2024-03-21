@@ -27,5 +27,4 @@ IF "%~2"=="" (
     exit /b
 )
 
-REM Good for testing non-streaming:
 curl -v "https://localhost:%1/config?backend=%2" -H "Content-Type: application/json" --data-ascii "{}"
