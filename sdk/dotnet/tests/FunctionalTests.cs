@@ -38,8 +38,10 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             var options = new ChatProtocolClientOptions(loggerFactory);
 
-            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), options);
+            // Create the client with bearer token key authentication, and client logging to console
+            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), new ApiKeyCredential("MyToken"), options);
 
+            // Example of how you set additional headers on each request
             var requestOptions = new RequestOptions();
             requestOptions.SetHeader("TestHeader1", "TestValue1");
             requestOptions.SetHeader("TestHeader2", "TestValue2");
@@ -157,7 +159,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             var options = new ChatProtocolClientOptions(loggerFactory);
 
-            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), options);
+            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), null, options);
 
             Task<ClientResult<ChatCompletion>> task = client.GetChatCompletionAsync(
                 new ChatCompletionOptions(
@@ -206,7 +208,7 @@ namespace Microsoft.AI.ChatProtocol.Test
 
             var options = new ChatProtocolClientOptions(loggerFactory);
 
-            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), options);
+            var client = new ChatProtocolClient(new Uri(this.chatEndpoint), null, options);
 
             var cancellationTokenSource = new CancellationTokenSource();
 
@@ -246,7 +248,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             });
 
             var options = new ChatProtocolClientOptions(loggerFactory);
-            var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint), options);
+            var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint), null, options);
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
                 {
@@ -343,7 +345,7 @@ namespace Microsoft.AI.ChatProtocol.Test
             });
 
             var options = new ChatProtocolClientOptions(loggerFactory);
-            var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint), options);
+            var client = new ChatProtocolClient(new Uri(this.chatStreamingEndpoint), null, options);
             var chatCompletionOptions = new ChatCompletionOptions(
                 messages: new[]
                 {

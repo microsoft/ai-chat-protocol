@@ -20,30 +20,37 @@ namespace Microsoft.AI.ChatProtocol
         private readonly ChatProtocolClientOptions clientOptions = new ();
         private readonly ILogger? logger = null;
         private readonly ClientPipeline clientPipeline;
+        private ApiKeyCredential? credential = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatProtocolClient"/> class.
         /// </summary>
         /// <param name="endpoint"> The connection URL to use. </param>
-        /// <param name="clientOptions"> Additional client options. </param>
+        /// <param name="credentials"> Optional bearer token key that can be used for authentication against the service.
+        /// It is applied via <see cref="ApiKeyAuthenticationPolicy.CreateBearerAuthorizationPolicy"/>.</param>
+        /// <param name="options"> Additional client options. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/>.</exception>
-        public ChatProtocolClient(Uri endpoint, ChatProtocolClientOptions? clientOptions = null)
+        public ChatProtocolClient(Uri endpoint, ApiKeyCredential? credentials = null, ChatProtocolClientOptions? options = null)
         {
             this.endpoint = endpoint;
-
-            this.clientOptions = clientOptions ?? new ChatProtocolClientOptions();
+            this.credential = credentials;
+            this.clientOptions = options ?? new ChatProtocolClientOptions();
 
             if (this.clientOptions != null && this.clientOptions.LoggerFactory != null)
             {
                 this.logger = this.clientOptions.LoggerFactory.CreateLogger<ChatProtocolClient>();
             }
 
-            ApiKeyAuthenticationPolicy authenticationPolicy = ApiKeyAuthenticationPolicy.CreateBearerAuthorizationPolicy("my-credential");
+            ReadOnlySpan<PipelinePolicy> perTryPolicy = ReadOnlySpan<PipelinePolicy>.Empty;
+            if (this.credential != null)
+            {
+                perTryPolicy = new PipelinePolicy[] { ApiKeyAuthenticationPolicy.CreateBearerAuthorizationPolicy(this.credential) };
+            }
 
             this.clientPipeline = ClientPipeline.Create(
                 this.clientOptions!,
                 perCallPolicies: ReadOnlySpan<PipelinePolicy>.Empty,
-                perTryPolicies: new PipelinePolicy[] { authenticationPolicy },
+                perTryPolicies: perTryPolicy,
                 beforeTransportPolicies: ReadOnlySpan<PipelinePolicy>.Empty);
         }
 
