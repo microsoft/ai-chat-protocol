@@ -205,7 +205,7 @@ namespace Microsoft.AI.ChatProtocol
         }
 
         /// <summary>
-        /// Internal utility method to return emtpy async enumration.
+        /// Internal utility method to return empty async enumeration.
         /// </summary>
         /// <typeparam name="T">The type of the enumerated objects.</typeparam>
         /// <returns>Any async enumerator of T types.</returns>
