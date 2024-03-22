@@ -1,3 +1,5 @@
+!packages/*
 dist
 .tshy
 .tshy-build
+*.tgz

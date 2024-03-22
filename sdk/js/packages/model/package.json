@@ -1,41 +1,29 @@
 {
-  "name": "@microsoft/ai-chat-protocol",
+  "name": "@microsoft/ai-chat-protocol-model",
   "version": "0.1.0-alpha.1",
-  "description": "",
+  "description": "TypeScript models for the AI Chat Protocol requests and responses.",
   "main": "./dist/commonjs/index.js",
   "scripts": {
     "build": "tshy",
-    "watch": "tshy -w",
-    "bundle": "npm run build && rollup -c",
-    "lint": "eslint src",
-    "format": "prettier --write src test",
-    "clean": "rimraf dist",
-    "test": "vitest --run"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "files": [
-    "dist"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/microsoft/ai-chat-protocol.git"
   },
-  "author": "",
+  "author": "Gerardo Lecaros <gerardo.lecaros.e@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/microsoft/ai-chat-protocol/issues"
   },
   "homepage": "https://github.com/microsoft/ai-chat-protocol#readme",
   "devDependencies": {
-    "@types/node": "^20.11.20",
-    "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
-    "rimraf": "^5.0.5",
-    "rollup": "^4.12.0",
-    "rollup-plugin-dts": "^6.1.0",
-    "tshy": "^1.11.1",
-    "typescript": "^5.3.3",
-    "typescript-eslint": "^7.1.1",
-    "vitest": "^1.3.1"
+    "@types/node": "^20.11.30",
+    "tshy": "^1.12.0",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@typespec/ts-http-runtime": "^1.0.0-alpha.20240228.1"
   },
   "tshy": {
     "exports": {
@@ -69,9 +57,5 @@
     }
   },
   "types": "./dist/commonjs/index.d.ts",
-  "type": "module",
-  "dependencies": {
-    "@microsoft/ai-chat-protocol-model": "file:../model/microsoft-ai-chat-protocol-model-0.1.0-alpha.1.tgz",
-    "@typespec/ts-http-runtime": "^1.0.0-alpha.20240228.1"
-  }
+  "type": "module"
 }

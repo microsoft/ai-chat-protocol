@@ -10,4 +10,4 @@ export {
   AIChatFinishReason,
   AIChatMessage,
   AIChatRole,
-} from "./models/index.js";
+} from "@microsoft/ai-chat-protocol-model";

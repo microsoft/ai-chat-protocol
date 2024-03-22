@@ -15,7 +15,7 @@ import {
   AIChatCompletionDelta,
   AIChatCompletionOptions,
   AIChatMessage,
-} from "./models/index.js";
+} from "@microsoft/ai-chat-protocol-model";
 import { getAsyncIterable } from "./util/ndjson.js";
 import { asStream } from "./util/stream.js";
 
