@@ -2,19 +2,17 @@ import { DefaultAzureCredential } from "@azure/identity";
 import { ChatRequestMessage, OpenAIClient } from "@azure/openai";
 import express, { Router, Request } from "express";
 import { ConfigParameter, getConfig } from "../config";
+import {
+  AIChatCompletion,
+  AIChatCompletionDelta,
+  AIChatCompletionRequest,
+  AIChatFinishReason,
+  AIChatRole,
+} from "@microsoft/ai-chat-protocol-model";
 
 const chat = Router();
 
 chat.use(express.json());
-
-interface ChatMessage {
-  role: string;
-  content: string;
-}
-
-interface ChatCompletionRequest {
-  messages: ChatMessage[];
-}
 
 const client = new OpenAIClient(
   getConfig(ConfigParameter.azureOpenAIEndpoint),
@@ -22,7 +20,7 @@ const client = new OpenAIClient(
 );
 chat.post(
   "/",
-  async (req: Request<{}, {}, ChatCompletionRequest>, res, next) => {
+  async (req: Request<{}, {}, AIChatCompletionRequest>, res, next) => {
     try {
       const response = await client.getChatCompletions(
         getConfig(ConfigParameter.azureOpenAIDeployment),
@@ -34,11 +32,12 @@ chat.post(
         }),
       );
       const choice = response.choices[0];
-      const completion = {
+      const completion: AIChatCompletion = {
         message: {
-          role: choice?.message?.role,
-          content: choice?.message?.content,
+          role: (choice?.message?.role ?? undefined) as AIChatRole,
+          content: choice?.message?.content ?? "",
         },
+        finishReason: choice.finishReason as AIChatFinishReason,
       };
       res.json(completion);
     } catch (error) {
@@ -49,7 +48,7 @@ chat.post(
 
 chat.post(
   "/stream",
-  async (req: Request<{}, {}, ChatCompletionRequest>, res, next) => {
+  async (req: Request<{}, {}, AIChatCompletionRequest>, res, next) => {
     try {
       const response = await client.streamChatCompletions(
         getConfig(ConfigParameter.azureOpenAIDeployment),
@@ -64,12 +63,12 @@ chat.post(
       for await (const event of response) {
         const choice = event.choices[0];
         if (choice) {
-          /* TODO: Add chat client library types */
-          const completion = {
+          const completion: AIChatCompletionDelta = {
             delta: {
-              content: choice?.delta?.content,
-              role: choice?.delta?.role,
+              content: choice?.delta?.content ?? undefined,
+              role: (choice?.delta?.role ?? undefined) as AIChatRole,
             },
+            finishReason: choice.finishReason as AIChatFinishReason,
           };
           res.write(JSON.stringify(completion) + "\r\n");
         }
