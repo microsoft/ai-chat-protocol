@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 export {
-  AIChatClientOptions,
   AIChatCompletion,
   AIChatCompletionDelta,
   AIChatCompletionOptions,
+  AIChatCompletionRequest,
   AIChatFinishReason,
   AIChatMessage,
   AIChatRole,
