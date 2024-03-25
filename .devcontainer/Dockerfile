@@ -2,6 +2,11 @@ FROM ubuntu:22.04
 
 RUN apt update && apt upgrade -y && apt install -y curl wget git zsh libicu70 bash-completion
 
+# Install Azure CLI
+RUN curl -o az-cli.sh -L https://aka.ms/InstallAzureCLIDeb &&\
+    chmod +x az-cli.sh &&\
+    ./az-cli.sh -y
+
 ARG user=vscode
 
 RUN useradd -ms /bin/bash $user
