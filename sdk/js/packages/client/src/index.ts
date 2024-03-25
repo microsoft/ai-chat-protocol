@@ -4,6 +4,9 @@
 export { AIChatProtocolClient } from "./client.js";
 export {
   AIChatClientOptions,
+  AIChatCompletionOperationOptions,
+} from "./model/index.js";
+export {
   AIChatCompletion,
   AIChatCompletionDelta,
   AIChatCompletionOptions,

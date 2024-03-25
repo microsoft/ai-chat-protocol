@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/microsoft/ai-chat-protocol#readme",
   "devDependencies": {
+    "@microsoft/ai-chat-protocol-model": "file:../model/microsoft-ai-chat-protocol-model-0.1.0-alpha.1.tgz",
     "@types/node": "^20.11.20",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
@@ -71,7 +72,6 @@
   "types": "./dist/commonjs/index.d.ts",
   "type": "module",
   "dependencies": {
-    "@microsoft/ai-chat-protocol-model": "file:../model/microsoft-ai-chat-protocol-model-0.1.0-alpha.1.tgz",
     "@typespec/ts-http-runtime": "^1.0.0-alpha.20240228.1"
   }
 }
