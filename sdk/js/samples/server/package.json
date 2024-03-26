@@ -15,12 +15,15 @@
     "@azure/identity": "^4.0.1",
     "@azure/openai": "^1.0.0-beta.11",
     "dotenv": "^16.4.5",
-    "express": "^4.19.1"
+    "express": "^4.19.1",
+    "redis": "^4.6.13",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@microsoft/ai-chat-protocol-model": "file:../../../sdk/js/packages/model/microsoft-ai-chat-protocol-model-0.1.0-alpha.1.tgz",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.30",
+    "@types/uuid": "^9.0.8",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",

@@ -1,10 +1,10 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import dotenv from "dotenv";
+
+dotenv.config();
 
 import chat from "./routes/chat";
 import { ConfigParameter, getConfig } from "./config";
-
-dotenv.config();
 
 const app: Express = express();
 

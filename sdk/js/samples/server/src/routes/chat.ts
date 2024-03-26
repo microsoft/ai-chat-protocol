@@ -7,8 +7,10 @@ import {
   AIChatCompletionDelta,
   AIChatCompletionRequest,
   AIChatFinishReason,
+  AIChatMessage,
   AIChatRole,
 } from "@microsoft/ai-chat-protocol-model";
+import { StateStore } from "../state-store";
 
 const chat = Router();
 
@@ -18,26 +20,58 @@ const client = new OpenAIClient(
   getConfig(ConfigParameter.azureOpenAIEndpoint),
   new DefaultAzureCredential(),
 );
+
+const stateStore = new StateStore<AIChatMessage[]>();
+stateStore.connect();
+
+async function getMessageHistory(
+  request: AIChatCompletionRequest,
+): Promise<[AIChatMessage[], string | undefined]> {
+  const key = request.sessionState as string;
+  if (key) {
+    try {
+      return [await stateStore.read(key), key];
+    } catch (error) {
+      console.error(`Failed to read state for key ${key}: ${error}`);
+    }
+  }
+  return [
+    [
+      {
+        role: "system",
+        content: getConfig(ConfigParameter.systemPrompt),
+      },
+    ],
+    undefined,
+  ];
+}
+
 chat.post(
   "/",
   async (req: Request<{}, {}, AIChatCompletionRequest>, res, next) => {
     try {
+      const [history, key] = await getMessageHistory(req.body);
+      const updatedHistory = [
+        ...history,
+        req.body.messages.pop() as AIChatMessage,
+      ];
       const response = await client.getChatCompletions(
         getConfig(ConfigParameter.azureOpenAIDeployment),
-        req.body.messages.map((message) => {
-          return {
-            role: message.role,
-            content: message.content,
-          } as ChatRequestMessage;
-        }),
+        updatedHistory as ChatRequestMessage[],
       );
       const choice = response.choices[0];
+      const responseMessage: AIChatMessage = {
+        role: (choice?.message?.role ?? undefined) as AIChatRole,
+        content: choice?.message?.content ?? "",
+      };
+
       const completion: AIChatCompletion = {
-        message: {
-          role: (choice?.message?.role ?? undefined) as AIChatRole,
-          content: choice?.message?.content ?? "",
-        },
+        message: responseMessage,
         finishReason: choice.finishReason as AIChatFinishReason,
+        sessionState: stateStore.save(key, [
+          ...updatedHistory,
+          responseMessage,
+        ]),
       };
       res.json(completion);
     } catch (error) {
@@ -50,14 +84,12 @@ chat.post(
   "/stream",
   async (req: Request<{}, {}, AIChatCompletionRequest>, res, next) => {
     try {
+      const history = (await getMessageHistory(
+        req.body,
+      )) as ChatRequestMessage[];
       const response = await client.streamChatCompletions(
         getConfig(ConfigParameter.azureOpenAIDeployment),
-        req.body.messages.map((message) => {
-          return {
-            role: message.role,
-            content: message.content,
-          } as ChatRequestMessage;
-        }),
+        [...history, req.body.messages.pop() as ChatRequestMessage],
       );
       res.contentType("application/x-ndjson");
       for await (const event of response) {
