@@ -28,7 +28,7 @@ export interface AIChatCompletionDelta {
   delta: AIChatMessageDelta;
   sessionState?: unknown;
   context?: object;
-  finishReason: AIChatFinishReason;
+  finishReason?: AIChatFinishReason;
 }
 
 export interface AIChatCompletionOptions {
