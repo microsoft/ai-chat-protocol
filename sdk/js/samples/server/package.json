@@ -20,7 +20,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@microsoft/ai-chat-protocol-model": "file:../../../sdk/js/packages/model/microsoft-ai-chat-protocol-model-0.1.0-alpha.1.tgz",
+    "@microsoft/ai-chat-protocol": "file:../../packages/client/microsoft-ai-chat-protocol-0.1.0-alpha.1.tgz",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.30",
     "@types/uuid": "^9.0.8",

@@ -4,13 +4,13 @@
 export { AIChatProtocolClient } from "./client.js";
 export {
   AIChatClientOptions,
-  AIChatCompletionOperationOptions,
-} from "./model/index.js";
-export {
   AIChatCompletion,
   AIChatCompletionDelta,
+  AIChatCompletionOperationOptions,
   AIChatCompletionOptions,
+  AIChatCompletionRequest,
   AIChatFinishReason,
   AIChatMessage,
+  AIChatMessageDelta,
   AIChatRole,
-} from "@microsoft/ai-chat-protocol-model";
+} from "./model/index.js";

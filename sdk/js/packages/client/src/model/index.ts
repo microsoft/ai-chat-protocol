@@ -3,5 +3,13 @@
 
 export {
   AIChatClientOptions,
+  AIChatCompletion,
+  AIChatCompletionDelta,
   AIChatCompletionOperationOptions,
+  AIChatCompletionOptions,
+  AIChatCompletionRequest,
+  AIChatFinishReason,
+  AIChatMessage,
+  AIChatMessageDelta,
+  AIChatRole,
 } from "./model.js";

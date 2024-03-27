@@ -1,7 +1,4 @@
 import express, { Express } from "express";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 import chat from "./routes/chat";
 import { ConfigParameter, getConfig } from "./config";

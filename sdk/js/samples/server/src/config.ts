@@ -1,9 +1,14 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 export enum ConfigParameter {
   port,
   azureOpenAIEndpoint,
   azureOpenAIDeployment,
   redisUrl,
   systemPrompt,
+  stateTTL,
 }
 
 export function getConfig(parameter: ConfigParameter): string {
@@ -23,6 +28,9 @@ export function getConfig(parameter: ConfigParameter): string {
       }
       case ConfigParameter.systemPrompt: {
         return process.env.SYSTEM_PROMPT;
+      }
+      case ConfigParameter.stateTTL: {
+        return process.env.STATE_TTL;
       }
       default: {
         throw new Error("Unsupported config parameter.");

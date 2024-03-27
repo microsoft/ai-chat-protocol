@@ -9,16 +9,14 @@ import {
   RequestParameters,
   TokenCredential,
 } from "@typespec/ts-http-runtime";
-import {
-  AIChatCompletion,
-  AIChatCompletionDelta,
-  AIChatMessage,
-} from "@microsoft/ai-chat-protocol-model";
 import { getAsyncIterable } from "./util/ndjson.js";
 import { asStream } from "./util/stream.js";
 import {
   AIChatClientOptions,
+  AIChatCompletion,
+  AIChatCompletionDelta,
   AIChatCompletionOperationOptions,
+  AIChatMessage,
 } from "./model/index.js";
 
 /* Replace with a version provided by the ts-http-runtime library once that is provided. */

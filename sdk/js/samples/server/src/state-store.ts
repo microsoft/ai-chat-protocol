@@ -1,5 +1,4 @@
 import { createClient, RedisClientType } from "redis";
-import { v4 as uuid } from "uuid";
 
 import { ConfigParameter, getConfig } from "./config";
 
@@ -28,11 +27,11 @@ export class StateStore<T> {
     return JSON.parse(state);
   }
 
-  public async save(key: string | undefined, state: T): Promise<string> {
-    if (!key) {
-      key = uuid();
-    }
+  public async save(key: string, state: T): Promise<void> {
     await this.client.set(key, JSON.stringify(state));
-    return key;
+    await this.client.expire(
+      key,
+      parseInt(getConfig(ConfigParameter.stateTTL)),
+    );
   }
 }
