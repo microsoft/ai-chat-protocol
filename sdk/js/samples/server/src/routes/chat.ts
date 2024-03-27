@@ -117,6 +117,8 @@ chat.post(
             sessionState: req.sessionState,
             finishReason: choice.finishReason as AIChatFinishReason,
           };
+          responseMessage.role = completion.delta.role ?? responseMessage.role;
+          responseMessage.content += completion.delta.content ?? "";
           res.write(JSON.stringify(completion) + "\r\n");
         }
       }
