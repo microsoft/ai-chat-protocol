@@ -19,13 +19,11 @@ To get started with the AI Chat Protocol, check out our documentation *here*.
 
 Alternatively, if you'd like to get started with our *samples* [TODO: link]:
 
-* **JavaScript**:
-  * Sample React App
-  * Sample NextJS App
+* **JavaScript frontend**:
+  * React + Python with OpenAI and Azure AI Model as a Service (MaaS)
+  * React + NodeJS with OpenAI and Azure AI Model as a Service (MaaS)
+  * React + .NET with OpenAI and Azure AI Model as a Service (MaaS)
 
-* **.NET**:
-  * Sample .NET MAUI App
-  * Sample .NET Blazor App
 
 ## Contributing
 
