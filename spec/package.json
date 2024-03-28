@@ -1,0 +1,16 @@
+{
+  "name": "chat-protocol",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsp compile .",
+    "format": "tsp format **/*.tsp"
+  },
+  "dependencies": {
+    "@typespec/compiler": "latest",
+    "@typespec/http": "latest",
+    "@typespec/rest": "latest",
+    "@typespec/openapi3": "latest"
+  },
+  "private": true
+}
