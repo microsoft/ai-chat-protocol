@@ -30,12 +30,19 @@ export interface AIChatCompletionDelta {
   delta: AIChatMessageDelta;
   sessionState?: unknown;
   context?: object;
-  finishReason: AIChatFinishReason;
+  finishReason?: AIChatFinishReason;
 }
 
-export interface AIChatClientOptions extends ClientOptions {}
-
-export interface AIChatCompletionOptions extends OperationOptions {
+export interface AIChatCompletionOptions {
   context?: object;
   sessionState?: unknown;
 }
+
+export type AIChatCompletionRequest = {
+  messages: AIChatMessage[];
+} & AIChatCompletionOptions;
+
+export interface AIChatClientOptions extends ClientOptions {}
+
+export type AIChatCompletionOperationOptions = AIChatCompletionOptions &
+  OperationOptions;

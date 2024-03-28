@@ -9,15 +9,15 @@ import {
   RequestParameters,
   TokenCredential,
 } from "@typespec/ts-http-runtime";
+import { getAsyncIterable } from "./util/ndjson.js";
+import { asStream } from "./util/stream.js";
 import {
   AIChatClientOptions,
   AIChatCompletion,
   AIChatCompletionDelta,
-  AIChatCompletionOptions,
+  AIChatCompletionOperationOptions,
   AIChatMessage,
-} from "./models/index.js";
-import { getAsyncIterable } from "./util/ndjson.js";
-import { asStream } from "./util/stream.js";
+} from "./model/index.js";
 
 /* Replace with a version provided by the ts-http-runtime library once that is provided. */
 function isTokenCredential(credential: unknown): credential is TokenCredential {
@@ -62,7 +62,7 @@ export class AIChatProtocolClient {
 
   async getCompletion(
     messages: AIChatMessage[],
-    options: AIChatCompletionOptions = {},
+    options: AIChatCompletionOperationOptions = {},
   ): Promise<AIChatCompletion> {
     const request: RequestParameters = {
       headers: {
@@ -84,7 +84,7 @@ export class AIChatProtocolClient {
 
   async getStreamedCompletion(
     messages: AIChatMessage[],
-    options: AIChatCompletionOptions = {},
+    options: AIChatCompletionOperationOptions = {},
   ): Promise<AsyncIterable<AIChatCompletionDelta>> {
     const request: RequestParameters = {
       headers: {
