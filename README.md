@@ -1,29 +1,20 @@
 # Microsoft AI Chat Protocol
 
-The Microsoft AI Chat Protocol is a library for building AI Chat applications and interfaces.
+The Microsoft AI Chat Protocol is a library for building AI Chat interfaces.
+
+*Note: we are currently in public preview. Your feedback is greatly appreciated as we get ready to be generally available!*
 
 With the AI Chat Protocol, you will be able to:
 
-* Develop AI chat interfaces, components, and applications in several languages:
-  * **Currently available**: .NET, JavaScript
-* Stream text from LLM-powered backends with ease
+* Develop AI chat interfaces, components, and applications in JavaScript/TypeScript
+* Consume LLM-powered backends with ease, either synchronously or by streaming
 * Easily incorporate HTTP middleware for logging, authentication, and more.
-
-*Note: we are currently in public preview. Your feedback is greatly appreciated as we get ready to be generally available!*
 
 **Please star the repo to show your support for this project!**
 
 ## Getting Started
 
-To get started with the AI Chat Protocol, check out our documentation *here*.
-
-Alternatively, if you'd like to get started with our *samples* [TODO: link]:
-
-* **JavaScript frontend**:
-  * React + Python with OpenAI and Azure AI Model as a Service (MaaS)
-  * React + NodeJS with OpenAI and Azure AI Model as a Service (MaaS)
-  * React + .NET with OpenAI and Azure AI Model as a Service (MaaS)
-
+To get started with the AI Chat Protocol, check out our getting started guide (coming soon).
 
 ## Contributing
 
