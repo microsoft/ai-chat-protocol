@@ -2,7 +2,7 @@
 	"name": "chat-protocol-dev",
 	"dockerComposeFile": ["docker-compose.yaml"],
 	"service": "development",
-	"workspaceFolder": "/workspace",
+	"workspaceFolder": "/chat-protocol",
 	"remoteUser": "vscode",
 	"customizations": {
 		"vscode": {
