@@ -4,33 +4,6 @@ services:
     ports:
     - 6379:6379
 
-  test-server:
-    build:
-      context: ../extra/test-server
-      dockerfile: Dockerfile
-      args:
-        port: 8080
-    environment:
-      - SAMPLE_CHAT_SERVICE_AZURE_OPENAI_KEY_FILE=/run/secrets/azure_openai_key
-      - SAMPLE_CHAT_SERVICE_AZURE_OPENAI_ENDPOINT_FILE=/run/secrets/azure_openai_endpoint
-      - SAMPLE_CHAT_SERVICE_AZURE_OPENAI_DEPLOYMENT_FILE=/run/secrets/azure_openai_deployment
-      - SAMPLE_CHAT_SERVICE_MAAS_KEY_FILE=/run/secrets/maas_key
-      - SAMPLE_CHAT_SERVICE_MAAS_ENDPOINT_FILE=/run/secrets/maas_endpoint
-      - SAMPLE_CHAT_SERVICE_LLAMA2_MAAP_KEY_FILE=/run/secrets/llama2_maap_key
-      - SAMPLE_CHAT_SERVICE_LLAMA2_MAAP_ENDPOINT_FILE=/run/secrets/llama2_maap_endpoint
-      - SAMPLE_CHAT_SERVICE_LLAMA2_MAAP_DEPLOYMENT_FILE=/run/secrets/llama2_maap_deployment
-    secrets:
-      - azure_openai_key
-      - azure_openai_endpoint
-      - azure_openai_deployment
-      - maas_key
-      - maas_endpoint
-      - llama2_maap_key
-      - llama2_maap_endpoint
-      - llama2_maap_deployment
-    ports:
-      - 8080:8080
-
   development:
     build:
       context: .
@@ -48,21 +21,3 @@ services:
     depends_on:
       - test-server
     command: sleep infinity
-
-secrets:
-  azure_openai_key:
-    file: ../extra/secrets/azure_openai_key
-  azure_openai_endpoint:
-    file: ../extra/secrets/azure_openai_endpoint
-  azure_openai_deployment:
-    file: ../extra/secrets/azure_openai_deployment
-  maas_key:
-    file: ../extra/secrets/maas_key
-  maas_endpoint:
-    file: ../extra/secrets/maas_endpoint
-  llama2_maap_key:
-    file: ../extra/secrets/llama2_maap_key
-  llama2_maap_endpoint:
-    file: ../extra/secrets/llama2_maap_endpoint
-  llama2_maap_deployment:
-    file: ../extra/secrets/llama2_maap_deployment
