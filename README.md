@@ -16,7 +16,7 @@ The AI Chat Protocol SDK is designed to easily consume AI backends that conform 
 
 ## Getting Started
 
-Our getting started guides are coming soon!
+Our getting started guides are coming soon! For now, you can check out the [samples](/sdk/js/samples) directory.
 
 To take a look locally, install the library via npm:
 
