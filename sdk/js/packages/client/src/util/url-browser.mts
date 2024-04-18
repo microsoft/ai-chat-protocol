@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { URL } from 'url';
-
 function isAbsoluteUrl(url: string): boolean {
   let parsed: URL;
   try {
