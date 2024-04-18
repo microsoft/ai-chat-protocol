@@ -18,6 +18,7 @@ import {
   AIChatCompletionOperationOptions,
   AIChatMessage,
 } from "./model/index.js";
+import { toAbsoluteUrl } from "./util/url.js";
 
 /* Replace with a version provided by the ts-http-runtime library once that is provided. */
 function isTokenCredential(credential: unknown): credential is TokenCredential {
@@ -53,10 +54,11 @@ export class AIChatProtocolClient {
     arg1?: TokenCredential | KeyCredential | AIChatClientOptions,
     arg2?: AIChatClientOptions,
   ) {
+    const absoluteEndpoint = toAbsoluteUrl(endpoint);
     if (isCredential(arg1)) {
-      this.client = getClient(endpoint, arg1, arg2);
+      this.client = getClient(absoluteEndpoint, arg1, arg2);
     } else {
-      this.client = getClient(endpoint, arg1);
+      this.client = getClient(absoluteEndpoint, arg1);
     }
   }
 
