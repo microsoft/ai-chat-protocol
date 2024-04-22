@@ -8,7 +8,7 @@ function isAbsoluteUrl(url: string): boolean {
   } catch (e) {
     return false;
   }
-  return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  return parsed.protocol === "http:" || parsed.protocol === "https:";
 }
 
 export function toAbsoluteUrl(url: string): string {

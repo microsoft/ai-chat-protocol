@@ -10,7 +10,8 @@
     "lint": "eslint src",
     "format": "prettier --write src test",
     "clean": "rimraf dist",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "postinstall": "playwright install chromium"
   },
   "files": [
     "dist"
@@ -27,7 +28,9 @@
   "homepage": "https://github.com/microsoft/ai-chat-protocol#readme",
   "devDependencies": {
     "@types/node": "^20.11.20",
+    "@vitest/browser": "^1.5.0",
     "eslint": "^8.57.0",
+    "playwright": "^1.43.1",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "rollup": "^4.12.0",
