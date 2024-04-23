@@ -36,13 +36,9 @@ const useMessageStyles = makeStyles({
 });
 
 export default function Chat() {
-  const client = new AIChatProtocolClient('http://localhost:8080/chat', {
+  const client = new AIChatProtocolClient('http://localhost:3000/api/chat', {
     allowInsecureConnection: true
   });
-  const configMessage: AIChatMessage = {
-    role: 'system',
-    content: 'You are an enthusiastic assistant that talks like a 5 year old.',
-  };
 
   const [messages, setMessages] = useState<AIChatMessage[]>([]);
   const [input, setInput] = useState<string>('');
@@ -63,7 +59,7 @@ export default function Chat() {
     setMessages(updatedMessages);
     setInput('');
     if (streaming) {
-      const result = await client.getStreamedCompletion([configMessage, ...updatedMessages]);
+      const result = await client.getStreamedCompletion([message]);
       const latestMessage: AIChatMessage = { content: "", role: 'assistant' };
       for await (const response of result) {
         if (!response.delta) {
@@ -78,7 +74,7 @@ export default function Chat() {
         }
       }
     } else {
-      const result = await client.getCompletion([configMessage, ...updatedMessages]);
+      const result = await client.getCompletion([message]);
       setMessages([...updatedMessages, result.message]);
     }
   };

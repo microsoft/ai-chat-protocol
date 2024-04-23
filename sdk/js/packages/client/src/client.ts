@@ -72,7 +72,6 @@ export class AIChatProtocolClient {
       },
       body: {
         messages: messages,
-        stream: false,
         context: options.context,
         sessionState: options.sessionState,
       },
@@ -94,7 +93,6 @@ export class AIChatProtocolClient {
       },
       body: {
         messages: messages,
-        stream: true,
         context: options.context,
         sessionState: options.sessionState,
       },

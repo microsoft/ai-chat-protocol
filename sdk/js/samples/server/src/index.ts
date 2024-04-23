@@ -1,4 +1,5 @@
 import express, { Express } from "express";
+import * as cors from "cors";
 
 import chat from "./routes/chat";
 import { ConfigParameter, getConfig } from "./config";
@@ -6,6 +7,8 @@ import { ConfigParameter, getConfig } from "./config";
 const app: Express = express();
 
 const port = getConfig(ConfigParameter.port);
+
+app.use(cors.default());
 
 app.use("/api/chat", chat);
 
