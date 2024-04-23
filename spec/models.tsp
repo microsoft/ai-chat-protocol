@@ -16,11 +16,6 @@ enum AIChatRole {
   system,
 }
 
-enum AIChatFinishReason {
-  stop,
-  length,
-}
-
 model AIChatMessage {
   role: AIChatRole;
   content: string;
@@ -35,7 +30,6 @@ model AIChatMessageDelta {
 
 model AIChatCompletion {
   message: AIChatMessage;
-  finishReason: AIChatFinishReason;
   ...ContextProp;
   ...SessionStateProp;
 }
@@ -45,7 +39,6 @@ model AIChatCompletionDelta {
   contentType: "application/x-ndjson";
 
   delta: AIChatMessageDelta;
-  finisReason?: AIChatFinishReason;
   ...ContextProp;
   ...SessionStateProp;
 }
