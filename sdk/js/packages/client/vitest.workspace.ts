@@ -1,3 +1,4 @@
+import { fileURLToPath } from "url";
 import { defineWorkspace } from "vitest/config";
 
 export default defineWorkspace([

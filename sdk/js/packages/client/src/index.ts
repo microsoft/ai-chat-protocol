@@ -9,7 +9,6 @@ export {
   AIChatCompletionOperationOptions,
   AIChatCompletionOptions,
   AIChatCompletionRequest,
-  AIChatFinishReason,
   AIChatMessage,
   AIChatMessageDelta,
   AIChatRole,

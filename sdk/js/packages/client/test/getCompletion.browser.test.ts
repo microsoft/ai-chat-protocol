@@ -1,9 +1,9 @@
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
+import { setupWorker } from 'msw/browser';
 import { expect, test } from 'vitest';
 
-import { AIChatProtocolClient } from '../dist/commonjs/client.js';
-import { AIChatCompletionRequest, AIChatCompletion } from '../src/index.js';
+import { AIChatProtocolClient } from '../dist/browser/client.js';
+import { AIChatCompletionRequest, AIChatCompletion, AIChatClientOptions } from '../dist/browser/model/index.js';
 
 const handlers = [
     http.post<{}, AIChatCompletionRequest> ("https://my.test.com/api/chat", ({ request } ) => {
@@ -26,12 +26,12 @@ const handlers = [
 
 ];
 
-const server = setupServer(...handlers);
-server.listen();
+const server = setupWorker(...handlers);
+await server.start();
 
 test("Can send getCompletionRequest", async () => {
 
-    const client = new AIChatProtocolClient("https://my.test.com/api/chat");
+    const client = new AIChatProtocolClient("https://my.test.com/api/chat", {});
     const response = await client.getCompletion([
         { content: "Hello, world!", role: "user" },
     ]);
