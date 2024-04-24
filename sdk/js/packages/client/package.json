@@ -10,8 +10,8 @@
     "lint": "eslint src",
     "format": "prettier --write src test",
     "clean": "rimraf dist",
-    "test": "vitest --run",
-    "postinstall": "playwright install chromium"
+    "test": "npm run prepare-tests && vitest --run",
+    "prepare-tests": "playwright install chromium"
   },
   "files": [
     "dist"
