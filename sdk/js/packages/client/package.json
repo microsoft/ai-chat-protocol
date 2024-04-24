@@ -11,7 +11,7 @@
     "format": "prettier --write src test",
     "clean": "rimraf dist",
     "test": "npm run prepare-tests && vitest --run",
-    "prepare-tests": "playwright install chromium"
+    "prepare-tests": "playwright install chromium && msw init"
   },
   "files": [
     "dist"
