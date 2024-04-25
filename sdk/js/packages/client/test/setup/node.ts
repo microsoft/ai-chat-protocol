@@ -3,12 +3,13 @@
 
 import { setupServer } from "msw/node";
 import { handlers } from "./handlers.js";
-import { afterAll, afterEach, beforeAll } from "vitest";
+import { afterEach, beforeAll } from "vitest";
 
 const server = setupServer(...handlers);
 
-beforeAll(() => server.listen());
-
-afterAll(() => server.close());
+beforeAll(async () => {
+  server.listen();
+  return async () => server.close();
+});
 
 afterEach(() => server.resetHandlers());

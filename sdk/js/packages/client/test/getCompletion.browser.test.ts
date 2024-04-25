@@ -6,11 +6,12 @@ import { expect, test } from "vitest";
 import { AIChatProtocolClient } from "../src/client.js";
 
 test("Can send getCompletionRequest", async () => {
-  const client = new AIChatProtocolClient("https://my.test.com/api/chat", {});
-  const response = await client.getCompletion([
+  const client = new AIChatProtocolClient("https://my.test.com/api/chat");
+  const { message, context } = await client.getCompletion([
     { content: "Hello, world!", role: "user" },
   ]);
-  expect(response).toEqual({
-    message: { content: "Hello, world!", role: "assistant" },
+  expect(message).toEqual({ content: "Hello, world!", role: "assistant" });
+  expect(context).toEqual({
+    payload: { messages: [{ content: "Hello, world!", role: "user" }] },
   });
 });

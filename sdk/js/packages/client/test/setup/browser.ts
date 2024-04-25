@@ -3,14 +3,13 @@
 
 import { setupWorker } from "msw/browser";
 import { handlers } from "./handlers.js";
-import { afterAll, afterEach, beforeAll } from "vitest";
+import { afterEach, beforeAll } from "vitest";
 
 const server = setupWorker(...handlers);
 
 beforeAll(async () => {
   await server.start({ quiet: true });
+  return async () => server.stop();
 });
-
-afterAll(() => server.stop());
 
 afterEach(() => server.resetHandlers());
