@@ -4,6 +4,7 @@ export default defineWorkspace([
   {
     test: {
       name: "node",
+      environment: 'node',
       include: ["test/**/*.{node,common}.test.ts"],
       setupFiles: ["./test/setup/node.ts"],
     },
@@ -11,15 +12,16 @@ export default defineWorkspace([
   {
     test: {
       name: "browser",
+      environment: 'jsdom',
       include: ["test/**/*.{browser,common}.test.ts"],
       alias: [
         {
-          find: "./util/stream.js",
-          replacement: "./util/stream-browser.mjs",
+          find: /^(.+)\/stream.js/,
+          replacement: "$1/stream-browser.mjs",
         },
         {
-          find: "./util/url.js",
-          replacement: "./util/url-browser.mjs",
+          find: /^(.+)\/url.js/,
+          replacement: "$1/url-browser.mjs",
         },
       ],
       browser: {

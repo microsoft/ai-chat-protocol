@@ -13,7 +13,7 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "rootDir": ".",
+    "rootDir": "./src",
     "lib": [
       "ESNext",
       "DOM"
