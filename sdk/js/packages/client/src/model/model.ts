@@ -46,3 +46,12 @@ export interface AIChatClientOptions extends ClientOptions {}
 
 export type AIChatCompletionOperationOptions = AIChatCompletionOptions &
   OperationOptions;
+
+export interface AIChatError {
+  code: string;
+  message: string;
+}
+
+export interface AIChatErrorResponse {
+  error: AIChatError;
+}

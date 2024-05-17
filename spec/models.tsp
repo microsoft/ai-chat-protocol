@@ -55,3 +55,12 @@ model AIChatCompletionRequest {
   ...ContextProp;
   ...SessionStateProp;
 }
+
+model AIChatErrorResponse {
+  error: AIChatError
+}
+
+model AIChatError {
+  code: string;
+  message: string;
+}
