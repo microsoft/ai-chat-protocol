@@ -153,7 +153,7 @@ export class AIChatProtocolClient {
       const body = await getStreamContent(response.body);
       handleFailedRequest(response.status, body);
     }
-    
+
     return getAsyncIterable<AIChatCompletionDelta>(response.body);
   }
 }
