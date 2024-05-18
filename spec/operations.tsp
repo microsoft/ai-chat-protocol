@@ -6,9 +6,11 @@ using TypeSpec.Http;
 
 namespace AI.Chat;
 
+alias Response<T> = T | AIChatErrorResponse;
+
 @post
-op getCompletion(...AIChatCompletionRequest): AIChatCompletion;
+op getCompletion(...AIChatCompletionRequest): Response<AIChatCompletion>;
 
 @post
 @route("/stream")
-op getStreamedCompletion(...AIChatCompletionRequest): AIChatCompletionDelta;
+op getStreamedCompletion(...AIChatCompletionRequest): Response<AIChatCompletionDelta>;

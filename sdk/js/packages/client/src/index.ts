@@ -13,4 +13,6 @@ export {
   AIChatMessage,
   AIChatMessageDelta,
   AIChatRole,
+  AIChatError,
+  AIChatErrorResponse,
 } from "./model/index.js";
