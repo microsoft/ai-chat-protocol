@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -14,6 +14,7 @@
     "declaration": true,
     "declarationMap": true,
     "rootDir": ".",
+    "outDir": "build",
     "lib": [
       "ESNext",
       "DOM"
