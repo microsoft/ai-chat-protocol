@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { isErrorResponse } from "./error.js";
+
 function makeAsyncIterable<T>(stream: ReadableStream<T>): AsyncIterable<T> {
   return {
     async *[Symbol.asyncIterator]() {
@@ -82,5 +84,11 @@ async function* map<T, U>(
 export function getAsyncIterable<T>(
   stream: ReadableStream<Uint8Array>,
 ): AsyncIterable<T> {
-  return map(toLines(stream), (line) => JSON.parse(line) as T);
+  return map(toLines(stream), (line) => {
+    const parsed = JSON.parse(line);
+    if (isErrorResponse(parsed)) {
+      throw parsed.error;
+    }
+    return parsed as T;
+  });
 }
