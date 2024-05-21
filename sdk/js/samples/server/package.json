@@ -21,7 +21,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@microsoft/ai-chat-protocol": "file:../../packages/client/microsoft-ai-chat-protocol-0.1.0-alpha.1.tgz",
+    "@microsoft/ai-chat-protocol": "^1.0.0-alpha.20240520.1",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.30",

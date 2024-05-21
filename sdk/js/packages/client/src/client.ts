@@ -16,10 +16,10 @@ import {
   AIChatCompletion,
   AIChatCompletionDelta,
   AIChatCompletionOperationOptions,
-  AIChatErrorResponse,
   AIChatMessage,
 } from "./model/index.js";
 import { toAbsoluteUrl } from "./util/url.js";
+import { isErrorResponse } from "./util/error.js";
 
 /* Replace with a version provided by the ts-http-runtime library once that is provided. */
 function isTokenCredential(credential: unknown): credential is TokenCredential {
@@ -35,10 +35,6 @@ function isTokenCredential(credential: unknown): credential is TokenCredential {
   );
 }
 
-function isErrorResponse(response: any): response is AIChatErrorResponse {
-  return response.error !== undefined && response.error.code !== undefined;
-}
-
 function isCredential(
   credential: unknown,
 ): credential is TokenCredential | KeyCredential {
@@ -52,7 +48,7 @@ function isLocalhost(url: string): boolean {
 
 async function getStreamContent(
   stream: ReadableStream<Uint8Array>,
-): Promise<any> {
+): Promise<unknown> {
   const bodyText = await new Response(stream).text();
   try {
     return JSON.parse(bodyText);
@@ -61,7 +57,7 @@ async function getStreamContent(
   }
 }
 
-function handleFailedRequest(status: any, body: any): never {
+function handleFailedRequest(status: string, body: unknown): never {
   if (isErrorResponse(body)) {
     throw body.error;
   }

@@ -15,6 +15,10 @@ function getReadableStream(lines: string[]) {
   });
 }
 
+function getReadableStreamFromObjects(objects: object[]) {
+  return getReadableStream(objects.map((o) => JSON.stringify(o) + "\n"));
+}
+
 interface Foo {
   a: number;
 }
@@ -80,4 +84,40 @@ test("When received a malformed JSON, it throws an error", async () => {
   } catch (e) {
     expect(e).toBeInstanceOf(SyntaxError);
   }
+});
+
+test("Throws an exception when the stream contains an AIChatErrorResponse", async () => {
+  const stream = getReadableStreamFromObjects([
+    { error: { code: "Some code", message: "Some error" } },
+  ]);
+  const iterable = getAsyncIterable(stream);
+
+  try {
+    for await (const _ of iterable) {
+      expect.unreachable("Should have thrown an error");
+    }
+    expect.unreachable("Should have thrown an error");
+  } catch (err) {
+    expect(err).toEqual({ code: "Some code", message: "Some error" });
+  }
+});
+
+test("Throws an exception as soon as an AIChatError is encountered", async () => {
+  const stream = getReadableStreamFromObjects([
+    { foo: "bar" },
+    { error: { code: "Some code", message: "Some error" } },
+    { foo: "baz" },
+  ]);
+  const iterable = getAsyncIterable(stream);
+
+  let values: unknown[] = [];
+  try {
+    for await (const value of iterable) {
+      values.push(value);
+    }
+    expect.unreachable("Should have thrown an error");
+  } catch (err) {
+    expect(err).toEqual({ code: "Some code", message: "Some error" });
+  }
+  expect(values).toEqual([{ foo: "bar" }]);
 });
