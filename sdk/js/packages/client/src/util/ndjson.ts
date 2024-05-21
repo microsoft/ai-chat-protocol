@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { isErrorResponse } from "./error";
+import { isErrorResponse } from "./error.js";
 
 function makeAsyncIterable<T>(stream: ReadableStream<T>): AsyncIterable<T> {
   return {
