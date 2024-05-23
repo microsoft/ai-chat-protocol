@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { Button, ToggleButton } from "@fluentui/react-components";
 import { AIChatMessage, AIChatProtocolClient } from "@microsoft/ai-chat-protocol";
 import { useId, useState } from "react";
@@ -56,7 +59,7 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
       setMessages([...updatedMessages, result.message]);
     }
   };
-  
+
   return (
     <div className={styles.chatWindow} style={style}>
       <div className={styles.messages}>

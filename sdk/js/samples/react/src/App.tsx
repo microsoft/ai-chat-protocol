@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { FluentProvider, webLightTheme } from '@fluentui/react-components'
 import Chat from './Chat.tsx';
 import Readme from './Readme.tsx';
