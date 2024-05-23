@@ -33,19 +33,21 @@
 }
 
 .userMessage .messageBubble {
-  background-color: #DCF8C6;
+  background-color: #dcf8c6;
   /* light green */
 }
 
 .assistantMessage .messageBubble {
-  background-color: #ECE5DD;
+  background-color: #ece5dd;
   /* light gray */
 }
 
 .inputArea {
   display: flex;
-  border-top: 1px solid #ECE5DD;
+  border-top: 1px solid #ece5dd;
   padding: 10px;
+  flex-shrink: 0;
+  align-items: flex-end;
 }
 
 .inputArea textarea {
@@ -57,11 +59,34 @@
   resize: none;
 }
 
-.inputArea>div {
+.inputArea > div {
   display: flex;
   gap: 10px;
 }
 
 .inputArea button {
   margin-right: 10px;
+}
+
+.caution {
+  padding: 10px 10px 10px 40px;
+  border: 1px solid #d1d5da;
+  background-color: #fdd;
+  background-image: url("./assets/caution.svg");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 20px;
+  color: #24292e;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
 }

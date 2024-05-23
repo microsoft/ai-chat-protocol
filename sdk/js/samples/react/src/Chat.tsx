@@ -7,10 +7,11 @@ import {
   AIChatProtocolClient,
   AIChatError,
 } from "@microsoft/ai-chat-protocol";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import TextareaAutosize from 'react-textarea-autosize';
-import styles from './Chat.module.css';
+import TextareaAutosize from "react-textarea-autosize";
+import styles from "./Chat.module.css";
+import gfm from "remark-gfm";
 
 
 type ChatEntry = AIChatMessage | AIChatError;
@@ -27,11 +28,12 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
   const [streaming, setStreaming] = useState<boolean>(false);
   const inputId = useId();
   const [sessionState, setSessionState] = useState<unknown>(undefined);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const clear = () => {
-    setMessages([]);
-    setInput("");
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  useEffect(scrollToBottom, [messages]);
 
   const sendMessage = async () => {
     const message: AIChatMessage = {
@@ -43,7 +45,9 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
     setInput("");
     try {
       if (streaming) {
-        const result = await client.getStreamedCompletion([message], { sessionState: sessionState });
+        const result = await client.getStreamedCompletion([message], {
+          sessionState: sessionState,
+        });
         const latestMessage: AIChatMessage = { content: "", role: "assistant" };
         for await (const response of result) {
           if (response.sessionState) {
@@ -61,10 +65,10 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
           }
         }
       } else {
-        const result = await client.getCompletion([message]);
-        if (result.sessionState) {
-          setSessionState(result.sessionState);
-        }
+        const result = await client.getCompletion([message], {
+          sessionState: sessionState,
+        });
+        setSessionState(result.sessionState);
         setMessages([...updatedMessages, result.message]);
       }
     } catch (e) {
@@ -74,28 +78,59 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
     }
   };
 
+  const getClassName = (message: ChatEntry) => {
+    if (isChatError(message)) {
+      return styles.caution;
+    }
+    return message.role === "user"
+      ? styles.userMessage
+      : styles.assistantMessage;
+  };
+
+  const getErrorMessage = (message: AIChatError) => {
+    return `${message.code}: ${message.message}`;
+  };
+
   return (
     <div className={styles.chatWindow} style={style}>
       <div className={styles.messages}>
-        {messages.map(message => (
-          <div key={crypto.randomUUID()} className={message.role === 'user' ? styles.userMessage : styles.assistantMessage}>
-            <div className={styles.messageBubble}>
-              <ReactMarkdown>{message.content}</ReactMarkdown>
-            </div>
+        {messages.map((message) => (
+          <div key={crypto.randomUUID()} className={getClassName(message)}>
+            {isChatError(message) ? (
+              <>{getErrorMessage(message)}</>
+            ) : (
+              <div className={styles.messageBubble}>
+                <ReactMarkdown remarkPlugins={[gfm]}>
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+            )}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <div className={styles.inputArea}>
         <TextareaAutosize
           id={inputId}
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && e.shiftKey) {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
           minRows={1}
           maxRows={4}
         />
         <Button onClick={sendMessage}>Send</Button>
-        <ToggleButton checked={streaming} onClick={() => setStreaming(!streaming)} >Streaming</ToggleButton>
+        <ToggleButton
+          checked={streaming}
+          onClick={() => setStreaming(!streaming)}
+        >
+          Streaming
+        </ToggleButton>
       </div>
     </div>
-      );
+  );
 }

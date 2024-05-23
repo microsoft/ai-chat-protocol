@@ -1,0 +1,19 @@
+/**
+ * Copyright (c) Microsoft Corporation.
+ * Licensed under the MIT License.
+ */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.appContainer {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: auto;
+}
