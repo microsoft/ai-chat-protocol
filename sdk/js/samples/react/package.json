@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.1",
+    "react-textarea-autosize": "^8.5.3",
+    "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
     "@fluentui/react-components": "9.46.8",

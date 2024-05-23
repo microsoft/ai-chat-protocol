@@ -1,41 +1,12 @@
-import { Button, Input, makeStyles, Text, ToggleButton } from "@fluentui/react-components";
+import { Button, ToggleButton } from "@fluentui/react-components";
 import { AIChatMessage, AIChatProtocolClient } from "@microsoft/ai-chat-protocol";
 import { useId, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import TextareaAutosize from 'react-textarea-autosize';
+import styles from './Chat.module.css';
 
-const useStyles = makeStyles({
-  messages: {
-    top: "10px",
-    left: "10px",
-    right: "10px",
-    bottom: "50px",
-    position: 'absolute',
-    overflowY: 'auto',
-    paddingRight: '10px',
-    paddingLeft: '10px',
-    paddingTop: '10px',
-    paddingBottom: '10px',
 
-  },
-  input: {
-    position: 'absolute',
-    bottom: '10px',
-    left: '10px',
-    right: '10px',
-  },
-});
-
-const useMessageStyles = makeStyles({
-  assistant: {
-    color: 'blue',
-    fontWeight: 'bold',
-  },
-  user: {
-    color: 'green',
-    fontWeight: 'bold',
-  },
-});
-
-export default function Chat() {
+export default function Chat({ style }: { style: React.CSSProperties }) {
   const client = new AIChatProtocolClient('http://localhost:3000/api/chat', {
     allowInsecureConnection: true
   });
@@ -44,6 +15,7 @@ export default function Chat() {
   const [input, setInput] = useState<string>('');
   const [streaming, setStreaming] = useState<boolean>(false);
   const inputId = useId();
+  const [sessionState, setSessionState] = useState<unknown>(undefined);
 
   const clear = () => {
     setMessages([]);
@@ -59,9 +31,12 @@ export default function Chat() {
     setMessages(updatedMessages);
     setInput('');
     if (streaming) {
-      const result = await client.getStreamedCompletion([message]);
+      const result = await client.getStreamedCompletion([message], { sessionState: sessionState });
       const latestMessage: AIChatMessage = { content: "", role: 'assistant' };
       for await (const response of result) {
+        if (response.sessionState) {
+          setSessionState(response.sessionState);
+        }
         if (!response.delta) {
           continue;
         }
@@ -74,28 +49,36 @@ export default function Chat() {
         }
       }
     } else {
-      const result = await client.getCompletion([message]);
+      const result = await client.getCompletion([message], { sessionState: sessionState });
+      if (result.sessionState) {
+        setSessionState(result.sessionState);
+      }
       setMessages([...updatedMessages, result.message]);
     }
   };
-
-  const styles = useStyles();
-  const messageStyles = useMessageStyles();
+  
   return (
-    <div>
+    <div className={styles.chatWindow} style={style}>
       <div className={styles.messages}>
         {messages.map(message => (
-          <div key={crypto.randomUUID()}>
-            <Text className={message.role === 'user' ? messageStyles.user : messageStyles.assistant}>{message.role}: {message.content}</Text>
+          <div key={crypto.randomUUID()} className={message.role === 'user' ? styles.userMessage : styles.assistantMessage}>
+            <div className={styles.messageBubble}>
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
           </div>
         ))}
       </div>
-      <div className={styles.input}>
-        <Input id={inputId} value={input} onChange={(e) => setInput(e.target.value)} />
+      <div className={styles.inputArea}>
+        <TextareaAutosize
+          id={inputId}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          minRows={1}
+          maxRows={4}
+        />
         <Button onClick={sendMessage}>Send</Button>
-        <Button onClick={clear}>Clear</Button>
         <ToggleButton checked={streaming} onClick={() => setStreaming(!streaming)} >Streaming</ToggleButton>
       </div>
     </div>
-  );
+      );
 }
