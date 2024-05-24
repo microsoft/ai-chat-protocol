@@ -1,48 +1,17 @@
-import {
-  Button,
-  Input,
-  makeStyles,
-  Text,
-  ToggleButton,
-} from "@fluentui/react-components";
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+import { Button, ToggleButton } from "@fluentui/react-components";
 import {
   AIChatMessage,
   AIChatProtocolClient,
   AIChatError,
 } from "@microsoft/ai-chat-protocol";
-import { useId, useState } from "react";
-
-const useStyles = makeStyles({
-  messages: {
-    top: "10px",
-    left: "10px",
-    right: "10px",
-    bottom: "50px",
-    position: "absolute",
-    overflowY: "auto",
-    paddingRight: "10px",
-    paddingLeft: "10px",
-    paddingTop: "10px",
-    paddingBottom: "10px",
-  },
-  input: {
-    position: "absolute",
-    bottom: "10px",
-    left: "10px",
-    right: "10px",
-  },
-});
-
-const useMessageStyles = makeStyles({
-  assistant: {
-    color: "blue",
-    fontWeight: "bold",
-  },
-  user: {
-    color: "green",
-    fontWeight: "bold",
-  },
-});
+import { useEffect, useId, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import TextareaAutosize from "react-textarea-autosize";
+import styles from "./Chat.module.css";
+import gfm from "remark-gfm";
 
 type ChatEntry = AIChatMessage | AIChatError;
 
@@ -50,18 +19,20 @@ function isChatError(entry: unknown): entry is AIChatError {
   return (entry as AIChatError).code !== undefined;
 }
 
-export default function Chat() {
+export default function Chat({ style }: { style: React.CSSProperties }) {
   const client = new AIChatProtocolClient("/api/chat");
 
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [input, setInput] = useState<string>("");
   const [streaming, setStreaming] = useState<boolean>(false);
   const inputId = useId();
+  const [sessionState, setSessionState] = useState<unknown>(undefined);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const clear = () => {
-    setMessages([]);
-    setInput("");
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  useEffect(scrollToBottom, [messages]);
 
   const sendMessage = async () => {
     const message: AIChatMessage = {
@@ -73,9 +44,14 @@ export default function Chat() {
     setInput("");
     try {
       if (streaming) {
-        const result = await client.getStreamedCompletion([message]);
+        const result = await client.getStreamedCompletion([message], {
+          sessionState: sessionState,
+        });
         const latestMessage: AIChatMessage = { content: "", role: "assistant" };
         for await (const response of result) {
+          if (response.sessionState) {
+            setSessionState(response.sessionState);
+          }
           if (!response.delta) {
             continue;
           }
@@ -88,7 +64,10 @@ export default function Chat() {
           }
         }
       } else {
-        const result = await client.getCompletion([message]);
+        const result = await client.getCompletion([message], {
+          sessionState: sessionState,
+        });
+        setSessionState(result.sessionState);
         setMessages([...updatedMessages, result.message]);
       }
     } catch (e) {
@@ -98,39 +77,52 @@ export default function Chat() {
     }
   };
 
-  const styles = useStyles();
-  const messageStyles = useMessageStyles();
+  const getClassName = (message: ChatEntry) => {
+    if (isChatError(message)) {
+      return styles.caution;
+    }
+    return message.role === "user"
+      ? styles.userMessage
+      : styles.assistantMessage;
+  };
+
+  const getErrorMessage = (message: AIChatError) => {
+    return `${message.code}: ${message.message}`;
+  };
+
   return (
-    <div>
+    <div className={styles.chatWindow} style={style}>
       <div className={styles.messages}>
         {messages.map((message) => (
-          <div key={crypto.randomUUID()}>
+          <div key={crypto.randomUUID()} className={getClassName(message)}>
             {isChatError(message) ? (
-              <Text>
-                {message.code}: {message.message}
-              </Text>
+              <>{getErrorMessage(message)}</>
             ) : (
-              <Text
-                className={
-                  message.role === "user"
-                    ? messageStyles.user
-                    : messageStyles.assistant
-                }
-              >
-                {message.role}: {message.content}
-              </Text>
+              <div className={styles.messageBubble}>
+                <ReactMarkdown remarkPlugins={[gfm]}>
+                  {message.content}
+                </ReactMarkdown>
+              </div>
             )}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <div className={styles.input}>
-        <Input
+      <div className={styles.inputArea}>
+        <TextareaAutosize
           id={inputId}
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && e.shiftKey) {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
+          minRows={1}
+          maxRows={4}
         />
         <Button onClick={sendMessage}>Send</Button>
-        <Button onClick={clear}>Clear</Button>
         <ToggleButton
           checked={streaming}
           onClick={() => setStreaming(!streaming)}

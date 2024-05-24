@@ -1,0 +1,92 @@
+/**
+ * Copyright (c) Microsoft Corporation.
+ * Licensed under the MIT License.
+ */
+
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.userMessage {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.assistantMessage {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.messageBubble {
+  max-width: 60%;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.userMessage .messageBubble {
+  background-color: #dcf8c6;
+  /* light green */
+}
+
+.assistantMessage .messageBubble {
+  background-color: #ece5dd;
+  /* light gray */
+}
+
+.inputArea {
+  display: flex;
+  border-top: 1px solid #ece5dd;
+  padding: 10px;
+  flex-shrink: 0;
+  align-items: flex-end;
+}
+
+.inputArea textarea {
+  flex-grow: 1;
+  border: none;
+  border-radius: 20px;
+  padding: 10px;
+  margin-right: 10px;
+  resize: none;
+}
+
+.inputArea > div {
+  display: flex;
+  gap: 10px;
+}
+
+.inputArea button {
+  margin-right: 10px;
+}
+
+.caution {
+  padding: 10px 10px 10px 40px;
+  border: 1px solid #d1d5da;
+  background-color: #fdd;
+  background-image: url("./assets/caution.svg");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 20px;
+  color: #24292e;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+}

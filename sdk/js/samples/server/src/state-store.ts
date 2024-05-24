@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { createClient, RedisClientType } from "redis";
 
 import { ConfigParameter, getConfig } from "./config";
