@@ -13,7 +13,6 @@ import TextareaAutosize from "react-textarea-autosize";
 import styles from "./Chat.module.css";
 import gfm from "remark-gfm";
 
-
 type ChatEntry = AIChatMessage | AIChatError;
 
 function isChatError(entry: unknown): entry is AIChatError {
