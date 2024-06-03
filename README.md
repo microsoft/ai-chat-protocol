@@ -1,5 +1,8 @@
 # Microsoft AI Chat Protocol SDK
 
+[![NPM Package](https://img.shields.io/npm/v/@microsoft/ai-chat-protocol)](https://www.npmjs.com/package/@microsoft/ai-chat-protocol)
+[![TypeScript Build](https://github.com/microsoft/ai-chat-protocol/actions/workflows/typescript-build.yml/badge.svg)](https://github.com/microsoft/ai-chat-protocol/actions/workflows/typescript-build.yml)
+
 The Microsoft AI Chat Protocol SDK is a library for easily building AI Chat interfaces.
 
 *Note: we are currently in public preview. Your feedback is greatly appreciated as we get ready to be generally available!*
