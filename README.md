@@ -1,6 +1,6 @@
 # Microsoft AI Chat Protocol SDK
 
-The Microsoft AI Chat Protocol is a library for easily building AI Chat interfaces.
+The Microsoft AI Chat Protocol SDK is a library for easily building AI Chat interfaces.
 
 *Note: we are currently in public preview. Your feedback is greatly appreciated as we get ready to be generally available!*
 

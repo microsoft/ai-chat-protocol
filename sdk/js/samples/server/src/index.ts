@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import express, { Express } from "express";
 import * as cors from "cors";
 
