@@ -1,12 +1,16 @@
-name: CI
+name: TypeScript Build
 
 on:
   push:
     branches:
       - main
+    paths: 
+      - 'sdk/js/packages/**'
   pull_request:
     branches:
       - main
+    paths: 
+      - 'sdk/js/packages/**'
 
 jobs:
   build:
