@@ -72,7 +72,5 @@ jobs:
         GH_TOKEN: ${{ github.token}}
       run: |
         tag_name=${GITHUB_REF#refs/tags/}
-        version=${tag_name#release/js/}    
-        echo "Tag: $tag_name"
-        echo "Version: $version"
+        version=${tag_name#release/js/}
         gh release create $tag_name -t "Typescript Release $version" ./packages/*.tgz      
