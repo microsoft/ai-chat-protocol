@@ -70,7 +70,7 @@ jobs:
     - name: Create Release
       env:
         GH_TOKEN: ${{ github.token}}
-      run:
+      run: |
         tag_name=${GITHUB_REF#refs/tags/}
-        version=${tag_name#release/js/}    
+        version=${tag_name#release/js/}
         gh release create $tag_name -t "Typescript Release $version" ./packages/*.tgz      
