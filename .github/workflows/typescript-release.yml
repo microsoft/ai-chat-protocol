@@ -71,5 +71,6 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token}}
       run:
-        version=${GITHUB_REF#refs/tags/release/js/}
-        gh release create release/js/$version -t "Typescript Release $version" ./packages/*.tgz      
+        tag_name=${GITHUB_REF#refs/tags/}
+        version=${tag_name#release/js/}    
+        gh release create $tag_name -t "Typescript Release $version" ./packages/*.tgz      
