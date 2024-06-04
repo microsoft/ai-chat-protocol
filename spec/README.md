@@ -1,6 +1,7 @@
 # Microsoft AI Chat Protocol API Specification (Version 2024-05-29)
 
 ## Rationale
+
 The AI Chat Protocol API Specification is an effort to standarize API contracts across AI solutions and languages. By having a unified approach, AI application components become compatible and interoperable with one another without hassle. Additionally, this allows for a consistent API surface to perform AI evaluations on, reducing the complexity in calling different AI services.
 
 This protocol is inspired by the [OpenAI ChatCompletion API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api) but contains additional fields required for a chat application. The original specification was created by [Pamela Fox](https://github.com/pamelafox) and [Natalia Venditto](https://github.com/anfibiacreativa).
@@ -9,7 +10,7 @@ Table of contents:
 
 * [HTTP requests to AI chat app endpoints](#http-requests-to-ai-chat-app-endpoints)
   * [Example request context](#example-request-context)
-* [HTTP responses from RAG chat app endpoints](#http-responses-from-rag-chat-app-endpoints)
+* [HTTP responses from AI Chat App endpoints](#http-responses-from-ai-chat-app-endpoints)
   * [Non-streaming response](#non-streaming-response)
     * [Successful response](#successful-response)
     * [Error response](#error-response)
@@ -217,10 +218,9 @@ Here's an example JSON response for a 500-level error:
 
 ### Streaming response
 
-The response should contain these headers:
+The response should contain this header:
 
-* `Content-Type: application/json-lines`
-* `Transfer-Encoding: chunked`
+* `Content-Type: application/x-ndjson`
 
 #### Successful streamed response
 
@@ -231,7 +231,7 @@ The first chunk contains the `context` property, since that is available before 
 Each JSON object should contain the following properties:
 
 * `"delta"`: An object containing the actual content of the response, a token at a time. See [Answer formatting](#answer-formatting). _Comes from the [OpenAI chat completion chunk object](https://platform.openai.com/docs/api-reference/chat/streaming)._
-* `"context"`: _Optional_. An object containing additional details needed for the chat app. Each application can define its own properties. See [recommended response context properties](#recommended-response-context).
+* `"context"`: _Optional_. An object containing additional details needed for the chat app. Each application can define its own properties. See [example response context properties](#example-response-context).
 * `"session_state"`: _Optional_. An object containing the "memory" for the chat app, such as a user ID.
 
 Here's an example of the first three JSON objects in a streaming response:
@@ -357,7 +357,7 @@ Here's a full example of an answer with citation:
 There is no specific information provided about what is included in the Northwind Health Plus plan that is not in the standard plan. It is recommended to read the plan details carefully and ask questions to understand the specific benefits of the Northwind Health Plus plan [Northwind_Standard_Benefits_Details.pdf#page=91].
 ```
 
-### Recommended response context
+### Example response context
 
 The response context object can contain any properties. However, here are some recommended properties:
 
