@@ -2,7 +2,7 @@
 
 ## Rationale
 
-The AI Chat Protocol API Specification is an effort to standarize API contracts across AI solutions and languages. By having a unified approach, AI application components become compatible and interoperable with one another without hassle. Additionally, this allows for a consistent API surface to perform AI evaluations on, reducing the complexity in calling different AI services.
+The AI Chat Protocol API Specification is an effort to standarize API contracts across AI solutions and languages. By having a unified approach, AI application components become easily compatible and interoperable with one another. Additionally, this allows for a consistent API surface to perform AI evaluations on, reducing the complexity in consuming different AI service endpoints.
 
 This protocol is inspired by the [OpenAI ChatCompletion API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api) but contains additional fields required for a chat application. The original specification was created by [Pamela Fox](https://github.com/pamelafox) and [Natalia Venditto](https://github.com/anfibiacreativa).
 
@@ -88,7 +88,7 @@ Example of the overrides object:
 
 ## HTTP responses from AI Chat App endpoints
 
-The HTTP response should either be JSON for a non-streaming response, or [newline-delimited JSON](https://ndjson.org/home/) ("NDJSON"/"jsonlines") for a streaming response.
+The HTTP response should either be JSON for a non-streaming response, or [newline-delimited JSON](https://ndjson.org/home/) ("NDJSON") for a streaming response.
 
 ### Non-streaming response
 
@@ -101,7 +101,7 @@ The response should contain this header:
 A successful response should have a status code of 200, and the body should contain a JSON object with the following properties:
 
 * `"message"`: An object containing the actual content of the response.  See [Answer formatting](#answer-formatting). _Comes from the [OpenAI chat completion object](https://platform.openai.com/docs/api-reference/chat/object)._
-* `"context"`: _Optional_. An object containing additional details needed for the chat app. Each application can define its own properties. See [recommended example context properties](#recommended-response-context).
+* `"context"`: _Optional_. An object containing additional details needed for the chat app. Each application can define its own properties. See [example context properties for responses](#example-response-context).
 * `"session_state"`: _Optional_. An object containing the "memory" for the chat app, such as a user ID.
 
 
@@ -359,7 +359,7 @@ There is no specific information provided about what is included in the Northwin
 
 ### Example response context
 
-The response context object can contain any properties. However, here are some recommended properties:
+The response context object can contain any properties. Here are some example properties:
 
 * `"followup_questions"`: A list of follow-up questions to ask the user.
 
