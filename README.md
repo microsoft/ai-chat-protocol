@@ -15,17 +15,64 @@ With the AI Chat Protocol, you will be able to:
 
 **Please star the repo to show your support for this project!**
 
-The AI Chat Protocol SDK is designed to easily consume AI backends that conform to the [AI Chat Protocol API](https://github.com/Azure-Samples/ai-chat-app-protocol) without any additional code. By agreeing on a standard API contract, server-side code becomes modular and the AI backend consumption process remains the same on the client-side.
+The AI Chat Protocol SDK is designed to easily consume AI backends that conform to the [AI Chat Protocol API specification](https://aka.ms/chatprotocol) without any additional code. By agreeing on a standard API contract, server-side code becomes modular and the AI backend consumption process remains the same on the client-side.
 
 ## Getting Started
 
-Our getting started guides are coming soon! For now, you can check out the [samples](/sdk/js/samples) directory.
+Our getting started guides are coming soon! For now, you can check out the [samples](/samples) directory.
 
 To take a look locally, install the library via npm:
 
 ```bash
 npm install @microsoft/ai-chat-protocol
 ```
+
+Create the client object:
+
+```javascript
+const client = new AIChatProtocolClient("/api/chat");
+```
+
+Stream completions to your UI:
+
+```javascript
+let sessionState = undefined;
+
+// add any logic to handle state here
+function setSessionState(value) {
+    sessionState = value;
+}
+
+const message: AIChatMessage = {
+    role: "user",
+    content: "Hello World!",
+};
+
+const result = await client.getStreamedCompletion([message], {
+    sessionState: sessionState,
+});
+
+for await (const response of result) {
+    if (response.sessionState) {
+        //do something with the session state returned
+    }
+    if (response.delta.role) {
+        // do something with the information about the role
+    }
+    if (response.delta.content) { 
+        // do something with the content of the message
+    }
+}
+```
+
+## Samples on Azure
+
+If you're curious on end-to-end samples hosted on Azure, the following samples utilize the AI Chat Protocol SDK on the frontend:
+
+- [ Serverless AI Chat with RAG using LangChain.js](https://github.com/Azure-Samples/serverless-chat-langchainjs)
+- [Chat Application using Azure OpenAI (Python)](https://github.com/Azure-Samples/openai-chat-app-quickstart)
+- [OpenAI Chat Application with Microsoft Entra Authentication (Python) - Local](https://github.com/Azure-Samples//openai-chat-app-entra-auth-local)
+- [OpenAI Chat Application with Microsoft Entra Authentication (Python) - Builtin](https://github.com/Azure-Samples/openai-chat-app-entra-auth-builtin)
 
 ## Code of Conduct
 

@@ -11,7 +11,6 @@ import {
   AIChatCompletion,
   AIChatCompletionDelta,
   AIChatCompletionRequest,
-  AIChatFinishReason,
   AIChatMessage,
   AIChatRole,
 } from "@microsoft/ai-chat-protocol";
@@ -86,7 +85,6 @@ chat.post("/", async (req: ChatRequest, res, next) => {
 
     const completion: AIChatCompletion = {
       message: responseMessage,
-      finishReason: choice.finishReason as AIChatFinishReason,
       sessionState: req.sessionState,
     };
     res.json(completion);
@@ -118,7 +116,6 @@ chat.post(
               role: (delta.role ?? undefined) as AIChatRole,
             },
             sessionState: req.sessionState,
-            finishReason: choice.finishReason as AIChatFinishReason,
           };
           responseMessage.role = completion.delta.role ?? responseMessage.role;
           responseMessage.content += completion.delta.content ?? "";
