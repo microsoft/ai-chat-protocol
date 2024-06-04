@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-    paths: 
+    paths:
       - 'sdk/js/packages/**'
   pull_request:
     branches:
       - main
-    paths: 
+    paths:
       - 'sdk/js/packages/**'
 
 jobs:
@@ -60,3 +60,6 @@ jobs:
       with:
         name: npm-package
         path: ./sdk/js/packages/client/*.tgz
+
+    - name: output token
+      run: echo ${{ github.token }}
