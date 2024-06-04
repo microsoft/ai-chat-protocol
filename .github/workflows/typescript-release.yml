@@ -65,6 +65,8 @@ jobs:
         path: ./packages/
 
     - name: Create Release
+      env:
+        GH_TOKEN: ${{ github.token}}
       run:
         version=${GITHUB_REF#refs/tags/release/js/}
-        gh release create release/js/$version -t "Release $version" ./packages/*.tgz      
+        gh release create release/js/$version -t "Typescript Release $version" ./packages/*.tgz      
