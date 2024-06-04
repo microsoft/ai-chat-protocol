@@ -1,0 +1,70 @@
+name: TypeScript Release
+
+on:
+  push:
+    tags:
+      - 'release/js/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.11.1'
+
+    - name: Install Dependencies
+      run: npm ci
+      working-directory: ./sdk/js/packages/client
+
+    - name: Run Linter
+      run: npm run lint
+      working-directory: ./sdk/js/packages/client
+
+    - name: Check Format
+      run: npm run check-format
+      working-directory: ./sdk/js/packages/client
+
+    - name: Build
+      run: npm run build
+      working-directory: ./sdk/js/packages/client
+
+    - name: Test
+      run: npm test
+      working-directory: ./sdk/js/packages/client
+
+    - name: Set Version
+      run: |
+          version=${GITHUB_REF#refs/tags/release/js/}
+          npm pkg set version="${version}"
+      working-directory: ./sdk/js/packages/client
+
+    - name: Pack
+      run: npm pack
+      working-directory: ./sdk/js/packages/client
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: npm-package
+        path: ./sdk/js/packages/client/*.tgz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: npm-package
+        path: ./packages/
+
+    - name: Create Release
+      run:
+        version=${GITHUB_REF#refs/tags/release/js/}
+        gh release create release/js/$version -t "Release $version" ./packages/*.tgz      
