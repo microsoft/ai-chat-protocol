@@ -359,7 +359,7 @@ There is no specific information provided about what is included in the Northwin
 
 ### Example response context
 
-The response context object can contain any properties. Here are some example properties:
+The response context object can contain any properties. Here are some common properties that may be of use depending on your AI application along with some best practices:
 
 * `"followup_questions"`: A list of follow-up questions to ask the user.
 
@@ -404,7 +404,7 @@ The response context object can contain any properties. Here are some example pr
     },
     ```
 
-    If a client receives this property, the client should display the data points in a perusable format. [See image](images/datapoints.png)
+    If a client receives this property, the client should display the data points in a perusable format. [See image](images/data_points.png)
 
 * `"thoughts"`: A list describing each step of the backend. Each step should contain:
   * `"title"`: A string describing the step.
