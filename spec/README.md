@@ -4,6 +4,8 @@
 
 The AI Chat Protocol API Specification is an effort to standarize API contracts across AI solutions and languages. By having a unified approach, AI application components become easily compatible and interoperable with one another. Additionally, this allows for a consistent API surface to perform AI evaluations on, reducing the complexity in consuming different AI service endpoints.
 
+In this directory, the specification is defined via [TypeSpec](https://typespec.io) and available as a human-readable document via this README.
+
 This protocol is inspired by the [OpenAI ChatCompletion API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api) but contains additional fields required for a chat application. The original specification was created by [Pamela Fox](https://github.com/pamelafox) and [Natalia Venditto](https://github.com/anfibiacreativa).
 
 Table of contents:
@@ -18,7 +20,7 @@ Table of contents:
     * [Successful streamed response](#successful-streamed-response)
     * [Error in streamed response](#error-in-streamed-response)
   * [Answer formatting](#answer-formatting)
-  * [Recommended response context](#recommended-response-context)
+  * [Example response context](#example-response-context)
 
 ## HTTP requests to AI Chat App endpoints
 
@@ -103,7 +105,6 @@ A successful response should have a status code of 200, and the body should cont
 * `"message"`: An object containing the actual content of the response.  See [Answer formatting](#answer-formatting). _Comes from the [OpenAI chat completion object](https://platform.openai.com/docs/api-reference/chat/object)._
 * `"context"`: _Optional_. An object containing additional details needed for the chat app. Each application can define its own properties. See [example context properties for responses](#example-response-context).
 * `"session_state"`: _Optional_. An object containing the "memory" for the chat app, such as a user ID.
-
 
 Here's an example JSON response:
 
@@ -485,15 +486,6 @@ The response context object can contain any properties. Here are some common pro
 
     If a client receives this property, the client should display the thoughts in a debug display or to the end-user as specified by the design system. [See image](images/thoughts.png)
 
-## Sample applications
+## Summary
 
-The following applications support at least a subset of the schema described above:
-
-Markdown table:
-
-| Application | Supports schema | Description |
-| ----------- | --------------- | ----------- |
-| [azure-search-openai-demo](https://www.github.com/Azure-samples/azure-search-openai-demo) | Supports the full schema, including all recommended context properties. | A RAG chat app that uses Azure AI Search and OpenAI. |
-| [azure-search-openai-javascript](https://www.github.com/Azure-samples/azure-search-openai-javascript) | Supports most of the schema, but not all recommended context properties (like for GPT-4V feature). | A RAG chat app that uses Azure AI Search and OpenAI. |
-| [openai-chat-backend-fastapi](https://github.com/Azure-Samples/openai-chat-backend-fastapi) | Supports messages and streamed responses, but no context properties. | A simple chat app using OpenAI. |
-| [openai-chat-app-quickstart](https://github.com/Azure-Samples/openai-chat-app-quickstart) | Supports messages, but no context properties, and only supports streamed responses. | A simple chat app using OpenAI. |
+The Microsoft AI Chat Protocol API Specification details a consistent pattern for requests and responses to an AI service endpoint, allowing for consistent service consumption and evaluations. Any comments or feedback can be left as an [issue](https://github.com/microsoft/ai-chat-protocol/issues/new).
