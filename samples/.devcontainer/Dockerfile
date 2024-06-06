@@ -7,7 +7,7 @@ RUN apt update &&\
                    libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2\
                    libatspi2.0-0 libxcomposite1 libxdamage1\
                    libxfixes3 libxrandr2 libgbm1 libxkbcommon0\
-                   libpango-1.0-0 libcairo2 libasound2 gnupg2                   
+                   libpango-1.0-0 libcairo2 libasound2 gnupg2
 
 # Install Azure CLI
 RUN curl -o az-cli.sh -L https://aka.ms/InstallAzureCLIDeb &&\
@@ -18,7 +18,7 @@ ARG user=vscode
 
 RUN useradd -ms /bin/bash $user
 
-RUN mkdir /workspace && chown $user:$user /workspace
+RUN mkdir /samples && chown $user:$user /samples
 
 USER $user
 WORKDIR /home/$user
