@@ -1,0 +1,5 @@
+{
+    "projectLoadTimeout": 100,
+    "maxProjectResults": 1,
+    "excludeSearchPatterns": ["samples/**/*"]
+}
