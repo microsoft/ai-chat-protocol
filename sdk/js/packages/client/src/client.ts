@@ -7,7 +7,7 @@ import {
   isKeyCredential,
   KeyCredential,
   RequestParameters,
-  TokenCredential,  
+  TokenCredential,
 } from "@typespec/ts-http-runtime";
 import { getAsyncIterable } from "./util/ndjson.js";
 import { asStream } from "./util/stream.js";
@@ -90,7 +90,7 @@ export class AIChatProtocolClient {
   ) {
     const absoluteEndpoint = toAbsoluteUrl(endpoint);
     const [origin, basePath] = splitURL(absoluteEndpoint);
-    this.basePath = basePath; 
+    this.basePath = basePath;
     const defaults: AIChatClientOptions = {
       allowInsecureConnection: isLocalhost(absoluteEndpoint),
     };
@@ -121,8 +121,10 @@ export class AIChatProtocolClient {
         context: options.context,
         sessionState: options.sessionState,
       },
-    };    
-    const response = await this.client.path(this.basePath).post(request, options);
+    };
+    const response = await this.client
+      .path(this.basePath)
+      .post(request, options);
     const { status, body } = response;
     if (!/2\d\d/.test(status)) {
       handleFailedRequest(status, body);
@@ -150,7 +152,7 @@ export class AIChatProtocolClient {
         context: options.context,
         sessionState: options.sessionState,
       },
-    };    
+    };
     const response = await asStream(
       this.client.path(`${this.basePath}/stream`).post(request, options),
     );
