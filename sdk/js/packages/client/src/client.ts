@@ -7,7 +7,7 @@ import {
   isKeyCredential,
   KeyCredential,
   RequestParameters,
-  TokenCredential,
+  TokenCredential,  
 } from "@typespec/ts-http-runtime";
 import { getAsyncIterable } from "./util/ndjson.js";
 import { asStream } from "./util/stream.js";
@@ -67,8 +67,15 @@ function handleFailedRequest(status: string, body: unknown): never {
   };
 }
 
+function splitURL(url: string): [string, string] {
+  const parsed = new URL(url);
+  return [parsed.origin, parsed.pathname];
+}
+
 export class AIChatProtocolClient {
   private client: Client;
+
+  private basePath: string;
 
   constructor(endpoint: string, options?: AIChatClientOptions);
   constructor(
@@ -82,13 +89,15 @@ export class AIChatProtocolClient {
     arg2?: AIChatClientOptions,
   ) {
     const absoluteEndpoint = toAbsoluteUrl(endpoint);
+    const [origin, basePath] = splitURL(absoluteEndpoint);
+    this.basePath = basePath; 
     const defaults: AIChatClientOptions = {
       allowInsecureConnection: isLocalhost(absoluteEndpoint),
     };
     if (isCredential(arg1)) {
-      this.client = getClient(absoluteEndpoint, arg1, { ...defaults, ...arg2 });
+      this.client = getClient(origin, arg1, { ...defaults, ...arg2 });
     } else {
-      this.client = getClient(absoluteEndpoint, { ...defaults, ...arg1 });
+      this.client = getClient(origin, { ...defaults, ...arg1 });
     }
   }
 
@@ -112,8 +121,8 @@ export class AIChatProtocolClient {
         context: options.context,
         sessionState: options.sessionState,
       },
-    };
-    const response = await this.client.path("/").post(request, options);
+    };    
+    const response = await this.client.path(this.basePath).post(request, options);
     const { status, body } = response;
     if (!/2\d\d/.test(status)) {
       handleFailedRequest(status, body);
@@ -141,9 +150,9 @@ export class AIChatProtocolClient {
         context: options.context,
         sessionState: options.sessionState,
       },
-    };
+    };    
     const response = await asStream(
-      this.client.path("/stream").post(request, options),
+      this.client.path(`${this.basePath}/stream`).post(request, options),
     );
     if (!/2\d\d/.test(response.status)) {
       const body = await getStreamContent(response.body);
