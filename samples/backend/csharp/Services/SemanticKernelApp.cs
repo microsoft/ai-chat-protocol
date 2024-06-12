@@ -4,7 +4,6 @@
 using System.Text;
 using Azure.Identity;
 using Microsoft.SemanticKernel;
-using Microsoft.Extensions.Caching.Distributed;
 
 using Backend.Interfaces;
 using Backend.Model;
@@ -47,14 +46,14 @@ internal struct SemanticKernelConfig
 internal class SemanticKernelSession : ISemanticKernelSession
 {
     private readonly Kernel _kernel;
-    private readonly IDistributedCache _cache;
+    private readonly IStateStore<string> _stateStore;
 
     public Guid Id { get; private set; }
 
-    internal SemanticKernelSession(Kernel kernel, IDistributedCache cache, Guid sessionId)
+    internal SemanticKernelSession(Kernel kernel, IStateStore<string> stateStore, Guid sessionId)
     {
         _kernel = kernel;
-        _cache = cache;
+        _stateStore = stateStore;
         Id = sessionId;
     }
 
@@ -67,11 +66,10 @@ internal class SemanticKernelSession : ISemanticKernelSession
         ChatBot:";
 
     public async Task<AIChatCompletion> ProcessRequest(AIChatRequest message)
-    {
-        var cacheKey = Id.ToString();
+    {        
         var chatFunction = _kernel.CreateFunctionFromPrompt(prompt);
         var userInput = message.Messages.Last();
-        string history = await _cache.GetStringAsync(cacheKey) ?? "";
+        string history = await _stateStore.GetStateAsync(Id) ?? "";
         var arguments = new KernelArguments()
         {
             ["history"] = history,
@@ -79,7 +77,7 @@ internal class SemanticKernelSession : ISemanticKernelSession
         };
         var botResponse = await chatFunction.InvokeAsync(_kernel, arguments);
         var updatedHistory = $"{history}\nUser: {userInput.Content}\nChatBot: {botResponse}";
-        await _cache.SetStringAsync(cacheKey, updatedHistory);
+        await _stateStore.SetStateAsync(Id, updatedHistory);
         return new AIChatCompletion(Message: new AIChatMessage
         {
             Role = AIChatRole.Assistant,
@@ -91,11 +89,10 @@ internal class SemanticKernelSession : ISemanticKernelSession
     }
 
     public async IAsyncEnumerable<AIChatCompletionDelta> ProcessStreamingRequest(AIChatRequest message)
-    {
-        var cacheKey = Id.ToString();
+    {        
         var chatFunction = _kernel.CreateFunctionFromPrompt(prompt);
         var userInput = message.Messages.Last();
-        string history = await _cache.GetStringAsync(cacheKey) ?? "";
+        string history = await _stateStore.GetStateAsync(Id) ?? "";
         var arguments = new KernelArguments()
         {
             ["history"] = history,
@@ -116,7 +113,7 @@ internal class SemanticKernelSession : ISemanticKernelSession
             };
         }
         var updatedHistory = $"{history}\nUser: {userInput.Content}\nChatBot: {response}";
-        await _cache.SetStringAsync(cacheKey, updatedHistory);
+        await _stateStore.SetStateAsync(Id, updatedHistory);
     }
 
 }
@@ -124,7 +121,7 @@ internal class SemanticKernelSession : ISemanticKernelSession
 public class SemanticKernelApp : ISemanticKernelApp
 {
     private readonly ISecretStore _secretStore;
-    private readonly IDistributedCache _cache;
+    private readonly IStateStore<string> _stateStore;
     private readonly Lazy<Task<Kernel>> _kernel;
 
     private async Task<Kernel> InitKernel()
@@ -154,27 +151,27 @@ public class SemanticKernelApp : ISemanticKernelApp
         return builder.Build();
     }
 
-    public SemanticKernelApp(ISecretStore secretStore, IDistributedCache cache)
+    public SemanticKernelApp(ISecretStore secretStore, IStateStore<string> stateStore)
     {
         _secretStore = secretStore;
-        _cache = cache;
+        _stateStore = stateStore;
         _kernel = new(() => Task.Run(InitKernel));
     }
 
     public async Task<ISemanticKernelSession> CreateSession(Guid sessionId)
     {
         var kernel = await _kernel.Value;
-        return new SemanticKernelSession(kernel, _cache, sessionId);
+        return new SemanticKernelSession(kernel, _stateStore, sessionId);
     }
 
     public async Task<ISemanticKernelSession> GetSession(Guid sessionId)
     {
         var kernel = await _kernel.Value;
-        var state = await _cache.GetStringAsync(sessionId.ToString());
+        var state = await _stateStore.GetStateAsync(sessionId);
         if (state is null)
         {
             throw new KeyNotFoundException($"Session {sessionId} not found.");
         }
-        return new SemanticKernelSession(kernel, _cache, sessionId);
+        return new SemanticKernelSession(kernel, _stateStore, sessionId);
     }
 }

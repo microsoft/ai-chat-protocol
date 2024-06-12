@@ -26,9 +26,6 @@ export function getConfig(parameter: ConfigParameter): string {
       case ConfigParameter.port: {
         return process.env.PORT;
       }
-      case ConfigParameter.redisUrl: {
-        return process.env.REDIS_URL;
-      }
       case ConfigParameter.systemPrompt: {
         return process.env.SYSTEM_PROMPT;
       }

@@ -20,7 +20,7 @@ function isChatError(entry: unknown): entry is AIChatError {
 }
 
 export default function Chat({ style }: { style: React.CSSProperties }) {
-  const client = new AIChatProtocolClient("/api/chat");
+  const client = new AIChatProtocolClient("/api/chat/");
 
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [input, setInput] = useState<string>("");

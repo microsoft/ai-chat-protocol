@@ -1,23 +1,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using Backend.Interfaces;
 using Backend.Model;
 using Backend.Services;
-using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = "redis";
-    options.InstanceName = "SemanticKernel";
-});
-
+builder.Services.AddSingleton<IStateStore<string>>(new InMemoryStore<string>());
 builder.Services.AddSingleton<ISecretStore>(new EnvVarSecretStore());
 builder.Services.AddSingleton<ISemanticKernelApp, SemanticKernelApp>();
 
@@ -43,18 +36,5 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.Lifetime.ApplicationStarted.Register(() =>
-{
-    var currentTimeUTC = DateTimeOffset.UtcNow.ToString();
-    var encodedTimeUTC = Encoding.UTF8.GetBytes(currentTimeUTC);
-    var options = new DistributedCacheEntryOptions()
-        .SetSlidingExpiration(TimeSpan.FromMinutes(5));
-    var distributedCache = app.Services.GetService<IDistributedCache>();
-    if (distributedCache != null)
-    {
-        distributedCache.Set("CachedTimeUTC", encodedTimeUTC, options);
-    }
-});
 
 app.Run();
