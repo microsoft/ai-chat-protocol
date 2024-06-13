@@ -90,7 +90,7 @@ Example of the overrides object:
 
 ## HTTP responses from AI Chat App endpoints
 
-The HTTP response should either be JSON for a non-streaming response, or [newline-delimited JSON](https://ndjson.org/home/) ("NDJSON") for a streaming response.
+The HTTP response should either be JSON for a non-streaming response, or [newline-delimited JSON](https://github.com/ndjson/ndjson-spec) ("NDJSON") for a streaming response.
 
 ### Non-streaming response
 
