@@ -80,11 +80,12 @@ If you're curious on samples hosted on Azure, the following samples utilize the 
 * [OpenAI Chat App Frontend (Vanilla JS)](https://github.com/Azure-Samples/openai-chat-frontend-vanillajs)
 * [Chat Application using Azure OpenAI (Python)](https://github.com/Azure-Samples/openai-chat-app-quickstart)
 
-Additionally, many Azure AI sample projects utilize the AI Chat Protocol API spec without the SDK as they were created before the library was made:
+Additionally, many Azure AI sample projects utilize the AI Chat Protocol API spec without the SDK, either because they don't have a frontend, or because they were made before the library's release:
 
 * [ChatGPT + Enterprise data with Azure OpenAI and AI Search in Python](https://github.com/Azure-samples/azure-search-openai-demo)
 * [ChatGPT + Enterprise data with Azure OpenAI and Azure AI Search in JavaScript](https://github.com/Azure-samples/azure-search-openai-javascript)
 * [Chat with GPT Modes - FastAPI backend](https://github.com/Azure-Samples/openai-chat-backend-fastapi)
+* [Evaluating a RAG Chat App](https://github.com/Azure-Samples/ai-rag-chat-evaluator)
 
 ## Code of Conduct
 
