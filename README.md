@@ -71,12 +71,21 @@ for await (const response of result) {
 
 ## Samples on Azure
 
-If you're curious on end-to-end samples hosted on Azure, the following samples utilize the AI Chat Protocol SDK on the frontend:
+If you're curious on samples hosted on Azure, the following samples utilize the AI Chat Protocol SDK on the frontend:
 
 * [Serverless AI Chat with RAG using LangChain.js](https://github.com/Azure-Samples/serverless-chat-langchainjs)
 * [Chat Application using Azure OpenAI (Python)](https://github.com/Azure-Samples/openai-chat-app-quickstart)
 * [OpenAI Chat Application with Microsoft Entra Authentication (Python) - Local](https://github.com/Azure-Samples//openai-chat-app-entra-auth-local)
 * [OpenAI Chat Application with Microsoft Entra Authentication (Python) - Builtin](https://github.com/Azure-Samples/openai-chat-app-entra-auth-builtin)
+* [OpenAI Chat App Frontend (Vanilla JS)](https://github.com/Azure-Samples/openai-chat-frontend-vanillajs)
+* [Chat Application using Azure OpenAI (Python)](https://github.com/Azure-Samples/openai-chat-app-quickstart)
+
+Additionally, many Azure AI sample projects utilize the AI Chat Protocol API spec without the SDK, either because they don't have a frontend, or because they were made before the library's release:
+
+* [ChatGPT + Enterprise data with Azure OpenAI and AI Search in Python](https://github.com/Azure-samples/azure-search-openai-demo)
+* [ChatGPT + Enterprise data with Azure OpenAI and Azure AI Search in JavaScript](https://github.com/Azure-samples/azure-search-openai-javascript)
+* [Chat with GPT Modes - FastAPI backend](https://github.com/Azure-Samples/openai-chat-backend-fastapi)
+* [Evaluating a RAG Chat App](https://github.com/Azure-Samples/ai-rag-chat-evaluator)
 
 ## Code of Conduct
 
