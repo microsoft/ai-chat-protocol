@@ -1,40 +1,22 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { createClient, RedisClientType } from "redis";
-
-import { ConfigParameter, getConfig } from "./config";
-
 export class StateStore<T> {
-  private client: RedisClientType;
+  private store: Record<string, T>;
 
   constructor() {
-    this.client = createClient({
-      url: getConfig(ConfigParameter.redisUrl),
-    });
+    this.store = {};
   }
 
-  public async connect(): Promise<void> {
-    await this.client.connect();
-  }
-
-  public async disconnect(): Promise<void> {
-    await this.client.disconnect();
-  }
-
-  public async read(key: string): Promise<T> {
-    const state = await this.client.get(key);
+  public read(key: string): T {
+    const state = this.store[key];
     if (!state) {
       throw new Error("Not found.");
     }
-    return JSON.parse(state);
+    return this.store[key];
   }
 
-  public async save(key: string, state: T): Promise<void> {
-    await this.client.set(key, JSON.stringify(state));
-    await this.client.expire(
-      key,
-      parseInt(getConfig(ConfigParameter.stateTTL)),
-    );
+  public async save(key: string, state: T) {
+    this.store[key] = state;
   }
 }

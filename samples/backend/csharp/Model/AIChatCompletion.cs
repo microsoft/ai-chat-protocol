@@ -7,9 +7,9 @@ namespace Backend.Model;
 
 public record AIChatCompletion([property: JsonPropertyName("message")] AIChatMessage Message)
 {
-    [JsonPropertyName("sessionState")]
+    [JsonInclude, JsonPropertyName("sessionState"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Guid? SessionState;
 
-    [JsonPropertyName("context")]
+    [JsonInclude, JsonPropertyName("context"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public BinaryData? Context;
 }

@@ -34,16 +34,15 @@ const client = new OpenAIClient(
 );
 
 const stateStore = new StateStore<AIChatMessage[]>();
-stateStore.connect();
 
 type ChatRequest = Request<{}, {}, AIChatCompletionRequest>;
 
-chat.use(async (req: ChatRequest, res, next) => {
+chat.use((req: ChatRequest, res, next) => {
   const request = req.body;
   if (request.sessionState && typeof request.sessionState == "string") {
     req.sessionState = request.sessionState as string;
     try {
-      const history = await stateStore.read(request.sessionState);
+      const history = stateStore.read(request.sessionState);
       console.info(`Loaded history for session ${request.sessionState}`);
       req.body.messages = [...history, ...request.messages];
       return next();
@@ -78,10 +77,7 @@ chat.post("/", async (req: ChatRequest, res, next) => {
       content: choice?.message?.content ?? "",
     };
 
-    await stateStore.save(req.sessionState, [
-      ...req.body.messages,
-      responseMessage,
-    ]);
+    stateStore.save(req.sessionState, [...req.body.messages, responseMessage]);
 
     const completion: AIChatCompletion = {
       message: responseMessage,
@@ -122,7 +118,7 @@ chat.post(
           res.write(JSON.stringify(completion) + "\r\n");
         }
       }
-      await stateStore.save(req.sessionState, [
+      stateStore.save(req.sessionState, [
         ...req.body.messages,
         responseMessage,
       ]);
