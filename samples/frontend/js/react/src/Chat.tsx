@@ -13,10 +13,36 @@ import TextareaAutosize from "react-textarea-autosize";
 import styles from "./Chat.module.css";
 import gfm from "remark-gfm";
 
-type ChatEntry = AIChatMessage | AIChatError;
+type ChatEntry = (AIChatMessage & { dataUrl?: string }) | AIChatError;
 
 function isChatError(entry: unknown): entry is AIChatError {
   return (entry as AIChatError).code !== undefined;
+}
+
+interface FileInput {
+  data: Uint8Array;
+  name: string;
+  type: string;
+}
+
+function toBase64DataUrl(
+  arr?: Uint8Array,
+  contentType?: string,
+): Promise<string | undefined> {
+  return new Promise<string | undefined>((resolve, reject) => {
+    if (!arr) {
+      resolve(undefined);
+      return;
+    }
+    const blob = new Blob([arr], { type: contentType });
+    const reader = new FileReader();
+
+    reader.onerror = reject;
+    reader.onload = (event) => {
+      resolve(event.target?.result as string);
+    };
+    reader.readAsDataURL(blob);
+  });
 }
 
 export default function Chat({ style }: { style: React.CSSProperties }) {
@@ -28,6 +54,44 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
   const inputId = useId();
   const [sessionState, setSessionState] = useState<unknown>(undefined);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [selectedFile, setSelectedFile] = useState<FileInput | undefined>(
+    undefined,
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function isArrayBuffer(value: unknown): value is ArrayBuffer {
+    return value instanceof ArrayBuffer;
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target?.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (loadEvent) => {
+        const arrayBuffer = loadEvent!.target!.result;
+        if (!isArrayBuffer(arrayBuffer)) {
+          setSelectedFile(undefined);
+          return;
+        }
+        const fileUint8Array = new Uint8Array(arrayBuffer);
+        setSelectedFile({
+          data: fileUint8Array,
+          name: file.name,
+          type: file.type,
+        });
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+  };
+
+  const clearSelectedFile = () => {
+    setSelectedFile(undefined);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset file input
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -38,10 +102,30 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
     const message: AIChatMessage = {
       role: "user",
       content: input,
+      files: selectedFile
+        ? [
+            {
+              data: selectedFile.data,
+              contentType: selectedFile.type,
+            },
+          ]
+        : undefined,
     };
-    const updatedMessages = [...messages, message];
+    const dataUrl = await toBase64DataUrl(
+      selectedFile?.data,
+      selectedFile?.type,
+    );
+    const updatedMessages: ChatEntry[] = [
+      ...messages,
+      {
+        ...message,
+        files: undefined,
+        dataUrl: dataUrl,
+      },
+    ];
     setMessages(updatedMessages);
     setInput("");
+    setSelectedFile(undefined);
     try {
       if (streaming) {
         const result = await client.getStreamedCompletion([message], {
@@ -98,11 +182,25 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
             {isChatError(message) ? (
               <>{getErrorMessage(message)}</>
             ) : (
-              <div className={styles.messageBubble}>
-                <ReactMarkdown remarkPlugins={[gfm]}>
-                  {message.content}
-                </ReactMarkdown>
-              </div>
+              <>
+                <div className={styles.messageBubble}>
+                  <ReactMarkdown remarkPlugins={[gfm]}>
+                    {message.content}
+                  </ReactMarkdown>
+                  {message.dataUrl && (
+                    <img
+                      src={message.dataUrl}
+                      style={{
+                        maxHeight: "300px",
+                        maxWidth: "100%",
+                        height: "auto",
+                        width: "auto",
+                      }}
+                      alt="Message Attachment"
+                    />
+                  )}
+                </div>
+              </>
             )}
           </div>
         ))}
@@ -122,6 +220,20 @@ export default function Chat({ style }: { style: React.CSSProperties }) {
           minRows={1}
           maxRows={4}
         />
+        {selectedFile && (
+          <div>
+            <span>File: {selectedFile.name}</span>
+            <button onClick={clearSelectedFile}>Clear</button>
+          </div>
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          ref={fileInputRef} // Create this ref using useRef in your component
+          onChange={handleFileChange} // Implement this function to handle file selection
+        />
+        <Button onClick={() => fileInputRef?.current?.click()}>Attach</Button>
         <Button onClick={sendMessage}>Send</Button>
         <ToggleButton
           checked={streaming}

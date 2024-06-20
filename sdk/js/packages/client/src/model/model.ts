@@ -5,10 +5,16 @@ import { ClientOptions, OperationOptions } from "@typespec/ts-http-runtime";
 
 export type AIChatRole = "user" | "assistant" | "system";
 
+export interface AIChatFile {
+  contentType: string;
+  data: Uint8Array | File | Buffer;
+}
+
 export interface AIChatMessage {
   role: AIChatRole;
   content: string;
   context?: object;
+  files?: AIChatFile[];
 }
 
 export interface AIChatMessageDelta {
