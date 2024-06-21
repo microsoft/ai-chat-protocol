@@ -66,10 +66,11 @@ internal class SemanticKernelSession : ISemanticKernelSession
         ChatBot:";
 
     public async Task<AIChatCompletion> ProcessRequest(AIChatRequest message)
-    {        
+    {
         var chatFunction = _kernel.CreateFunctionFromPrompt(prompt);
         var userInput = message.Messages.Last();
         string history = await _stateStore.GetStateAsync(Id) ?? "";
+        /* TODO: Add support for text+image content */
         var arguments = new KernelArguments()
         {
             ["history"] = history,
@@ -89,7 +90,7 @@ internal class SemanticKernelSession : ISemanticKernelSession
     }
 
     public async IAsyncEnumerable<AIChatCompletionDelta> ProcessStreamingRequest(AIChatRequest message)
-    {        
+    {
         var chatFunction = _kernel.CreateFunctionFromPrompt(prompt);
         var userInput = message.Messages.Last();
         string history = await _stateStore.GetStateAsync(Id) ?? "";
