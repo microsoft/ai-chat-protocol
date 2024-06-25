@@ -1,2 +1,3 @@
 openai
 quart[dotenv]
+azure.identity

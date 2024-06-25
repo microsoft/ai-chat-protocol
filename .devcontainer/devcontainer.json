@@ -7,7 +7,8 @@
 	"features": {
 		"ghcr.io/devcontainers/features/dotnet:2": {},
 		"ghcr.io/devcontainers/features/node:1": {},
-		"ghcr.io/devcontainers/features/python": "3.12"
+		"ghcr.io/devcontainers/features/python": "3.12",
+		"ghcr.io/devcontainers/features/azure-cli": "latest"
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
