@@ -6,7 +6,8 @@
 	"image": "mcr.microsoft.com/devcontainers/base:jammy",
 	"features": {
 		"ghcr.io/devcontainers/features/dotnet:2": {},
-		"ghcr.io/devcontainers/features/node:1": {}
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers/features/python": "3.12"
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
