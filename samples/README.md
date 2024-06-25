@@ -7,8 +7,8 @@ If you'd like to run the samples, follow these steps:
 ## Frontend
 
 1. Clone the repository to your machine.
-1. In one terminal, navigate to the `frontend` directory.
-1. In the `frontend` directory, run `npm install` to install your dependencies, including [`@microsoft/ai-chat-protocol`](https://www.npmjs.com/package/@microsoft/ai-chat-protocol).
+1. In one terminal, navigate to the `frontend/js/react` directory.
+1. In the `frontend/js/react` directory, run `npm install` to install your dependencies, including [`@microsoft/ai-chat-protocol`](https://www.npmjs.com/package/@microsoft/ai-chat-protocol).
 1. Next, run `npm run dev` to start your web application.
 
 ## Backend
