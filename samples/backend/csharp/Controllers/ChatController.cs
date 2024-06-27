@@ -42,7 +42,7 @@ public class ChatController : ControllerBase
             _ => await _semanticKernelApp.CreateSession(Guid.NewGuid())
         };
         var response = Response;
-        response.Headers.Append("Content-Type", "application/x-ndjson");
+        response.Headers.Append("Content-Type", "application/jsonl");
         await foreach (var delta in session.ProcessStreamingRequest(request))
         {
             await response.WriteAsync($"{JsonSerializer.Serialize(delta)}\r\n");
