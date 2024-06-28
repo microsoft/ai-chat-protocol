@@ -1,3 +1,4 @@
 openai
 quart[dotenv]
-azure.identity
+azure-identity
+pydantic

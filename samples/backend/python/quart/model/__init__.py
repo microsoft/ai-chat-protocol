@@ -1,13 +1,13 @@
 from .model import (
-    AIChatRequest,
-    AIChatErrorResponse,
     AIChatCompletion,
     AIChatCompletionDelta,
     AIChatCompletionOptions,
     AIChatError,
+    AIChatErrorResponse,
     AIChatFile,
     AIChatMessage,
     AIChatMessageDelta,
+    AIChatRequest,
     AIChatRole,
 )
 
