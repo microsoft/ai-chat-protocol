@@ -63,6 +63,6 @@
   "types": "./dist/index.d.ts",
   "type": "module",
   "dependencies": {
-    "@typespec/ts-http-runtime": "^1.0.0-alpha.20240228.1"
+    "@typespec/ts-http-runtime": "^1.0.0-alpha.20240611.3"
   }
 }
