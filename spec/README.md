@@ -90,7 +90,7 @@ Example of the overrides object:
 
 ## HTTP responses from AI Chat App endpoints
 
-The HTTP response should either be JSON for a non-streaming response, or [newline-delimited JSON](https://github.com/ndjson/ndjson-spec) ("NDJSON") for a streaming response.
+The HTTP response should either be JSON for a non-streaming response, or [JSON Lines](https://github.com/wardi/jsonlines) ("jsonl") for a streaming response.
 
 ### Non-streaming response
 
@@ -221,7 +221,7 @@ Here's an example JSON response for a 500-level error:
 
 The response should contain this header:
 
-* `Content-Type: application/x-ndjson`
+* `Content-Type: application/jsonl`
 
 #### Successful streamed response
 

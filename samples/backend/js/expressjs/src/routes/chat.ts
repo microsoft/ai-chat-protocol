@@ -97,7 +97,7 @@ chat.post(
         getConfig(ConfigParameter.azureOpenAIDeployment),
         req.body.messages as ChatRequestMessage[],
       );
-      res.contentType("application/x-ndjson");
+      res.contentType("application/jsonl");
       const responseMessage: AIChatMessage = {
         role: "assistant",
         content: "",
