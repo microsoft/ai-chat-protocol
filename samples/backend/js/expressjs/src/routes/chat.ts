@@ -185,7 +185,7 @@ chat.post(
         model: getConfig(ConfigParameter.azureOpenAIDeployment),
         messages: req.body.messages.map(toOpenAIMessage),
       });
-      res.contentType("application/x-ndjson");
+      res.contentType("application/jsonl");
       const responseMessage: AIChatMessage = {
         role: "assistant",
         content: "",

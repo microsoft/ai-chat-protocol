@@ -36,7 +36,7 @@ model AIChatCompletion {
 
 model AIChatCompletionDelta {
   @header
-  contentType: "application/x-ndjson";
+  contentType: "application/jsonl";
 
   delta: AIChatMessageDelta;
   ...ContextProp;

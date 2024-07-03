@@ -11,7 +11,7 @@ import {
   RequestParameters,
   TokenCredential,
 } from "@typespec/ts-http-runtime";
-import { getAsyncIterable } from "./util/ndjson.js";
+import { getAsyncIterable } from "./util/jsonl.js";
 import { asStream } from "./util/stream.js";
 import {
   AIChatClientOptions,

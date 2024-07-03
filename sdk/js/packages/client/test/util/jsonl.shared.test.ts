@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { expect, test } from "vitest";
-import { getAsyncIterable } from "../../src/util/ndjson.js";
+import { getAsyncIterable } from "../../src/util/jsonl.js";
 
 function getReadableStream(lines: string[]) {
   return new ReadableStream({
