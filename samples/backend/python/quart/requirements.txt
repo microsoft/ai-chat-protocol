@@ -1,0 +1,4 @@
+openai
+quart[dotenv]
+azure-identity
+pydantic

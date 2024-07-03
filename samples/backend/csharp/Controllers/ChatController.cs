@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Backend.Interfaces;
 using Backend.Model;
+using System.Text.RegularExpressions;
 
 namespace Backend.Controllers;
 
@@ -17,6 +18,78 @@ public class ChatController : ControllerBase
     public ChatController(ISemanticKernelApp semanticKernelApp)
     {
         _semanticKernelApp = semanticKernelApp;
+    }
+
+    private (int MessageIndex, int FileIndex, IFormFile File) GetPosition(IFormFile formFile)
+    {
+        const string pattern = @"messages\[(\d+)\]\.files\[(\d+)\]";
+
+        var match = Regex.Match(formFile.Name, pattern);
+        if (match.Success && int.TryParse(match.Groups[1].Value, out var messageIndex) && int.TryParse(match.Groups[2].Value, out var fileIndex))
+        {
+            return (messageIndex, fileIndex, formFile);
+        }
+        throw new ArgumentException("Malformed multipart request: Invalid file name.");
+
+    }
+
+    private async Task<AIChatRequest> RequestFromMultipart(IFormFileCollection formFiles)
+    {
+        using var jsonFileStream = formFiles
+            .First(f => f.Name == "json")
+            .OpenReadStream();
+        if (jsonFileStream is null)
+        {
+            throw new Exception("Malformed multipart request: Missing json part.");
+        }
+        var request = await JsonSerializer.DeserializeAsync<AIChatRequest>(jsonFileStream);
+        if (request is null)
+        {
+            throw new Exception("Malformed multipart request: Invalid json part.");
+        }
+        foreach (var (messageIndex, fileIndex, file) in formFiles.Where(f => f.Name != "json").Select(GetPosition).OrderBy(p => p.MessageIndex).ThenBy(p => p.FileIndex))
+        {
+            using var fileStream = file.OpenReadStream();
+            if (request.Messages.Count <= messageIndex)
+            {
+                throw new Exception("Malformed multipart request: Invalid message index.");
+            }
+            var message = request.Messages[messageIndex];
+            message.Files ??= new List<AIChatFile>();
+            if (message.Files.Count != fileIndex)
+            {
+                throw new Exception("Malformed multipart request: Invalid file index.");
+            }
+            var fileData = await BinaryData.FromStreamAsync(fileStream);
+            message.Files.Add(new AIChatFile
+            {
+                ContentType = file.ContentType,
+                Data = fileData
+            });
+        }
+        return request;
+    }
+
+
+    [HttpPost]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> ProcessMessage(IFormFileCollection files)
+    {
+        try
+        {
+            var request = await RequestFromMultipart(files);
+            var session = request.SessionState switch
+            {
+                Guid sessionId => await _semanticKernelApp.GetSession(sessionId),
+                _ => await _semanticKernelApp.CreateSession(Guid.NewGuid())
+            };
+            var response = await session.ProcessRequest(request);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     [HttpPost]
