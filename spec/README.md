@@ -35,7 +35,7 @@ The body of the request can contain these properties, in JSON format:
 
 * `"messages"`: A list of messages, each containing "content" and "role", where "role" may be "assistant" or "user". A single-turn chat app may only contain 1 message, while a multi-turn chat app may contain multiple messages.
 * `"context"`: _Optional_. An object containing any additional context about the request, such as the temperature to use for the LLM. Each application may define its own context properties. See [example request context properties](#example-request-context).
-* `"session_state"`: _Optional._ An object containing the "memory" for the chat app, such as a user ID.
+* `"sessionState"`: _Optional._ An object containing the "memory" for the chat app, such as a user ID.
 
 ### Usage example
 
@@ -50,7 +50,7 @@ The example belows represents a valid and compliant request body to the chat app
         }
     ],
     "context": {},
-    "session_state": null
+    "sessionState": null
 }
 ```
 
@@ -104,7 +104,7 @@ A successful response should have a status code of 200, and the body should cont
 
 * `"message"`: An object containing the actual content of the response.  See [Answer formatting](#answer-formatting). _Comes from the [OpenAI chat completion object](https://platform.openai.com/docs/api-reference/chat/object)._
 * `"context"`: _Optional_. An object containing additional details needed for the chat app. Each application can define its own properties. See [example context properties for responses](#example-response-context).
-* `"session_state"`: _Optional_. An object containing the "memory" for the chat app, such as a user ID.
+* `"sessionState"`: _Optional_. An object containing the "memory" for the chat app, such as a user ID.
 
 Here's an example JSON response:
 
@@ -191,7 +191,7 @@ Here's an example JSON response:
             }
         ]
     },
-    "session_state": null
+    "sessionState": null
 }
 ```
 
@@ -233,7 +233,7 @@ Each JSON object should contain the following properties:
 
 * `"delta"`: An object containing the actual content of the response, a token at a time. See [Answer formatting](#answer-formatting). _Comes from the [OpenAI chat completion chunk object](https://platform.openai.com/docs/api-reference/chat/streaming)._
 * `"context"`: _Optional_. An object containing additional details needed for the chat app. Each application can define its own properties. See [example response context properties](#example-response-context).
-* `"session_state"`: _Optional_. An object containing the "memory" for the chat app, such as a user ID.
+* `"sessionState"`: _Optional_. An object containing the "memory" for the chat app, such as a user ID.
 
 Here's an example of the first three JSON objects in a streaming response:
 
@@ -318,7 +318,7 @@ Here's an example of the first three JSON objects in a streaming response:
             }
         ]
     },
-    "session_state": null,
+    "sessionState": null,
 }{
     "delta": {
         "content": null,
