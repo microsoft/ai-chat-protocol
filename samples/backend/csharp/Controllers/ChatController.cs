@@ -29,8 +29,8 @@ public class ChatController : ControllerBase
         {
             return (messageIndex, fileIndex, formFile);
         }
-        throw new ArgumentException("Malformed multipart request: Invalid file name.");
 
+        throw new ArgumentException("Malformed multipart request: Invalid file name.");
     }
 
     private async Task<AIChatRequest> RequestFromMultipart(IFormFileCollection formFiles)
