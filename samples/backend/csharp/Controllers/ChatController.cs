@@ -82,8 +82,8 @@ public class ChatController : ControllerBase
                 Guid sessionId => await _semanticKernelApp.GetSession(sessionId),
                 _ => await _semanticKernelApp.CreateSession(Guid.NewGuid())
             };
-            var response = await session.ProcessRequest(request);
-            return Ok(response);
+
+            return Ok(await session.ProcessRequest(request));
         }
         catch (Exception e)
         {
