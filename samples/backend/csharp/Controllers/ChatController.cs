@@ -47,17 +47,19 @@ public class ChatController : ControllerBase
             throw new Exception("Malformed multipart request: Invalid json part.");
         foreach (var (messageIndex, fileIndex, file) in formFiles.Where(f => f.Name != "json").Select(GetPosition).OrderBy(p => p.MessageIndex).ThenBy(p => p.FileIndex))
         {
-            using var fileStream = file.OpenReadStream();
             if (request.Messages.Count <= messageIndex)
             {
                 throw new Exception("Malformed multipart request: Invalid message index.");
             }
+
             var message = request.Messages[messageIndex];
             message.Files ??= new List<AIChatFile>();
             if (message.Files.Count != fileIndex)
             {
                 throw new Exception("Malformed multipart request: Invalid file index.");
             }
+
+            using var fileStream = file.OpenReadStream();
             var fileData = await BinaryData.FromStreamAsync(fileStream);
             message.Files.Add(new AIChatFile
             {
