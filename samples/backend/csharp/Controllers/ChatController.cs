@@ -25,7 +25,7 @@ public class ChatController : ControllerBase
         const string pattern = @"messages\[(\d+)\]\.files\[(\d+)\]";
 
         var match = Regex.Match(formFile.Name, pattern);
-        if (match.Success && int.TryParse(match.Groups[1].Value, out var messageIndex) && int.TryParse(match.Groups[2].Value, out var fileIndex))
+        if (match.Success && int.TryParse(match.Groups[1].ValueSpan, out var messageIndex) && int.TryParse(match.Groups[2].ValueSpan, out var fileIndex))
         {
             return (messageIndex, fileIndex, formFile);
         }
