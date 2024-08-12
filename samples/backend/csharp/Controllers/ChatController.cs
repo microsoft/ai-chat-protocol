@@ -66,6 +66,7 @@ public class ChatController : ControllerBase
                 ContentType = file.ContentType,
                 Data = fileData
             });
+
         }
         return request;
     }
