@@ -42,11 +42,9 @@ public class ChatController : ControllerBase
         {
             throw new Exception("Malformed multipart request: Missing json part.");
         }
-        var request = await JsonSerializer.DeserializeAsync<AIChatRequest>(jsonFileStream);
-        if (request is null)
-        {
+
+        var request = await JsonSerializer.DeserializeAsync<AIChatRequest>(jsonFileStream) ??        
             throw new Exception("Malformed multipart request: Invalid json part.");
-        }
         foreach (var (messageIndex, fileIndex, file) in formFiles.Where(f => f.Name != "json").Select(GetPosition).OrderBy(p => p.MessageIndex).ThenBy(p => p.FileIndex))
         {
             using var fileStream = file.OpenReadStream();
