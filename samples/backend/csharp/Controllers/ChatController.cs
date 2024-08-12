@@ -70,7 +70,6 @@ public class ChatController : ControllerBase
         return request;
     }
 
-
     [HttpPost]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> ProcessMessage(IFormFileCollection files)
