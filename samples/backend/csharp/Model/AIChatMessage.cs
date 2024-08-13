@@ -15,5 +15,8 @@ public struct AIChatMessage
 
     [JsonPropertyName("context")]
     public BinaryData? Context { get; set; }
+
+    [JsonPropertyName("files")]
+    public IList<AIChatFile>? Files { get; set; }
 }
 

@@ -49,6 +49,11 @@ model AIChatCompletionRequest {
   ...SessionStateProp;
 }
 
+model AIChatCompletionRequestMultipart {
+  json: HttpPart<AIChatCompletionRequest>,
+  files: HttpPart<bytes>[],
+}
+
 model AIChatErrorResponse {
   error: AIChatError
 }

@@ -3,9 +3,11 @@
 
 import {
   Client,
+  createFile,
   getClient,
   isKeyCredential,
   KeyCredential,
+  randomUUID,
   RequestParameters,
   TokenCredential,
 } from "@typespec/ts-http-runtime";
@@ -72,6 +74,10 @@ function splitURL(url: string): [string, string] {
   return [parsed.origin, parsed.pathname];
 }
 
+function isUint8Array(value: unknown): value is Uint8Array {
+  return value instanceof Uint8Array;
+}
+
 export class AIChatProtocolClient {
   private client: Client;
 
@@ -101,6 +107,61 @@ export class AIChatProtocolClient {
     }
   }
 
+  private prepareRequest(
+    messages: AIChatMessage[],
+    options: AIChatCompletionOperationOptions,
+  ): RequestParameters {
+    if (messages.some((message) => message.files && message.files.length > 0)) {
+      const binaryParts = messages
+        .map((message, index) => {
+          if (message.files) {
+            return message.files.map((file, fileIndex) => ({
+              dispositionType: `form-data; name="messages[${index}].files[${fileIndex}]"`,
+              contentType: file.contentType,
+              body: isUint8Array(file.data)
+                ? createFile(
+                    file.data,
+                    `messages[${index}].files[${fileIndex}]`,
+                  )
+                : file.data,
+            }));
+          }
+          return undefined;
+        })
+        .flat();
+      const boundary = `---Part-${randomUUID()}`;
+      return {
+        contentType: `multipart/form-data; boundary=${boundary}`,
+        body: [
+          {
+            dispositionType: "form-data; name=json",
+            contentType: "application/json",
+            body: {
+              messages: messages.map((message) => ({
+                ...message,
+                files: undefined,
+              })),
+              context: options.context,
+              sessionState: options.sessionState,
+            },
+          },
+          ...binaryParts.filter((part) => part !== undefined),
+        ],
+      };
+    } else {
+      return {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          messages: messages,
+          context: options.context,
+          sessionState: options.sessionState,
+        },
+      };
+    }
+  }
+
   /**
    * This method sends a request to the AIChatProtocol endpoint and returns a completion.
    * @param messages An array of AIChatMessage objects.
@@ -112,16 +173,7 @@ export class AIChatProtocolClient {
     messages: AIChatMessage[],
     options: AIChatCompletionOperationOptions = {},
   ): Promise<AIChatCompletion> {
-    const request: RequestParameters = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: {
-        messages: messages,
-        context: options.context,
-        sessionState: options.sessionState,
-      },
-    };
+    const request = this.prepareRequest(messages, options);
     const response = await this.client
       .path(this.basePath)
       .post(request, options);
@@ -143,16 +195,7 @@ export class AIChatProtocolClient {
     messages: AIChatMessage[],
     options: AIChatCompletionOperationOptions = {},
   ): Promise<AsyncIterable<AIChatCompletionDelta>> {
-    const request: RequestParameters = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: {
-        messages: messages,
-        context: options.context,
-        sessionState: options.sessionState,
-      },
-    };
+    const request = this.prepareRequest(messages, options);
     const response = await asStream(
       this.client.path(`${this.basePath}/stream`).post(request, options),
     );

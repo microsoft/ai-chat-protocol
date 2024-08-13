@@ -47,6 +47,7 @@ internal class SemanticKernelSession : ISemanticKernelSession
 {
     private readonly Kernel _kernel;
     private readonly IStateStore<string> _stateStore;
+    private readonly KernelFunction _chatFunction;
 
     public Guid Id { get; private set; }
 
@@ -54,6 +55,7 @@ internal class SemanticKernelSession : ISemanticKernelSession
     {
         _kernel = kernel;
         _stateStore = stateStore;
+        _chatFunction = _kernel.CreateFunctionFromPrompt(prompt);
         Id = sessionId;
     }
 
@@ -66,16 +68,16 @@ internal class SemanticKernelSession : ISemanticKernelSession
         ChatBot:";
 
     public async Task<AIChatCompletion> ProcessRequest(AIChatRequest message)
-    {        
-        var chatFunction = _kernel.CreateFunctionFromPrompt(prompt);
+    {
         var userInput = message.Messages.Last();
         string history = await _stateStore.GetStateAsync(Id) ?? "";
+        /* TODO: Add support for text+image content */
         var arguments = new KernelArguments()
         {
             ["history"] = history,
             ["userInput"] = userInput.Content,
         };
-        var botResponse = await chatFunction.InvokeAsync(_kernel, arguments);
+        var botResponse = await _chatFunction.InvokeAsync(_kernel, arguments);
         var updatedHistory = $"{history}\nUser: {userInput.Content}\nChatBot: {botResponse}";
         await _stateStore.SetStateAsync(Id, updatedHistory);
         return new AIChatCompletion(Message: new AIChatMessage
@@ -89,8 +91,7 @@ internal class SemanticKernelSession : ISemanticKernelSession
     }
 
     public async IAsyncEnumerable<AIChatCompletionDelta> ProcessStreamingRequest(AIChatRequest message)
-    {        
-        var chatFunction = _kernel.CreateFunctionFromPrompt(prompt);
+    {
         var userInput = message.Messages.Last();
         string history = await _stateStore.GetStateAsync(Id) ?? "";
         var arguments = new KernelArguments()
@@ -98,7 +99,7 @@ internal class SemanticKernelSession : ISemanticKernelSession
             ["history"] = history,
             ["userInput"] = userInput.Content,
         };
-        var streamedBotResponse = chatFunction.InvokeStreamingAsync(_kernel, arguments);
+        var streamedBotResponse = _chatFunction.InvokeStreamingAsync(_kernel, arguments);
         StringBuilder response = new();
         await foreach (var botResponse in streamedBotResponse)
         {
