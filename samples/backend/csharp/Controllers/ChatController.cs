@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 namespace Backend.Controllers;
 
 [ApiController, Route("api/[controller]")]
-public class ChatController : ControllerBase
+public partial class ChatController : ControllerBase
 {
     private readonly ISemanticKernelApp _semanticKernelApp;
 
@@ -20,11 +20,12 @@ public class ChatController : ControllerBase
         _semanticKernelApp = semanticKernelApp;
     }
 
+    [GeneratedRegex(@"messages\[(\d+)\]\.files\[(\d+)\]")]
+    private static partial Regex MessageFilesRegex();
+
     private (int MessageIndex, int FileIndex, IFormFile File) GetPosition(IFormFile formFile)
     {
-        const string pattern = @"messages\[(\d+)\]\.files\[(\d+)\]";
-
-        var match = Regex.Match(formFile.Name, pattern);
+        var match = MessageFilesRegex().Match(formFile.Name);
         if (match.Success && int.TryParse(match.Groups[1].ValueSpan, out var messageIndex) && int.TryParse(match.Groups[2].ValueSpan, out var fileIndex))
         {
             return (messageIndex, fileIndex, formFile);
@@ -43,7 +44,7 @@ public class ChatController : ControllerBase
             throw new Exception("Malformed multipart request: Missing json part.");
         }
 
-        var request = await JsonSerializer.DeserializeAsync<AIChatRequest>(jsonFileStream) ??        
+        var request = await JsonSerializer.DeserializeAsync<AIChatRequest>(jsonFileStream) ??
             throw new Exception("Malformed multipart request: Invalid json part.");
         foreach (var (messageIndex, fileIndex, file) in formFiles.Where(f => f.Name != "json").Select(GetPosition).OrderBy(p => p.MessageIndex).ThenBy(p => p.FileIndex))
         {
