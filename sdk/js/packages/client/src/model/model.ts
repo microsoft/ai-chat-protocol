@@ -10,33 +10,33 @@ export interface AIChatFile {
   data: Uint8Array | File | Buffer;
 }
 
-export interface AIChatMessage {
+export interface AIChatMessage<TCtx extends object = object> {
   role: AIChatRole;
   content: string;
-  context?: object;
+  context?: TCtx;
   files?: AIChatFile[];
 }
 
-export interface AIChatMessageDelta {
+export interface AIChatMessageDelta<TCtx extends object = object> {
   role?: AIChatRole;
   content?: string;
-  context?: object;
+  context?: TCtx;
 }
 
-export interface AIChatCompletion {
+export interface AIChatCompletion<TCtx extends object = object> {
   message: AIChatMessage;
   sessionState?: unknown;
-  context?: object;
+  context?: TCtx;
 }
 
-export interface AIChatCompletionDelta {
+export interface AIChatCompletionDelta<TCtx extends object = object> {
   delta: AIChatMessageDelta;
   sessionState?: unknown;
-  context?: object;
+  context?: TCtx;
 }
 
-export interface AIChatCompletionOptions {
-  context?: object;
+export interface AIChatCompletionOptions<TCtx extends object = object> {
+  context?: TCtx;
   sessionState?: unknown;
 }
 
