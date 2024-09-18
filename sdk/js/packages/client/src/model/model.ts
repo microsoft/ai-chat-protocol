@@ -12,32 +12,42 @@ export interface AIChatFile {
   data: Uint8Array | File | Buffer;
 }
 
-export interface AIChatMessage<ContextType extends GenericContext = GenericContext> {
+export interface AIChatMessage<
+  ContextType extends GenericContext = GenericContext,
+> {
   role: AIChatRole;
   content: string;
   context?: ContextType;
   files?: AIChatFile[];
 }
 
-export interface AIChatMessageDelta<ContextType extends GenericContext = GenericContext> {
+export interface AIChatMessageDelta<
+  ContextType extends GenericContext = GenericContext,
+> {
   role?: AIChatRole;
   content?: string;
   context?: ContextType;
 }
 
-export interface AIChatCompletion<ContextType extends GenericContext = GenericContext> {
+export interface AIChatCompletion<
+  ContextType extends GenericContext = GenericContext,
+> {
   message: AIChatMessage;
   sessionState?: unknown;
   context?: ContextType;
 }
 
-export interface AIChatCompletionDelta<ContextType extends GenericContext = GenericContext> {
+export interface AIChatCompletionDelta<
+  ContextType extends GenericContext = GenericContext,
+> {
   delta: AIChatMessageDelta;
   sessionState?: unknown;
   context?: ContextType;
 }
 
-export interface AIChatCompletionOptions<ContextType extends GenericContext = GenericContext> {
+export interface AIChatCompletionOptions<
+  ContextType extends GenericContext = GenericContext,
+> {
   context?: ContextType;
   sessionState?: unknown;
 }
