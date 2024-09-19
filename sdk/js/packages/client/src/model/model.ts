@@ -5,38 +5,50 @@ import { ClientOptions, OperationOptions } from "@typespec/ts-http-runtime";
 
 export type AIChatRole = "user" | "assistant" | "system";
 
+type GenericContext = Record<string, unknown>;
+
 export interface AIChatFile {
   contentType: string;
   data: Uint8Array | File | Buffer;
 }
 
-export interface AIChatMessage {
+export interface AIChatMessage<
+  ContextType extends GenericContext = GenericContext,
+> {
   role: AIChatRole;
   content: string;
-  context?: object;
+  context?: ContextType;
   files?: AIChatFile[];
 }
 
-export interface AIChatMessageDelta {
+export interface AIChatMessageDelta<
+  ContextType extends GenericContext = GenericContext,
+> {
   role?: AIChatRole;
   content?: string;
-  context?: object;
+  context?: ContextType;
 }
 
-export interface AIChatCompletion {
+export interface AIChatCompletion<
+  ContextType extends GenericContext = GenericContext,
+> {
   message: AIChatMessage;
   sessionState?: unknown;
-  context?: object;
+  context?: ContextType;
 }
 
-export interface AIChatCompletionDelta {
+export interface AIChatCompletionDelta<
+  ContextType extends GenericContext = GenericContext,
+> {
   delta: AIChatMessageDelta;
   sessionState?: unknown;
-  context?: object;
+  context?: ContextType;
 }
 
-export interface AIChatCompletionOptions {
-  context?: object;
+export interface AIChatCompletionOptions<
+  ContextType extends GenericContext = GenericContext,
+> {
+  context?: ContextType;
   sessionState?: unknown;
 }
 
