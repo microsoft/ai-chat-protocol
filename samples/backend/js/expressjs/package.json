@@ -15,7 +15,7 @@
     "@azure/identity": "^4.2.1",    
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.1",
+    "express": "^4.20.0",
     "formidable": "^3.5.1",
     "lodash": "^4.17.21",
     "openai": "^4.52.0",
