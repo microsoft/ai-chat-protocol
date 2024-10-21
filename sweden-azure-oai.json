@@ -1,0 +1,86 @@
+{
+    "id": "/subscriptions/a9793dab-5672-48b9-8bb2-aeccc90e53c1/resourceGroups/rg-swedencentral/providers/Microsoft.CognitiveServices/accounts/sweden-azure-oai",
+    "name": "sweden-azure-oai",
+    "kind": "OpenAI",
+    "resourceGroup": "rg-swedencentral",
+    "subscriptionId": "a9793dab-5672-48b9-8bb2-aeccc90e53c1",
+    "isValid": true,
+    "key": "fcfff4cda4ae4277aa9bac2d6d740431",
+    "location": "swedencentral",
+    "provisioningState": "Succeeded",
+    "endpoint": "https://sweden-azure-oai.openai.azure.com/",
+    "endpoints": {
+      "OpenAI Language Model Instance API": "https://sweden-azure-oai.openai.azure.com/",
+      "OpenAI Dall-E API": "https://sweden-azure-oai.openai.azure.com/",
+      "OpenAI Whisper API": "https://sweden-azure-oai.openai.azure.com/",
+      "OpenAI Model Scaleset API": "https://sweden-azure-oai.openai.azure.com/",
+      "OpenAI Realtime API": "https://sweden-azure-oai.openai.azure.com/",
+      "Token Service API": "https://sweden-azure-oai.openai.azure.com/"
+    },
+    "plan": "S0",
+    "internalId": "f26a8681a6844f62bb0c8e6aacc4442c",
+    "createdAt": "2024-07-29T12:28:27.4324275Z",
+    "createdBy": "zachary@qredence.ai",
+    "identity": {
+      "principalId": "88ead1d0-31c8-4459-875e-d98bb490f9e0",
+      "tenantId": "2de16556-356e-43f8-beee-f59ce2c336e4",
+      "type": "SystemAssigned, UserAssigned",
+      "userAssignedIdentities": {
+        "/subscriptions/a9793dab-5672-48b9-8bb2-aeccc90e53c1/resourceGroups/rg-Qredence/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-dmddf5rz6wjj4": {
+          "principalId": "34e70e65-7625-441e-a908-d0b1d8355111",
+          "clientId": "c6acfb7d-9a0d-40ad-b718-ecede11ef8a3"
+        }
+      }
+    },
+    "disableLocalAuth": false,
+    "tags": {
+      "_az_oai": ""
+    },
+    "capabilities": [
+      {
+        "name": "VirtualNetworks"
+      },
+      {
+        "name": "CustomerManagedKey"
+      },
+      {
+        "name": "MaxFineTuneCount",
+        "value": "100"
+      },
+      {
+        "name": "MaxRunningFineTuneCount",
+        "value": "1"
+      },
+      {
+        "name": "MaxUserFileCount",
+        "value": "50"
+      },
+      {
+        "name": "MaxTrainingFileSize",
+        "value": "512000000"
+      },
+      {
+        "name": "MaxUserFileImportDurationInHours",
+        "value": "1"
+      },
+      {
+        "name": "MaxFineTuneJobDurationInHours",
+        "value": "720"
+      },
+      {
+        "name": "MaxEvaluationRunDurationInHours",
+        "value": "5"
+      },
+      {
+        "name": "MaxRunningEvaluationCount",
+        "value": "2"
+      },
+      {
+        "name": "TrustedServices",
+        "value": "Microsoft.CognitiveServices,Microsoft.MachineLearningServices,Microsoft.Search,Microsoft.VideoIndexer"
+      },
+      {
+        "name": "RaiMonitor"
+      }
+    ]
+  }

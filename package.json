@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1"
+  }
+}
