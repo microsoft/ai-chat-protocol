@@ -3,6 +3,7 @@ import dts from "rollup-plugin-dts";
 import typescript from "@rollup/plugin-typescript";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import alias from "@rollup/plugin-alias";
+import svg from 'rollup-plugin-svg-import';
 
 export default [
   {
@@ -20,6 +21,7 @@ export default [
       },
     ],
     plugins: [
+      svg({ stringify: true }),
       nodeResolve({
         preferBuiltins: true,
       }),
@@ -43,6 +45,7 @@ export default [
       },
     ],
     plugins: [
+      svg({ stringify: true }),
       alias({
         entries: [
           {
