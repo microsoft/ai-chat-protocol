@@ -45,6 +45,18 @@ jobs:
       run: npm test
       working-directory: ./sdk/js/packages/client
 
+    - name: Test Coverage
+      run: npm run test:coverage
+      working-directory: ./sdk/js/packages/client
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./sdk/js/packages/client/coverage
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
     - name: Update Version
       run: |
         version=$(npm pkg get version | tr -d '"')

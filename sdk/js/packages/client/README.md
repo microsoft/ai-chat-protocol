@@ -1,5 +1,7 @@
 # Microsoft AI Chat Protocol SDK
 
+[![Coverage Status](https://codecov.io/gh/microsoft/ai-chat-protocol/branch/main/graph/badge.svg)](https://codecov.io/gh/microsoft/ai-chat-protocol)
+
 The Microsoft AI Chat Protocol library allows you to easily build AI Chat interfaces.
 
 *Note: we are currently in public preview. Your feedback is greatly appreciated as we get ready to be generally available!*

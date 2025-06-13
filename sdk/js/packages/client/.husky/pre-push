@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Run full test suite with coverage before pushing
+npm run test:coverage
+
+# Check if coverage meets thresholds
+if [ $? -ne 0 ]; then
+  echo "❌ Coverage check failed. Please ensure tests pass and coverage thresholds are met."
+  exit 1
+fi
+
+echo "✅ All tests passed with sufficient coverage!"
