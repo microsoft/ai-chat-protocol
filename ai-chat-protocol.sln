@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{5D20AA90-6969-D8BD-9DCD-8634F4692FDA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{359C4649-C27F-D1E9-BD3B-65706094C913}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatProtocolBackend", "samples\backend\csharp\ChatProtocolBackend.csproj", "{7082BE44-3877-D585-42A2-54520D892845}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7082BE44-3877-D585-42A2-54520D892845}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7082BE44-3877-D585-42A2-54520D892845}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7082BE44-3877-D585-42A2-54520D892845}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7082BE44-3877-D585-42A2-54520D892845}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{359C4649-C27F-D1E9-BD3B-65706094C913} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
+		{7082BE44-3877-D585-42A2-54520D892845} = {359C4649-C27F-D1E9-BD3B-65706094C913}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FF78D2DD-95E1-49AF-A4F5-39B1B6E9F264}
+	EndGlobalSection
+EndGlobal

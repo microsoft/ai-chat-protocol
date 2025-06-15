@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(npm install)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(find:*)",
+      "Bash(npx vitest run:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run test:coverage:*)",
+      "Bash(rm:*)",
+      "Bash(npx husky init:*)",
+      "Bash(touch:*)",
+      "Bash(chmod:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(gh label list:*)",
+      "Bash(gh pr edit:*)"
+    ],
+    "deny": []
+  }
+}
