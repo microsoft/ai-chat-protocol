@@ -13,8 +13,15 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
+    "experimentalDecorators": true,
     "rootDir": ".",
     "outDir": "build",
+    "plugins": [
+      {
+        "name": "ts-lit-plugin",
+        "strict": true
+      }
+    ],
     "lib": [
       "ESNext",
       "DOM"
