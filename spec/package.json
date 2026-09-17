@@ -7,10 +7,10 @@
     "format": "tsp format **/*.tsp"
   },
   "dependencies": {
-    "@typespec/compiler": "^0.57.0",
-    "@typespec/http": "^0.57.0",
-    "@typespec/rest": "^0.57.0",
-    "@typespec/openapi3": "^0.57.0"
+    "@typespec/compiler": "^1.10.0",
+    "@typespec/http": "^1.10.0",
+    "@typespec/rest": "^0.80.0",
+    "@typespec/openapi3": "^1.10.0"
   },
   "private": true
 }
