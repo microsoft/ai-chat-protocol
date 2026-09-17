@@ -7,6 +7,9 @@ namespace Backend.Model;
 
 public struct AIChatFile
 {
+    [JsonPropertyName("filename")]
+    public string Filename { get; set; }
+
     [JsonPropertyName("contentType")]
     public string ContentType { get; set; }
 
