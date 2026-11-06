@@ -1,7 +1,11 @@
 # Microsoft AI Chat Protocol
 
-[![NPM Package](https://img.shields.io/npm/v/@microsoft/ai-chat-protocol)](https://www.npmjs.com/package/@microsoft/ai-chat-protocol)
-[![TypeScript Build](https://github.com/microsoft/ai-chat-protocol/actions/workflows/typescript-build.yml/badge.svg)](https://github.com/microsoft/ai-chat-protocol/actions/workflows/typescript-build.yml)
+> [!WARNING]
+> **SDK deprecation notice**
+>
+> The Microsoft AI Chat Protocol SDK (`@microsoft/ai-chat-protocol`) is deprecated. Existing applications that use this SDK should migrate to the **Responses API**, and new development should use the Responses API instead.
+>
+> To get started, see the [Azure OpenAI starter sample](https://aka.ms/openai/start) and the [Azure OpenAI starter kit guidance for JavaScript](https://learn.microsoft.com/en-us/azure/developer/ai/get-started-azure-openai-starter-kit?tabs=bash&pivots=javascript).
 
 The Microsoft [AI Chat Protocol SDK](/sdk) is a library for easily building AI Chat interfaces from services that follow the [AI Chat Protocol API Specification](https://aka.ms/chatprotocol), both of which are located in this repository.
 
